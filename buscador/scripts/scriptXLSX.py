@@ -1,16 +1,19 @@
-from pymongo import MongoClient
-import time
-from bson.objectid import ObjectId
 from openpyxl import Workbook
 import sys
 
 
-def xlsfile(listres, id):
+def xlsfile(out):
 	try:
 		wb = Workbook()
-		for doc in listres:
+		ws = wb.active
+		ws.title = out["query"][:10]
+		ws['A'+ str(1)] = "query" 
+		ws['A'+ str(2)] = out["query"]
+		ws['B'+ str(1)] = "date" 
+		ws['B'+ str(1)] = out["date"]
+		for doc in out["sources"]:
 			ws = wb.create_sheet()
-			ws.title = doc['name'][:10]
+			ws.title = doc['name']
 			ws['A'+ str(1)] = "rank"
 			ws['B'+ str(1)] = "title"
 			ws['C'+ str(1)] = "authors"
@@ -21,7 +24,7 @@ def xlsfile(listres, id):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
-			for item in doc['data']['res']:
+			for item in doc['doc']['results']:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
 				ws['C'+ str(row)] = item['authors']
@@ -32,7 +35,7 @@ def xlsfile(listres, id):
 				ws['H'+ str(row)] = item['pubP']
 				ws['I'+ str(row)] = item['doi']
 				row += 1
-		strout = 'buscador/xls/' +  id + '.xlsx'
+		strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
 		wb.save(strout)
 		return strout
 	except:

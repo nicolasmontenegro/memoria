@@ -12,4 +12,4 @@ def id(value):
 @register.filter(name='date')
 def id(value):
 	struct_time = time.strptime(value['date'])
-	return str(struct_time.tm_mday) + "/" + str(struct_time.tm_mon) + "/" + str(struct_time.tm_year) + " " + str(struct_time.tm_hour) + ":" + str(struct_time.tm_min) + ":" + str(struct_time.tm_sec)
+	return str(struct_time.tm_mday) + "/" + str(struct_time.tm_mon) + "/" + str(struct_time.tm_year) + " " + str(struct_time.tm_hour).zfill(2) + ":" + str(struct_time.tm_min).zfill(2) + ":" + str(struct_time.tm_sec).zfill(2)

@@ -33,7 +33,7 @@ def requestELSEVIER(querytext):
 	count = 200
 	rank = 1
 	results = []
-	while True:
+	while totalfound > 0:
 		if now <= maxres:
 			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&subscribed=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) ##+ '&view=complete'
 			print(urlWhile)
@@ -64,7 +64,7 @@ def requestELSEVIER(querytext):
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
 		"totalfound" : str(totalfound),
-		"res" : results}
+		"results" : results}
 
 
 def requestIEEE(querytext):
@@ -76,7 +76,7 @@ def requestIEEE(querytext):
 	now = 1
 	count = 200
 	results = []
-	while True:
+	while totalfound > 0:
 		if now <= maxres:
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext + '&hc=' + str(count) + '&rs=' + str(now)
 			print(urlWhile)
@@ -101,7 +101,7 @@ def requestIEEE(querytext):
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
 		"totalfound" : str(totalfound),
-		"res" : results}
+		"results" : results}
 
 def buscar(querytext, max):
 	maxres = max
@@ -110,6 +110,7 @@ def buscar(querytext, max):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"ieee" : db.ieee.insert(requestIEEE(querytext)),
-		"elsevier" : db.elsevier.insert(requestELSEVIER(querytext))}
+		"sources": [{"name": "ieee", "db": db.ieee.insert(requestIEEE(querytext))},
+			{"name": "elsevier", "db" : db.elsevier.insert(requestELSEVIER(querytext))}]
+		}
 	return db.query.insert(objInsert)
