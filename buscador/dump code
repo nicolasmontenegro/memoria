@@ -1,0 +1,15 @@
+dump code
+
+def putAtributeUn(ws, x, y, element):
+	c = ws.cell(row = y, column = x)
+	try:
+		c.value = element.text
+	except AttributeError:
+		c.value = ""
+
+def putAtribute(ws, x, y, element):
+	c = ws.cell(row = y, column = x)
+	try:
+		c.value = element
+	except AttributeError:
+		c.value = ""

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Papers{%endblock%}
+
+{%block script%}<script type="text/javascript" src="{% static 'func/index.js' %}"></script>{%endblock%}
+	
+
+{%block title_body%}Buscador{%endblock%}
+
+{%block body%}
+	<div class="row"><div class="col-xs-12 col-md-12"><label>Termino a buscar</label>
+	<div class="input-group">
+		<form action="revisar/" method="GET">
+			<input type="text" class="form-control" placeholder="buscar" id="query" type="text" name="query" >
+			<span class="input-group-btn">
+				<button class="btn btn-default" type="submit">buscar</button>
+			</span>
+		</form>
+	</div></div></div>
+    </br>
+	<div class="row"><div class="col-xs-12 col-md-12"><div class="panel panel-default">
+	  <!-- Default panel contents -->
+	  <div class="panel-heading">Busquedas recientes</div>
+		<table class="table">
+        <thead>
+          <tr>
+            <th>Busqueda</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for doc in  out %}
+          <tr>
+            <td><a href="http://localhost:8000/buscador/revisar/?idquery={{doc|id}}">{{doc.query}}</a></td>
+            <td>{{doc|date}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+	  </table>
+	</div></div></div>
+{%endblock%}	

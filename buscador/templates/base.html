@@ -1,0 +1,52 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	 	
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Buscador papers: {%block title%}Papers{%endblock%}</title>
+
+	
+
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">      <!-- We use the fluid option here to avoid overriding the fixed width of a normal container within the narrow content columns. -->
+    <div class="container-fluid">
+    	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+      <div class="navbar-header">          
+        <a class="navbar-brand" href="http://127.0.0.1:8000/buscador">{% if back %}
+			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+			{% endif %}{%block title_body%}Papers {%endblock%}</a>
+      </div>
+
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-5">
+        {%block nav_left%}{%endblock%}
+        {%block nav_right%}{%endblock%}
+      </div><!-- /.navbar-collapse -->
+    </div>
+  </nav>
+
+	
+	<div class="col-xs-12">
+		{%block body%}{%endblock%}
+	</div>
+</body>
+<footer>
+
+	<script type="text/javascript" src="{% static 'js/jquery-2.1.4.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/navbar-fixed-top.css' %}">
+	{%block script%}{%endblock%}
+	
+</footer>
+</html>
