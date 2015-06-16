@@ -10,6 +10,7 @@
 {%block nav_right%}Fecha de busqueda: {{out|date}}{%endblock%}
 
 {%block body%}
+<input type="hidden" id="csrfmiddlewaretoken" value="{{ csrf_token }}">
 	
 <div role="tabpanel">
 
@@ -36,13 +37,21 @@
 			{% for doc in item.doc.results %}
 			<div class="well well-sm">
 				<div class="row">
-					<div class="col-xs-1"><font size="10">{{doc.rank}}</font></div> 
-					<div class="col-xs-11"><h3><a href="{{doc.mdurl}}">{{doc.title}}</a></h3></div>
+					<div class="col-sm-2">						
+						<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control" source="{{item.name}}" rank={{doc.rank}} id="{{item.doc|id}}">
+							<a type="button" class="btn btn-default button-remove {% ifequal doc.vote '-1' %}active{% endifequal %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> (x)</a>
+							<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> (x)</a>
+							<a type="button" class="btn btn-default button-ok {% ifequal doc.vote '1' %}active{% endifequal %}" id="button-ok"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> (x)</a>
+						</div>
+					</div> 
+					<div class="col-sm-10">
+						<p><h3 class="paperTitle"><a href="{{doc.mdurl}}">{{doc.title}}</a></h3></p>
+					</div>
 				</div>
 				<div class="row">                
 					<!-- Optional: clear the XS cols if their content doesn't match in height -->
 					<!-- <div class="clearfix visible-xs-block"></div> -->
-					<div class="col-xs-12">
+					<div class="col-sm-12">
 						<p><b>Publicación: </b>{{doc.pubN}}, p. {{doc.pubP}}. {{doc.pubY}} </p>
 						<p><b>Autores: </b>{{doc.authors}}</p>
 						{% if doc.pdfurl %}<p><b>Enlace: </b><a href="{{doc.mdurl}}">Página de publicación</a><i> requiere registro</i></p>{% endif %}

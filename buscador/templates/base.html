@@ -34,16 +34,25 @@
 	</nav>
 
 
-	<div class="col-xs-12">
+	<div class="content-container" id="top">
 		{%block body%}{%endblock%}
 	</div>
+	
+
+	<span id="top-link-block" class="hidden">
+	    <a href="#top" class="well well-sm"  onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+	        <i class="glyphicon glyphicon-chevron-up"></i> Volver arriba
+	    </a>
+	</span><!-- /top-link-block -->
 </body>
 <footer>
 
 	<script type="text/javascript" src="{% static 'js/jquery-2.1.4.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/js.cookie.js' %}"></script>
+	<script type="text/javascript" src="{% static 'func/base.js' %}"></script>
 	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-	<link rel="stylesheet" href="{% static 'css/navbar-fixed-top.css' %}">
+	<link rel="stylesheet" href="{% static 'css/base.css' %}">
 	{%block script%}{%endblock%}
 
 </footer>
