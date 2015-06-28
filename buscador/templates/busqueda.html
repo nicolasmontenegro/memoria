@@ -5,9 +5,11 @@
 {%block title%}Inicio{%endblock%}
 {%block title_body%}Resultados<i> "{{out.query}}"</i>{%endblock%}
 
-{%block script%}<script type="text/javascript" src="{% static 'func/busqueda.js' %}"></script>{%endblock%}
+{%block urlback%}folder?idquery={{out.folder}}{%endblock%}
 
-{%block nav_right%}Fecha de busqueda: {{out|date}}{%endblock%}
+{%block nav_right%}fecha de busqueda: {{out|date}}{%endblock%}
+
+{%block script%}<script type="text/javascript" src="{% static 'func/busqueda.js' %}"></script>{%endblock%}
 
 {%block body%}
 <input type="hidden" id="csrfmiddlewaretoken" value="{{ csrf_token }}">
