@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Inicio{%endblock%}
+{%block title_body%}Resultados<i> "{{out.query}}"</i>{%endblock%}
+
+{%block urlback%}folder?idquery={{out.folder}}{%endblock%}
+
+{%block nav_right%}fecha de busqueda: {{out|date}}{%endblock%}
+
+{%block script%}<script type="text/javascript" src="{% static 'func/busqueda.js' %}"></script>{%endblock%}
+
+{%block body%}
+<input type="hidden" id="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<input type="hidden" id="idquery" value="{{ out|id }}">
+	
+<div role="tabpanel">
+
+	<!-- Nav tabs -->
+
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active">
+	{% for item in out.sources%}
+			<a href="#{{item.doc|id}}" aria-controls="{{item.name}}" role="tab" data-toggle="tab">{{item.name}}</a>
+		</li>	
+		<li role="presentation">
+	{% endfor %}
+			<a href="#download" aria-controls="download" role="tab" data-toggle="tab">descargar</a>
+		</li>
+	</ul>
+
+
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active{% for item in out.sources %} source"  name="{{item.name}}" id="{{item.doc|id}}">
+						
+		</div>
+		<div role="tabpanel" class="tab-pane{% endfor %}" id="download">
+			<div class="col-xs-1"><a class="btn btn-default" href="http://localhost:8000/descargar?idquery={{out|id}}" role="button">xlsx</a></div>
+			<button type="button" class="btn btn-info btn-block" id="searchComplete">searchComplete</button>
+		</div>
+	</div><!-- Tab panes end -->
+
+
+</div>
+
+{%endblock%}

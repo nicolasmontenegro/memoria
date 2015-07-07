@@ -1,0 +1,124 @@
+{% load types %}
+
+{% ifequal out.totalfound "0" %}
+<div class="page-header">
+	<h1>Sin resultados <small>intente otra busqueda</small></h1>
+</div>			
+{% else %}
+	{% ifequal page.thispage 1 %}
+	<div class="row">
+		<div class="col-xs-11"><h3>Total resultados: {{out.totalsave}} descargados de {{out.totalfound}} en total</h3></div>
+	</div>
+	{% endifequal %}
+	{% if out.results|length_is:"0"%}
+		{% if out.update == 1 %}
+			<h1>Faltan resultados por descargar <small>descargando</small></h1>
+		
+		{% else %}
+			<div class="page-header">
+				<h1>Faltan resultados por descargar <small>para ver los resultados faltantes...</small></h1>
+				<button type="button" class="btn btn-info"data-toggle="modal" data-target="#ModalInfoComplete">haga click aquí</button>
+				<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
+
+
+				<!-- Modal -->
+				<div class="modal fade" id="ModalInfoComplete" tabindex="-1" role="dialog" aria-labelledby="InfoComplete">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="myModalLabel">Actualizar resultados</h4>
+							</div>
+							<div class="modal-body">
+								<p>Los resultados estarán listos pronto. Cuando esto suceda, la página se recargará automáticamente.</p>
+								<p>No se preocupe: si cambia de página o cierra el explorador el proceso continuará de todos modos.</p>
+								<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+								<button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		{% endif %}
+	{% else %}
+		{% for doc in out.results %}
+		<div class="well well-sm">
+			<div class="row">
+				<div class="col-sm-2">						
+					<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control" source="{{out.name}}" rank={{doc.rank}} id="{{out|id}}">
+						<a type="button" class="btn btn-default button-remove {% ifequal doc.vote '-1' %}active{% endifequal %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+						<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span></a>
+						<a type="button" class="btn btn-default button-ok {% ifequal doc.vote '1' %}active{% endifequal %}" id="button-ok"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+					</div>
+				</div> 
+				<div class="col-sm-9">
+					<p><h3 class="paperTitle"><a href="{{doc.mdurl}}">{{doc.title}}</a></h3></p>
+				</div>
+				<div class="col-sm-1">
+					<p><h3>{{doc.rank}}</h3></p>
+				</div>
+			</div>
+			<div class="row">                
+				<!-- Optional: clear the XS cols if their content doesn't match in height -->
+				<!-- <div class="clearfix visible-xs-block"></div> -->
+				<div class="col-sm-12">
+					<p><b>Publicación: </b>{{doc.pubN}}, p. {{doc.pubP}}. {{doc.pubY}} </p>
+					<p><b>Autores: </b>{{doc.authors}}</p>
+					<p><b>DOI: </b>{{doc.doi}}</p>
+					<p><b>Abstract: </b>{{doc.abstract}}</p>
+				</div>
+			</div>				
+		</div>		
+		{% endfor %}		
+	{% endif %}
+	<nav class="navbar navbar-default navbar-fixed-bottom">
+		<div class="container" align="center">
+			<ul class="pagination pagination-sm folder" >						
+				<li class="buttonpagination{% ifequal page.prevpage -1 %} disabled{% endifequal %}" value="{{page.prevpage}}">
+					<a href="" aria-label="Página anterior">
+						<span aria-hidden="true">&laquo;</span>  
+					</a>
+				</li>
+				{% if page.rangepage|first != 1 %}
+				<li class="buttonpagination" value="1">
+					<a href="">
+						1
+					</a>
+				</li>
+				<li>
+					<a>
+						...
+					</a>
+				</li>						
+				{% endif %}
+				{% for num in page.rangepage %}
+				<li class="buttonpagination{% ifequal num page.thispage %} active{% endifequal %}" value="{{num}}">
+					<a href="">
+						{{num}}
+					</a>
+				</li>
+				{% endfor %}
+				{% if page.rangepage|last != page.totalpages %}
+				<li>
+					<a>
+						...
+					</a>
+				</li>
+				<li class="buttonpagination" value="{{page.totalpages}}">
+					<a href="">
+						{{page.totalpages}}
+					</a>
+				</li>
+				{% endif %}
+				<li class="buttonpagination {% ifequal page.nextpage -1 %}disabled{% endifequal %}" value="{{page.nextpage}}">
+					<a href="" aria-label="Página siguiente">
+						<span aria-hidden="true">&raquo;</span> 
+					</a>
+				</li>						
+			</ul> 	
+		</div>
+	</nav>
+{% endifequal %}

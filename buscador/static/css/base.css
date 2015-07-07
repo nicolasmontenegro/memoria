@@ -1,6 +1,20 @@
 .navbar-fixed-top + .content-container {
-	margin-top: 70px;
+	padding-top: 70px;
+    padding-bottom: 30px;
 }
+
+.navbar-fixed-bottom{
+    min-height: 0px;
+}
+
+.pagination {
+    margin: 0px;
+}
+.navbar-header {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .content-container {
 	margin: 0 30px;
 }
@@ -12,7 +26,7 @@
 }
 #top-link-block.affix {
     position: fixed; /* keeps it on the bottom once in view */
-    bottom: 18px; /* height of link element */
+    bottom: 50px; /* height of link element */
     left: 10px; /* padding from the left side of the window */
 }
 
@@ -23,7 +37,6 @@
 
 .paperButton {
     margin-top: 6px;
-    .paperTitle
 }
 
 .navbar-right {

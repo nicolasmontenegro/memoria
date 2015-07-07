@@ -45,14 +45,13 @@
 			<thead>
 				<tr>
 					<th>Busqueda</th>
-					<th>Fecha</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for doc in  out.search %}
 				<tr>
 					<td><a href="/revisar?idquery={{doc.doc|id}}">{{doc.doc.query}}</a></td>
-					<td>{{doc.doc|date}}</td>
+					<td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" title="{{doc.doc|date}}" data-placement="left" ></span></td>
 				</tr>
 				{% endfor %}
 			</tbody>
