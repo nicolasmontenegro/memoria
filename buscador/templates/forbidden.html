@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Papers{%endblock%}
+{%block title_body%}Buscador{%endblock%}
+
+{%block script%}<script type="text/javascript" src="{% static 'func/demand.js' %}"></script>{%endblock%}
+
+
+{%block body%}
+<input type="hidden" id="idquery" value="{{ out.idquery }}">
+<div class="row">
+	<div class="col-xs-12 col-md-12">
+		<div class="page-header">
+			<h1>Acceso prohibido <small>puedes pedir permiso para acceder a estos datos.</small></h1>
+			{% if userlogin|id in out.demand %}
+				<p>Ya has pedido acceso. Espera a que seas autorizado.</p>
+			{% else %}
+				<a class="btn btn-default" id="permission">Pedir acceso</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{%endblock%}	

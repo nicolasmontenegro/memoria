@@ -2,15 +2,18 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.shortcuts import render
 from django.conf import settings
+from django.views.static import serve
+from django.views.decorators.csrf import ensure_csrf_cookie
 from pymongo import MongoClient
 from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
-from django.views.static import serve
 import os
+
+
 
 # Create your views here.
 def revisar(request):
-	if request.method == 'GET':
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
 		if request.GET.get('source') and request.GET.get('page') and request.GET.get('iddb'):
 			resultsperpage = 24
 			print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
@@ -20,30 +23,32 @@ def revisar(request):
 			out["name"] = request.GET['source']
 			return render(request, 'resultsPage.html', 
 				{'page': scriptPage.countPage(int(request.GET['page']), int(out["totalfound"]), resultsperpage),
-				'out': out})	
+				'out': out,
+				"userlogin": scriptDB.unfold(request.COOKIES)})	
 		elif request.GET.get('idquery'):
 			print("revisar dice: " + request.GET['idquery'])
-			dbId = ObjectId(request.GET['idquery'])
-			client = MongoClient()
-			out = client.memoria.query.find_one({"_id": dbId})
-			for doc in out["sources"]:
-				doc["doc"] = scriptDB.readSource(doc["name"], doc["db"]) 
-			print("uploading")
+			out = scriptDB.getResults(request.GET, request.COOKIES)
+			if isinstance(out, int):
+				if out == -2:
+					return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
+				elif out == -1:
+					HttpResponseNotFound('<h1>Página no encontrada</h1>')
 			return render(request, 'results.html', 
-				{'out': out,
-				'back': 1})							
+				{'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})							
 		elif request.GET.get('query'):
 			print("busqueda dice: " + request.GET['query'])
 			dbId = scriptBuscador.search(request.GET['query'])
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
-	if request.method == 'POST':
+	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
 		print("hola")
 		if request.POST.get('query'):
 			print("entrando")
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}
 			return JsonResponse(response_data )
+	else:
+		return HttpResponseRedirect('/login')
 
 def descargar(request):
 	if request.method == 'GET':
@@ -66,37 +71,80 @@ def descargar(request):
 def vote(request):
 	if request.method == 'POST':
 		print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
-		result = scriptDB.updateVote (request.POST['source'], request.POST['id'], request.POST['rank'], request.POST['value'])
-		print(result.modified_count)
-		response_data = {
-			'modified': result.modified_count,
-			'matched': result.matched_count,
-			'value': request.POST['value'],}
-		return JsonResponse(response_data)
+		result = scriptDB.updateVote(request.POST, request.COOKIES)
+		return JsonResponse(result)
 
 def folder(request):
-	if request.method == 'GET':
-		if request.GET.get('idquery'):
-			print("folder dice: " + request.GET['idquery'])
-			dbId = ObjectId(request.GET['idquery'])							
-		elif request.GET.get('query'):
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:	
+		if request.GET.get('query'):
 			print("new folder dice: " + request.GET['query'])
-			dbId = scriptDB.createFolder(request.GET['query'])
-			return HttpResponseRedirect('/folder?idquery=%s' % str(dbId))
-		client = MongoClient()
-		out = client.memoria.folder.find_one({"_id": dbId})
-		for doc in out["search"]:
-			doc["doc"] = scriptDB.readQuery(doc["id"]) 
-		print("uploading")
-		return render(request, 'folder.html', 
-			{'out': out,
-			'back': 1})
+			dbId = scriptDB.createFolder(request.GET['query'], request.COOKIES)
+			return HttpResponseRedirect('/folder?idquery=%s' % dbId)
+		elif request.GET.get('idquery'):
+			out = scriptDB.getFolder(request.GET, request.COOKIES, True)
+			if isinstance(out, int):
+				if out == -1:
+					HttpResponseNotFound('<h1>Página no encontrada</h1>')
+			if out.get("permission"):
+				return render(request, 'folder.html', {'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
+			else:
+				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
+	elif request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:	
+		if request.POST.get("idfolder") and request.POST.get("iduser"):
+			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES))
+		elif request.POST.get("idquery"):
+			return JsonResponse({"check":scriptDB.addDemand(request.POST, request.COOKIES)})
+	else:
+		return HttpResponseRedirect('/login')
 
 
-#def index(request):
-#	lista = list(MongoClient().memoria.query.find())
-#	return render(request, 'index.html', {'out': lista})
 
 def indexfolder(request):
-	lista = list(MongoClient().memoria.folder.find())
-	return render(request, 'indexfolder.html', {'out': lista})
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:						
+		lista = scriptDB.getListFolder(request.COOKIES)#list(MongoClient().memoria.folder.find())
+		return render(request, 'indexfolder.html', {'out': lista, "userlogin": scriptDB.unfold(request.COOKIES)})
+	else:
+		return HttpResponseRedirect('/login')
+
+@ensure_csrf_cookie
+def signup(request):
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		return HttpResponseRedirect('/')
+	elif request.method == 'POST':
+		print(request.POST.get('password'))
+		return JsonResponse({"check":scriptDB.addUser(request.POST),})
+	elif request.method == 'GET':
+		c = {}
+		return render(request, 'signup.html', c)
+
+@ensure_csrf_cookie
+def login(request):	
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		return HttpResponseRedirect('/')
+	elif request.method == 'POST':
+		check = scriptDB.checkLogin(request.POST, request.COOKIES)
+		print(check)
+		return JsonResponse({"check":check})
+	elif request.method == 'GET':
+		c = {}
+		return render(request, 'login.html', c)
+
+def profile(request):
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		return render(request, 'profile.html', {"userlogin": scriptDB.unfold(request.COOKIES)})
+	elif request.method == 'GET':
+		return HttpResponseRedirect('/login')
+
+def logout(request):
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		return render(request, 'logout.html')
+	elif request.method == 'GET':
+		return HttpResponseRedirect('/login')
+
+def comment(request):
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		print("comment dice: " + request.GET['source'] + request.GET['id'])
+		return render(request, 'comment.html', scriptDB.getResult(request.GET))
+	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
+		print("comment dice: " + request.POST['source'] + request.POST['id'])
+		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))

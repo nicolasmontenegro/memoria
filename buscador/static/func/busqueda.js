@@ -4,8 +4,6 @@ $('#nav-tabs').click(function (e)
 	$(this).tab('show')
 })
 
-var csrftoken = $("#csrfmiddlewaretoken").val();
-
 function csrfSafeMethod(method) {
 	// these HTTP methods do not require CSRF protection
 	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -13,11 +11,12 @@ function csrfSafeMethod(method) {
 $.ajaxSetup({
 	beforeSend: function(xhr, settings) {
 		if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-			xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			xhr.setRequestHeader("X-CSRFToken", csrftoken = $.cookie("csrftoken"));
 		}
 	}
 
 });
+
 
 $(document).ready(function(){
 	$(".tab-pane.source").each(function()
@@ -36,10 +35,11 @@ $(document).on('click', ".button-ok", function(){
 	{
 		ajaxVote(0, btn).promise().done(function(json)
 		{
-			if (json.modified)
+			if (json.remove)
 			{
 				$(btn).button('toggle');
 				console.log("toggle ok from 1");
+				updateCountVote (btn, json); 
 			}
 		});
 	}
@@ -47,12 +47,13 @@ $(document).on('click', ".button-ok", function(){
 	{
 		ajaxVote(1, btn).promise().done(function(json)
 		{
-			if (json.modified) 
+			if (json.add) 
 			{
 				$(btn).button('toggle');
 				if ($(btn).parent().find(".button-remove").hasClass('active'))
 					$(btn).parent().find(".button-remove").button('toggle');
 				console.log("toggle ok from 0");
+				updateCountVote (btn, json); 
 			};
 		});
 	}
@@ -65,10 +66,11 @@ $(document).on('click', ".button-remove", function(){
 	{
 		ajaxVote(0, btn).promise().done(function(json)
 		{
-			if (json.modified)
+			if (json.remove)
 			{
 				$(btn).button('toggle');
 				console.log("toggle end from -1");
+				updateCountVote (btn, json); 
 			}
 		});
 	}
@@ -76,18 +78,23 @@ $(document).on('click', ".button-remove", function(){
 	{
 		ajaxVote(-1, btn).promise().done(function(json)
 		{
-			if (json.modified) 
+			if (json.add) 
 			{
 				$(btn).button('toggle');
 				if ($(btn).parent().find(".button-ok").hasClass('active'))
 					$(btn).parent().find(".button-ok").button('toggle');
 				console.log("toggle end from 0");
-				sol = btn;
+				updateCountVote (btn, json); 
 			};
 		});
 	}
 console.log("remove end");
 });
+
+function updateCountVote (btn, json) {
+	$(btn).parent().find(".button-ok strong").html(" " + json.yes);
+	$(btn).parent().find(".button-remove strong").html( " " + json.no);
+};
 
 
 $(document).on('click', ".buttonpagination", function(e){
@@ -117,6 +124,52 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	});
 });
 
+$(document).on('click', ".button-comment", function(e){
+	btn = this;
+	$("#ModalComment").attr("source", $(btn).parent().attr("source"));
+	$("#ModalComment").attr("rank", $(btn).parent().attr("rank"));
+	$("#ModalComment").attr("idpub", $(btn).parent().attr("id"));	
+	inputconnect = 
+	{
+		url: "comment",
+		type: "GET",
+	};
+	inputdata =
+	{
+		source: $("#ModalComment").attr("source"),
+		rank: $("#ModalComment").attr("rank"),
+		id: $("#ModalComment").attr("idpub"),
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		console.log("llegado  comentarios");
+		$(".modal-dialog").html(response);
+		$('#ModalComment').modal('show');
+	});	
+	console.log("mostrado comentario");
+});
+
+$(document).on('click', "#sendComment", function(e){
+	inputconnect = 
+	{
+		url: "comment",
+		type: "POST",
+	};
+	inputdata =
+	{
+		source: $("#ModalComment").attr("source"),
+		rank: $("#ModalComment").attr("rank"),
+		id: $("#ModalComment").attr("idpub"),
+		comment: $("#textComment").val(),
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		console.log("llegado nuevos comentarios");
+		$(".modal-dialog").html(response);
+		$('#ModalComment').modal('show');
+	});	
+	console.log(" comentario enviado");
+});
 
 function ajaxVote(valueVote, button)
 {
@@ -188,6 +241,25 @@ function ajaxComplete(query_)
 		success : function(response)
 		{
 			console.log(response);
+		},
+		// handle a non-successful response
+		error : function(xhr,errmsg,err) {
+		//$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+		console.log("ERROR: " + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+		}
+	});
+};
+
+function ajaxPages(inputconnect, inputdata)
+{
+	return $.ajax({
+		url : inputconnect.url, // the endpoint
+		type : inputconnect.type, // http method
+		data : inputdata,// data sent with the post request
+		// handle a successful response
+		success : function(response)
+		{
+			return response;
 		},
 		// handle a non-successful response
 		error : function(xhr,errmsg,err) {

@@ -56,7 +56,7 @@ def requestELSEVIER(querytext, now, maxres):
 					"pubY": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}coverDate")),
 					"pubP": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}startingPage")) + " - " + putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}endingPage")),
 					"doi": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}doi")),
-					"vote": 0,
+					"vote": {},
 					})
 				totalsave += 1
 				rank += 1
@@ -97,7 +97,8 @@ def requestIEEE(querytext, now, maxres):
 					"pubY": putAtributeUn(element.find("py")),
 					"pubP": putAtributeUn(element.find("epage")),
 					"doi": putAtributeUn(element.find("doi")),
-					"vote": 0,})
+					"vote": {},
+					})
 				totalsave += 1
 			now += count
 		else:

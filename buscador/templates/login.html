@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Papers{%endblock%}
+{%block title_body%}Buscador{%endblock%}
+
+{%block script%}
+	<script type="text/javascript" src="{% static 'js/jquery.validate.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery.md5.js' %}"></script>
+	<script type="text/javascript" src="{% static 'func/login.js' %}"></script>
+	<script type="text/javascript" src="{% static 'func/index.js' %}"></script>{%endblock%}
+
+{%block body%}
+<div class="row">
+	<div class="col-xs-12 col-md-12">
+		<div class="page-header">
+			<h1>Inicia sesion</h1>
+		</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label for="username" class="col-sm-2 control-label">Nombre de usuario</label>
+				<div class="col-sm-10">
+					<input id="username" class="form-control" tabindex="1"  type="text" name="username" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password" class="col-sm-2 control-label">Contraseña</label>
+				<div class="col-sm-10">
+					<input id="password" class="form-control" tabindex="2"  name="password" maxlength="50" value="" type="password" required autocomplete="off">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button class="btn btn-primary" id="send">Iniciar sesion</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="col-xs-12 col-md-12">
+		<div class="page-header">
+			<h1>¿No tienes una cuenta?</h1>
+			<a class="btn btn-default" href="/signup" role="button">Crear cuenta</a>
+		</div>
+	</div>
+</div>
+
+{%endblock%}	<!-- <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox"> Remember me
+        </label>
+      </div>
+    </div>
+</div> -->

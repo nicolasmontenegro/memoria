@@ -1,59 +1,79 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html>
-<head>
+	<head>
 
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>Buscador papers: {%block title%}Papers{%endblock%}</title>
+		<title>Buscador papers: {%block title%}Papers{%endblock%}</title>
 
-	
 
-</head>
-<body>
-	<nav class="navbar navbar-default navbar-fixed-top">      <!-- We use the fluid option here to avoid overriding the fixed width of a normal container within the narrow content columns. -->
-		<div class="container-fluid">
-			
-			<div class="navbar-header">          
-				<a class="navbar-brand" {% if back %}href="/{%block urlback%}{%endblock%}"{% endif %}>
-					
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top">      <!-- We use the fluid option here to avoid overriding the fixed width of a normal container within the narrow content columns. -->
+			<div class="container-fluid">
+				
+				<div class="navbar-header"> 
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>         
+					<a class="navbar-brand" {% if back %}href="/{%block urlback%}{%endblock%}"{% endif %}>
+						
 						{% if back %}<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>{% endif %}
-					
-					{%block title_body%}Papers {%endblock%}
-				</a>
+						
+						{%block title_body%}Papers {%endblock%}
+					</a>
+				</div>
+
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					{%block nav_left%}{%endblock%}
+					<ul class="nav navbar-nav navbar-right">
+						<li><p class="navbar-text">{%block nav_right%}{%endblock%}</p></li>
+						<li role="separator" class="divider"></li>
+						{% if userlogin %}
+							<li class="dropdown">
+						          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{userlogin.firstname}}<span class="caret"></span></a>
+						          <ul class="dropdown-menu">
+						            <li><a href="/">Carpetas</a></li>
+						            <li><a href="/profile">Perfil</a></li>
+						            <li><a href="/logout">Cerrar sesión</a></li>
+						          </ul>
+						        </li>
+						{% else %}
+							<li><a class="btn btn-sm btn-default" href="/login" role="button">Inicia sesion</a><li>
+						{% endif %}
+					</ul>
+				</div><!-- /.navbar-collapse -->
 			</div>
+		</nav>
 
 
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-5">
-				{%block nav_left%}{%endblock%}
-				<p class="navbar-text navbar-right">{%block nav_right%}{%endblock%}</p>
-			</div><!-- /.navbar-collapse -->
+		<div class="content-container" id="top">
+			{%block body%}{%endblock%}
 		</div>
-	</nav>
+		
 
-
-	<div class="content-container" id="top">
-		{%block body%}{%endblock%}
-	</div>
-	
-
-	<span id="top-link-block" class="hidden">
-	    <a href="#top" class="well well-sm"  onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
-	        <i class="glyphicon glyphicon-chevron-up"></i> Volver arriba
-	    </a>
-	</span><!-- /top-link-block -->
-</body>
-<footer>
-
-	<script type="text/javascript" src="{% static 'js/jquery-2.1.4.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/js.cookie.js' %}"></script>
-	<script type="text/javascript" src="{% static 'func/base.js' %}"></script>
-	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-	<link rel="stylesheet" href="{% static 'css/base.css' %}">
-	{%block script%}{%endblock%}
-
-</footer>
+		<span id="top-link-block" class="hidden">
+			<a href="#top" class="well well-sm"  onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+				<i class="glyphicon glyphicon-chevron-up"></i> Volver arriba
+			</a>
+		</span><!-- /top-link-block -->
+	</body>
+	<footer>
+		
+		<script type="text/javascript" src="{% static 'js/jquery-2.1.4.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/js.cookie.js' %}"></script>
+		<script type="text/javascript" src="{% static 'func/base.js' %}"></script>
+		<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+		<link rel="stylesheet" href="{% static 'css/base.css' %}">
+		{%block script%}{%endblock%}
+		
+	</footer>
 </html>

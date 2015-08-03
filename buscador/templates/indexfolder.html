@@ -23,38 +23,45 @@
 <div class="row">
 	<div class="col-xs-12 col-md-12">
 		<label>Crear carpeta</label>
-		<div class="input-group">
-			<form action="folder" method="GET">
+			<form action="folder" method="GET" class="input-group">
 				<input type="text" class="form-control" placeholder="nombre carpeta" id="query" type="text" name="query">
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="submit">crear</button>
 				</span>
 			</form>
-		</div>
 	</div>
 </div>
+
 </br>
 <div class="row">
 	<div class="col-xs-12 col-md-12">
+	{% if out|length%}
 		<div class="panel panel-default">
-			<div class="panel-heading">Carpetas recientes</div>
+			<div class="panel-heading">Mis carpetas</div>
 			<table class="table">
 				<thead>
 					<tr>
 						<th>Busqueda</th>
 						<th>Fecha</th>
+						<th>Permiso</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for doc in  out %}
+					{% for doc in out %}
 					<tr>
 						<td><a href="/folder?idquery={{doc|id}}">{{doc.folder}}</a></td>
 						<td>{{doc|date}}</td>
+						<td>{{doc|permission}}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
 			</table>
 		</div>
+	{%else%}
+		<div class="page-header">
+		  <h1>No hay carpetas <small>crea una desde el cuadro superior</small></h1>
+		</div>
+	{%endif%}
 	</div>
 </div>
 {%endblock%}	

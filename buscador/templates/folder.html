@@ -22,46 +22,75 @@
 	</div>
 </div> -->
 
+{% if out.permission == "creator" or out.permission == "admin" %}
 <div class="row">
 	<div class="col-xs-12 col-md-12">
 		<label>Termino a buscar</label>
-		<div class="input-group">
-			<form action="revisar" method="GET">
-				<input type="hidden" name="idfolder" value="{{ out|id }}">
-				<input type="text" class="form-control" placeholder="buscar" id="query" type="text" name="query" >
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="submit">buscar</button>
-				</span>
-			</form>
+		<form class="input-group" action="revisar" method="GET" >
+			<input type="text" class="form-control" placeholder="buscar" id="query" type="text" name="query" >				
+			<input type="hidden" name="idfolder" id="idfolder" value="{{ out|id }}">
+			<span class="input-group-btn">
+				<button class="btn btn-default" type="submit">buscar</button>
+			</span>
+		</form>
+	</div>
+</div>
+<br>
+{% if out.demand|length %}
+<div class="row">	
+	<div class="col-xs-12 col-md-12">	
+		<div class="panel panel-default">
+			<!-- Default panel contents -->		
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Solicitudes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for doc in out.demand %}
+					<tr>
+						<td><p class="userDemand">{{doc}}</p></td>
+						<td><button class="btn btn-default acceptDemand" iduser={{doc}}>Aceptar solicitud</button></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>
-</br>
-<div class="row"><div class="col-xs-12 col-md-12">
-	{% if out.search|length%}
-	<div class="panel panel-default">
-		<!-- Default panel contents -->		
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Busqueda</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for doc in  out.search %}
-				<tr>
-					<td><a href="/revisar?idquery={{doc.doc|id}}">{{doc.doc.query}}</a></td>
-					<td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" title="{{doc.doc|date}}" data-placement="left" ></span></td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+{% endif %}
+{% endif %}
+{% if out.search|length%}
+<div class="row">	
+	<div class="col-xs-12 col-md-12">	
+		<div class="panel panel-default">
+			<!-- Default panel contents -->		
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Busqueda</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for doc in  out.search %}
+					<tr>
+						<td><a href="/revisar?idquery={{doc.doc|id}}">{{doc.doc.query}}</a></td>
+						<td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="tooltip" title="{{doc.doc|date}}" data-placement="left" ></span></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
-	{%else%}
-	<div class="page-header">
-	  <h1>No hay registros <small>empieza buscando algo desde el cuadro superior</small></h1>
-	</div>
-	{%endif%}
 </div>
-</div>
+{%else%}
+<div class="page-header">
+	{% if out.permission == "creator" or out.permission == "admin" %}	
+	<h1>No hay registros <small>empieza buscando algo desde el cuadro superior</small></h1>
+	{% else %}	
+	<h1>No hay registros <small>solo los administradores pueden generar busquedas</small></h1>
+	{% endif %}
+</div>	
+{%endif%}
 {%endblock%}	

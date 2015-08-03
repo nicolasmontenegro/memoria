@@ -11,22 +11,7 @@ $.ajaxSetup({
 
 });
 
-$(document).ready(function(){
-
-	$('#searchButton').click(function (event) 
-	{
-		if ($('#searchText').val().length > 0 )
-			$(location).attr('href', 'revisar?query='+$('#searchText').val());
-			/*$.get( 
-				"revisar", 
-				{query: $('#searchText').val()}
-			);*/
-		else
-			alert("no hay na!");
-	});
-});
-
-$(document).on('click', ".acceptDemand", function(e){
+$(document).on('click', "#permission", function(e){
 	inputconnect = 
 	{
 		url: "folder",
@@ -34,14 +19,12 @@ $(document).on('click', ".acceptDemand", function(e){
 	};
 	inputdata =
 	{
-		idfolder: $("#idfolder").val(),
-		iduser: $(this).attr("iduser"),
+		idquery: $("#idquery").val()
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
 		console.log(response);
-		if (response.check == 1)
-			location.reload();
+		self.location="/";
 	});	
 	console.log(" comentario enviado");
 });

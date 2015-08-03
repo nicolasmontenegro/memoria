@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Papers{%endblock%}
+{%block title_body%}Buscador{%endblock%}
+
+{%block script%}
+	<script type="text/javascript" src="{% static 'js/jquery.validate.js' %}"></script>
+	<script type="text/javascript" src="{% static 'func/login.js' %}"></script>
+	<script type="text/javascript" src="{% static 'func/index.js' %}"></script>{%endblock%}
+
+{%block body%}
+<div class="row">
+	<div class="col-xs-12 col-md-12">
+		<legend><p type="text" name="username" >{{userlogin.username}}</p></legend>
+		<div>
+			<label for="username">Nombre </label>
+			<p type="text" name="firstname">{{userlogin.firstname}} {{userlogin.lastname}}</p>
+		</div>
+		<div>
+			<label for="email">Nombre </label>
+			<p type="email" name="email" >{{userlogin.email}}</p>
+		</div>
+		<div>
+			<label for="id">id </label>
+			<p type="id" name="id" >{{userlogin|id}}</p>
+		</div>
+	</div>
+</div>
+{%endblock%}	

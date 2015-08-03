@@ -12,8 +12,6 @@
 {%block script%}<script type="text/javascript" src="{% static 'func/busqueda.js' %}"></script>{%endblock%}
 
 {%block body%}
-<input type="hidden" id="csrfmiddlewaretoken" value="{{ csrf_token }}">
-
 <input type="hidden" id="idquery" value="{{ out|id }}">
 	
 <div role="tabpanel">
@@ -43,6 +41,11 @@
 		</div>
 	</div><!-- Tab panes end -->
 
+	<div class="modal fade" id="ModalComment" role="dialog" aria-labelledby="ModalComment" source="" rank="" idpub="">
+		<div class="modal-dialog">
+			
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 
 </div>
 

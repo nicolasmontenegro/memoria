@@ -1,0 +1,33 @@
+{% load types %}
+
+
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h3 class="modal-title">{{title}}</h3>
+	</div>
+	<div class="modal-footer">
+		<form>
+			<div class="form-group">
+				<textarea class="form-control" id="textComment" rows="2" maxlength="300"  placeholder="escribe tu comentario"></textarea>
+			</div>
+			<button type="button" class="btn btn-info btn-block" id="sendComment">Comentar</button>   
+		</form>
+	</div>
+	<div class="modal-body">
+		{% if comment%}
+			{% for doc in comment reversed %}
+				<h4>{{doc.user.firstname}} {{doc.user.lastname}}<small> {{doc|date}}</small></h4>
+				{% if doc.action == "comment" %}
+				<p>{{doc.comment}}</p>
+				{% elif doc.action == "vote" %}
+				<p>ha votado</p>{{doc.vote}}
+				{% endif %}
+				<hr>
+			{% endfor %}
+		{% else %}
+			<legend>No hay comentarios</legend>
+		{% endif %}
+	</div>
+	
+</div><!-- /.modal-content -->

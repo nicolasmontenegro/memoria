@@ -1,6 +1,7 @@
 .navbar-fixed-top + .content-container {
 	padding-top: 70px;
     padding-bottom: 30px;
+    margin: 0 30px;
 }
 
 .navbar-fixed-bottom{
@@ -10,14 +11,13 @@
 .pagination {
     margin: 0px;
 }
-.navbar-header {
+
+.navbar-brand {
     white-space: nowrap;
-    overflow: hidden;
+    overflow-x: hidden;
+    float: right;
 }
 
-.content-container {
-	margin: 0 30px;
-}
 
 #top-link-block.affix-top {
     position: absolute; /* allows it to "slide" up into view */
@@ -37,9 +37,4 @@
 
 .paperButton {
     margin-top: 6px;
-}
-
-.navbar-right {
-    float: right !important;
-    margin-right: 15px;
 }
