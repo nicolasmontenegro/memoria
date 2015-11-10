@@ -150,8 +150,9 @@ def search(querytext):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
-#			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}]
-		}
+		"sources": [{
+			"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
+#			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
+		]}
 	return client.memoria.query.insert(objInsert)
 
