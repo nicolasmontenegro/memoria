@@ -3,10 +3,10 @@ from bson.objectid import ObjectId
 from django.core import signing
 import time
 
-client = MongoClient()
+client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 
 def add(dbname, doc):
-	client = MongoClient()
+	return -1
 
 def readSource(dbname, id):
 	if dbname == "ieee":
