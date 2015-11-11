@@ -27,8 +27,9 @@ def requestELSEVIER(querytext, now, maxres):
 #	print(url)
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
-	print(text [:50])
-	getRestuls = ET.fromstring(requests.get(url).text)
+	texted = requests.get(url).text
+	print(texted [:50])
+	getRestuls = ET.fromstring(texted)
 	print("now a BeautifulSoup!")
 	totalfound = int("0"+putAtributeUn(getRestuls).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults"))
 	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
