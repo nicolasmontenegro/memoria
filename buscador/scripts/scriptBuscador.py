@@ -159,3 +159,6 @@ def search(querytext):
 		}
 	return client.memoria.query.insert(objInsert)
 
+def test():
+	urlWhile = "http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math"
+	return requests.get(urlWhile).text
