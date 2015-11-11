@@ -28,7 +28,7 @@ def requestELSEVIER(querytext, now, maxres):
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
-	print(querytext + "encontrado el ELSEVIERL"  + totalfound)
+	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
 	totalsave = 0
 	now -=1
 	count = 10
