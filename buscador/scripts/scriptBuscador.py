@@ -24,10 +24,12 @@ def putAtribute(ws, x, y, element):
 
 def requestELSEVIER(querytext, now, maxres):
 	url = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext
-	print(url)
+#	print(url)
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
-	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
+	getRestuls = ET.fromstring(requests.get(url).text)
+	print("now a BeautifulSoup!")
+	totalfound = int("0"+putAtributeUn(getRestuls).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults"))
 	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
 	totalsave = 0
 	now -=1
