@@ -150,4 +150,4 @@ def comment(request):
 		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))
 
 def testing(request):
-	return scriptBuscador.testing()
+	return JsonResponse({"elseiver": scriptBuscador.testing()})
