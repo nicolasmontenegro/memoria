@@ -34,8 +34,8 @@ def requestELSEVIER(querytext, now, maxres):
 	count = 100
 	rank = 1
 	results = []
-	#while totalfound > 0:
-	#from here tab -1
+#	while totalfound > 0:
+#	from here tab -1
 	if now <= maxres:
 		urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) ##+ '&view=complete'
 		print(urlWhile)
@@ -64,7 +64,7 @@ def requestELSEVIER(querytext, now, maxres):
 		now += count				
 	else:
 		break
-	#until here
+#	until here
 	print(time.asctime( time.localtime(time.time())) + " returning")
 	return {
 		"query" : querytext,
