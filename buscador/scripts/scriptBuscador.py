@@ -62,8 +62,8 @@ def requestELSEVIER(querytext, now, maxres):
 			totalsave += 1
 			rank += 1
 		now += count				
-	else:
-		break
+#	else:
+#		break
 #	until here
 	print(time.asctime( time.localtime(time.time())) + " returning")
 	return {
