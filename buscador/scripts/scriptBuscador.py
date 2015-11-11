@@ -31,7 +31,7 @@ def requestELSEVIER(querytext, now, maxres):
 	print(totalfound)
 	totalsave = 0
 	now -=1
-	count = 100
+	count = 10
 	rank = 1
 	results = []
 #	while totalfound > 0:
