@@ -28,43 +28,38 @@ def requestELSEVIER(querytext, now, maxres):
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
-	print(totalfound)
+	print(querytext + "encontrado el ELSEVIERL"  + totalfound)
 	totalsave = 0
 	now -=1
 	count = 10
 	rank = 1
 	results = []
 #	while totalfound > 0:
-#	from here tab -1
-	if now <= maxres:
-		urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) ##+ '&view=complete'
-		print(urlWhile)
-		##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("entry"):
-		for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
-			strAuthor = ""
-			if element.find("{http://www.w3.org/2005/Atom}authors"):
-				for author in element.find("{http://www.w3.org/2005/Atom}authors").findall("{http://www.w3.org/2005/Atom}author"):
-					strAuthor = strAuthor + putAtributeUn(author.find("{http://www.w3.org/2005/Atom}given-name")) + " " + putAtributeUn(author.find("{http://www.w3.org/2005/Atom}surname")) + "; "
-			results.append({
-				"rank": str(rank),
-				"title": putAtributeUn(element.find("{http://purl.org/dc/elements/1.1/}title")),
-				"authors": strAuthor[:-2],
-				##"abstract" : putAtributeUn(element.description)[8:],
-				##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
-				"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
-				"mdurl": element.find("{http://www.w3.org/2005/Atom}link[@ref='scidir']").attrib["href"],
-				"pubN": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}publicationName")),
-				"pubY": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}coverDate")),
-				"pubP": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}startingPage")) + " - " + putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}endingPage")),
-				"doi": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}doi")),
-				"vote": {},
-				})
-			totalsave += 1
-			rank += 1
-		now += count				
-#	else:
-#		break
-#	until here
+		# if now <= maxres:
+		# 	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) ##+ '&view=complete'
+		# 	print(urlWhile)
+		# 	for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
+		# 		strAuthor = ""
+		# 		if element.find("{http://www.w3.org/2005/Atom}authors"):
+		# 			for author in element.find("{http://www.w3.org/2005/Atom}authors").findall("{http://www.w3.org/2005/Atom}author"):
+		# 				strAuthor = strAuthor + putAtributeUn(author.find("{http://www.w3.org/2005/Atom}given-name")) + " " + putAtributeUn(author.find("{http://www.w3.org/2005/Atom}surname")) + "; "
+		# 		results.append({
+		# 			"rank": str(rank),
+		# 			"title": putAtributeUn(element.find("{http://purl.org/dc/elements/1.1/}title")),
+		# 			"authors": strAuthor[:-2],
+		# 			"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
+		# 			"mdurl": element.find("{http://www.w3.org/2005/Atom}link[@ref='scidir']").attrib["href"],
+		# 			"pubN": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}publicationName")),
+		# 			"pubY": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}coverDate")),
+		# 			"pubP": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}startingPage")) + " - " + putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}endingPage")),
+		# 			"doi": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}doi")),
+		# 			"vote": {},
+		# 			})
+		# 		totalsave += 1
+		# 		rank += 1
+		# 	now += count				
+		# else:
+		# 	break
 	print(time.asctime( time.localtime(time.time())) + " returning")
 	return {
 		"query" : querytext,
