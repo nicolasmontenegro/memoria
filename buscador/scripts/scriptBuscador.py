@@ -31,7 +31,7 @@ def requestELSEVIER(querytext, now, maxres):
 	print(texted [:50])
 	getRestuls = ET.fromstring(texted)
 	print("now a BeautifulSoup!")
-	totalfound = int("0"+putAtributeUn(getRestuls).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults"))
+	totalfound = int("0"+putAtributeUn(getRestuls.find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
 	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
 	totalsave = 0
 	now -=1
