@@ -24,10 +24,11 @@ def putAtribute(ws, x, y, element):
 
 def requestELSEVIER(querytext, now, maxres):
 	url = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext
-#	print(url)
+	print(url)
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
+	print(totalfound)
 	totalsave = 0
 	now -=1
 	count = 100
@@ -35,8 +36,9 @@ def requestELSEVIER(querytext, now, maxres):
 	results = []
 	while totalfound > 0:
 		if now <= maxres:
-			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) + '&view=complete'
-			print(str(count) + str(now))
+			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) ##+ '&view=complete'
+			print(urlWhile)
+			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("entry"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 				strAuthor = ""
 				if element.find("{http://www.w3.org/2005/Atom}authors"):
@@ -46,6 +48,8 @@ def requestELSEVIER(querytext, now, maxres):
 					"rank": str(rank),
 					"title": putAtributeUn(element.find("{http://purl.org/dc/elements/1.1/}title")),
 					"authors": strAuthor[:-2],
+					##"abstract" : putAtributeUn(element.description)[8:],
+					##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
 					"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
 					"mdurl": element.find("{http://www.w3.org/2005/Atom}link[@ref='scidir']").attrib["href"],
 					"pubN": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}publicationName")),
