@@ -63,7 +63,7 @@ def requestELSEVIER(querytext, now, maxres):
 			now += count				
 		else:
 			break
-	print(time.asctime( time.localtime(time.time())) + " returning")
+	print(time.asctime( time.localtime(time.time())) + " returning " + str(results[0]))
 	return {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
@@ -150,10 +150,8 @@ def search(querytext):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [
-			{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
-			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
-			]
+		"sources": [{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
+			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}]
 		}
 	return client.memoria.query.insert(objInsert)
 
