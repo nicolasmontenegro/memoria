@@ -156,7 +156,7 @@ def search(querytext):
 			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
 			]
 		}
-	seved = client.memoria.query.insert(objInsert)
+	saved = client.memoria.query.insert(objInsert)
 	print("query saved ")
 	return saved
 
