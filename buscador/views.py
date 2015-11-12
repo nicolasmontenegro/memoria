@@ -148,3 +148,6 @@ def comment(request):
 	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
 		print("comment dice: " + request.POST['source'] + request.POST['id'])
 		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))
+
+def testing(request):
+	return JsonResponse({"elseiver": scriptBuscador.testing()})

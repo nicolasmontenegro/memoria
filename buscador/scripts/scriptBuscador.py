@@ -63,7 +63,7 @@ def requestELSEVIER(querytext, now, maxres):
 			now += count				
 		else:
 			break
-	print(time.asctime( time.localtime(time.time())) + " returning")
+	print(time.asctime( time.localtime(time.time())) + " returning " + str(results[0]))
 	return {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
@@ -84,7 +84,7 @@ def requestIEEE(querytext, now, maxres):
 	while totalfound > 0:
 		if now <= maxres:
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext + '&hc=' + str(count) + '&rs=' + str(now)
-			print(urlWhile)
+			print(str(count) + str(now))
 			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("document"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("document"):	
 				results.append({
@@ -113,7 +113,7 @@ def requestIEEE(querytext, now, maxres):
 
 def searchComplete(idquery):
 	print("actualizacion" + idquery)
-	client = MongoClient()
+	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	objInsert = client.memoria.query.find_one({"_id": ObjectId(idquery)})
 	retval = 0
 	if objInsert:
@@ -144,7 +144,7 @@ def searchComplete(idquery):
 
 def search(querytext):
 	maxres = 100
-	client = MongoClient()
+	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	resultsIEEE = requestIEEE(querytext, 1, maxres)
 	resultsELSEVIER = requestELSEVIER(querytext, 1, maxres)
 	objInsert = {
@@ -155,3 +155,6 @@ def search(querytext):
 		}
 	return client.memoria.query.insert(objInsert)
 
+def testing():
+	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math'
+	return requests.get(urlWhile).text
