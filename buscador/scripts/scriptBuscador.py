@@ -4,10 +4,10 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import time
 import threading
-#try:
-#	import xml.etree.cElementTree as ET
-#except:
-import xml.etree.ElementTree as ET
+try:
+	import xml.etree.cElementTree as ET
+except:
+	import xml.etree.ElementTree as ET
 	
 def putAtributeUn(element):
 	try:
@@ -28,7 +28,6 @@ def requestELSEVIER(querytext, now, maxres):
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
-	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
 	totalsave = 0
 	now -=1
 	count = 100
@@ -148,7 +147,7 @@ def search(querytext):
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
 		"sources": [
-#			{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
+			{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
 			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
 			]
 		}
