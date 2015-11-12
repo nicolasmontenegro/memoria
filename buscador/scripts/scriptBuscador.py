@@ -27,11 +27,7 @@ def requestELSEVIER(querytext, now, maxres):
 #	print(url)
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
-	texted = requests.get(url).text
-	print(texted [:50])
-	getRestuls = ET.fromstring(texted)
-	print("now a BeautifulSoup!")
-	totalfound = int("0"+putAtributeUn(getRestuls.find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
+	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
 	print(querytext + "encontrado el ELSEVIERL"  + str(totalfound))
 	totalsave = 0
 	now -=1
@@ -41,7 +37,7 @@ def requestELSEVIER(querytext, now, maxres):
 	while totalfound > 0:
 		if now <= maxres:
 			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) + '&view=complete'
-			print(urlWhile)
+			print(str(count) + str(now))
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 				strAuthor = ""
 				if element.find("{http://www.w3.org/2005/Atom}authors"):
@@ -85,7 +81,7 @@ def requestIEEE(querytext, now, maxres):
 	while totalfound > 0:
 		if now <= maxres:
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext + '&hc=' + str(count) + '&rs=' + str(now)
-			print(urlWhile)
+			print(str(count) + str(now))
 			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("document"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("document"):	
 				results.append({
@@ -156,9 +152,7 @@ def search(querytext):
 			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
 			]
 		}
-	saved = client.memoria.query.insert(objInsert)
-	print("query saved ")
-	return saved
+	return client.memoria.query.insert(objInsert)
 
 def testing():
 	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math'
