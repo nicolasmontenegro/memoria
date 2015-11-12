@@ -114,7 +114,7 @@ def requestIEEE(querytext, now, maxres):
 
 def searchComplete(idquery):
 	print("actualizacion" + idquery)
-	client = MongoClient()
+	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	objInsert = client.memoria.query.find_one({"_id": ObjectId(idquery)})
 	retval = 0
 	if objInsert:
@@ -145,7 +145,7 @@ def searchComplete(idquery):
 
 def search(querytext):
 	maxres = 100
-	client = MongoClient()
+	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	resultsIEEE = requestIEEE(querytext, 1, maxres)
 	resultsELSEVIER = requestELSEVIER(querytext, 1, maxres)
 	objInsert = {
