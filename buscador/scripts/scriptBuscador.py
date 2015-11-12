@@ -156,7 +156,9 @@ def search(querytext):
 			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}
 			]
 		}
-	return client.memoria.query.insert(objInsert)
+	seved = client.memoria.query.insert(objInsert)
+	print("query saved ")
+	return saved
 
 def testing():
 	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math'
