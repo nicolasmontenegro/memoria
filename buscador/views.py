@@ -9,7 +9,7 @@ from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
 import os
 
-
+from django.utils.encoding import smart_str
 
 # Create your views here.
 def revisar(request):
@@ -62,7 +62,15 @@ def descargar(request):
 			print ("fichero de salida: " + filepath)
 			if filepath:
 				print("up up up!!")
-				return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
+
+				response = HttpResponse(mimetype='application/force-download')
+				response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filepath)
+				response['X-Sendfile'] = smart_str("./")
+				# It's usually a good idea to set the 'Content-Length' header too.
+				# You can also set any other required headers: Cache-Control, etc.
+				return response
+
+				##return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
 			else:
 				print ("no hay fichero :(")
 		else:
@@ -143,10 +151,10 @@ def logout(request):
 
 def comment(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
-		print("comment dice: " + request.GET['source'] + request.GET['id'])
+		#print("comment dice: " + request.GET['source'] + request.GET['id'])
 		return render(request, 'comment.html', scriptDB.getResult(request.GET))
 	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
-		print("comment dice: " + request.POST['source'] + request.POST['id'])
+		#print("comment dice: " + request.POST['source'] + request.POST['id'])
 		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))
 
 def testing(request):
