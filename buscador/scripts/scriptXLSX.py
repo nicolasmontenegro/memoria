@@ -36,7 +36,7 @@ def xlsfile(id):
 			row = 2
 			print("check 4")
 			docAux = scriptDB.readSource(doc["name"], str(doc["db"]))
-			print(docAux)
+			print(docAux["_id"])
 			for item in docAux['results']:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
