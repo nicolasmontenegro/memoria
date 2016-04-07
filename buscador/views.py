@@ -47,7 +47,8 @@ def revisar(request):
 		return HttpResponseRedirect('/login')
 
 def descargar(request):
-	if request.method == 'GET':		
+	if request.method == 'GET':
+		print("downloading " + request.GET['idquery'])
 		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
 		print ("fichero de salida: " + filepath)
 		if filepath:

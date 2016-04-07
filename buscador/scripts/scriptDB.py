@@ -55,6 +55,7 @@ def addToFolder(idquery, idfolder):
 
 
 def readQuery(id):
+	print("reading " + id )
 	return client.memoria.query.find_one({"_id": ObjectId(id)})
 
 def addUser(inputdata):
