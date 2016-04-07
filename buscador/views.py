@@ -9,8 +9,6 @@ from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
 import os
 
-from django.utils.encoding import smart_str
-
 # Create your views here.
 def revisar(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
