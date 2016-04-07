@@ -62,15 +62,7 @@ def descargar(request):
 			print ("fichero de salida: " + filepath)
 			if filepath:
 				print("up up up!!")
-
-				response = HttpResponse(mimetype='application/force-download')
-				response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filepath)
-				response['X-Sendfile'] = smart_str("./")
-				# It's usually a good idea to set the 'Content-Length' header too.
-				# You can also set any other required headers: Cache-Control, etc.
-				return response
-
-				##return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
+				return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
 			else:
 				print ("no hay fichero :(")
 		else:
