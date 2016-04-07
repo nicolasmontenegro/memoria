@@ -1,8 +1,13 @@
 from openpyxl import Workbook
 import sys
 
+from . import scriptDB
 
-def xlsfile(out):
+def xlsfile(id):
+
+	out = readQuery(id)
+	if !out:
+		return ""
 	try:
 		wb = Workbook()
 		ws = wb.active
@@ -24,7 +29,8 @@ def xlsfile(out):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
-			for item in doc['doc']['results']:
+			docAux = scriptDB.readSource(doc["name"], doc["db"]) 
+			for item in docAux:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
 				ws['C'+ str(row)] = item['authors']

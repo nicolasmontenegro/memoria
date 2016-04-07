@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import RequestContext, loader
 from django.shortcuts import render
 from django.conf import settings
@@ -49,22 +49,17 @@ def revisar(request):
 		return HttpResponseRedirect('/login')
 
 def descargar(request):
-	if request.method == 'GET':
+	if request.method == 'GET':		
+		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
 		print("descargar dice: " + request.GET['idquery'])
-		client = MongoClient()
-		out = client.memoria.query.find_one({"_id": ObjectId(request.GET['idquery'])})
-		if out:	
-			for doc in out["sources"]:
-				doc["doc"] = scriptDB.readSource(doc["name"], doc["db"]) 
-			filepath = scriptXLSX.xlsfile(out)
-			print ("fichero de salida: " + filepath)
-			if filepath:
-				print("up up up!!")
-				return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
-			else:
-				print ("no hay fichero :(")
+		print ("fichero de salida: " + filepath)
+		if filepath:
+			print("up up up!!")
+			return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
 		else:
-			print ("no existe id")
+			print ("no hay fichero :(")
+			return HttpResponseBadRequest()
+
 
 def vote(request):
 	if request.method == 'POST':
