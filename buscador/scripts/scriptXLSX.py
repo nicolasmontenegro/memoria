@@ -31,6 +31,7 @@ def xlsfile(id):
 			ws['I'+ str(1)] = "doi"
 			row = 2
 			docAux = scriptDB.readSource(doc["name"], str(doc["db"])) 
+			print(docAux[:20])
 			for item in docAux:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
@@ -42,8 +43,10 @@ def xlsfile(id):
 				ws['H'+ str(row)] = item['pubP']
 				ws['I'+ str(row)] = item['doi']
 				row += 1
+		print("saving " + 'buscador/xls/' +  str(out["_id"]) + '.xlsx')
 		strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
 		wb.save(strout)
+		print("saved")
 		return strout
 	except:
 		print("error en xlsx")
