@@ -6,20 +6,24 @@ from . import scriptDB
 def xlsfile(id):
 	print(id)
 	out = scriptDB.readQuery(id)
+	print(out)
 	if out is None :
 		print(id + " no encontrado")
 		return ""
 	try:
 		wb = Workbook()
 		ws = wb.active
+		print("check 1")
 		ws.title = out["query"][:10]
 		ws['A'+ str(1)] = "query" 
 		ws['A'+ str(2)] = out["query"]
 		ws['B'+ str(1)] = "date" 
 		ws['B'+ str(1)] = out["date"]
+		print("check 2")
 		for doc in out["sources"]:
 			ws = wb.create_sheet()
 			ws.title = doc['name']
+			print("check 3")
 			ws['A'+ str(1)] = "rank"
 			ws['B'+ str(1)] = "title"
 			ws['C'+ str(1)] = "authors"
@@ -30,6 +34,7 @@ def xlsfile(id):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
+			print("check 4")
 			docAux = scriptDB.readSource(doc["name"], str(doc["db"])) 
 			print(docAux[:20])
 			for item in docAux:
