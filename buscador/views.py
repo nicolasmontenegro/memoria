@@ -51,14 +51,13 @@ def revisar(request):
 def descargar(request):
 	if request.method == 'GET':		
 		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
-		print("descargar dice: " + request.GET['idquery'])
 		print ("fichero de salida: " + filepath)
 		if filepath:
 			print("up up up!!")
 			return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
 		else:
 			print ("no hay fichero :(")
-			return HttpResponseBadRequest()
+			return HttpResponseBadRequest("Error de descarga")
 
 
 def vote(request):

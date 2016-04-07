@@ -4,10 +4,10 @@ import sys
 from . import scriptDB
 
 def xlsfile(id):
-
+	print(id)
 	out = scriptDB.readQuery(id)
-	if out is None :
-		return ""
+	#if out is None :
+	#	return ""
 	try:
 		wb = Workbook()
 		ws = wb.active
