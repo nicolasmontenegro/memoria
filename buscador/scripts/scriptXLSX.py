@@ -22,7 +22,7 @@ def xlsfile(id):
 		print("check 2")
 		for doc in out["sources"]:
 			ws = wb.create_sheet()
-			ws.title = doc['name']
+			ws.title = doc["name"]
 			print("check 3")
 			ws['A'+ str(1)] = "rank"
 			ws['B'+ str(1)] = "title"
@@ -35,9 +35,9 @@ def xlsfile(id):
 			ws['I'+ str(1)] = "doi"
 			row = 2
 			print("check 4")
-			docAux = scriptDB.readSource(doc["name"], str(doc["db"])) 
-			print(docAux[:20])
-			for item in docAux:
+			docAux = scriptDB.readSource(doc["name"], str(doc["db"]))
+			print(docAux)
+			for item in docAux['results']:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
 				ws['C'+ str(row)] = item['authors']
