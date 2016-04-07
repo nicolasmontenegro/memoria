@@ -27,7 +27,7 @@ def updateVote (inputdata, inputcookie):
 		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
 		results["remove"] +=  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count	
 	votes = [item for item in client.memoria[inputdata['source']].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]["vote"]
-	print(votes)
+	#print(votes)
 	results["yes"] = results["no"] = 0
 	if votes.get("yes") != None:
 		results["yes"] = len(votes.get("yes"))
@@ -104,7 +104,7 @@ def getListFolder(inputcookie):
 	listFolder = []
 	for item in unfold(inputcookie)["folder"]:
 		listFolder.append(getFolder({"idquery": item}, inputcookie, False))
-	print(listFolder)
+	#print(listFolder)
 	return listFolder
 
 def getFolderPermission(folderid, userid):
@@ -130,7 +130,7 @@ def getFolder(inputdata, inputcookie, complete):
 
 def getPageResults():
 	resultsperpage = 24
-	print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
+	#print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
 	out = readSource(request.GET['source'], request.GET['iddb'])
 	lapsus = (int(request.GET['page'])-1)*(resultsperpage)
 	out["results"] = out["results"][lapsus:(lapsus+resultsperpage)]	

@@ -39,9 +39,7 @@ def revisar(request):
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
 	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
-		print("hola")
 		if request.POST.get('query'):
-			print("entrando")
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}
 			return JsonResponse(response_data )
@@ -62,14 +60,14 @@ def descargar(request):
 
 def vote(request):
 	if request.method == 'POST':
-		print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
+		#print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
 		result = scriptDB.updateVote(request.POST, request.COOKIES)
 		return JsonResponse(result)
 
 def folder(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:	
 		if request.GET.get('query'):
-			print("new folder dice: " + request.GET['query'])
+			#print("new folder dice: " + request.GET['query'])
 			dbId = scriptDB.createFolder(request.GET['query'], request.COOKIES)
 			return HttpResponseRedirect('/folder?idquery=%s' % dbId)
 		elif request.GET.get('idquery'):
@@ -103,7 +101,7 @@ def signup(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
-		print(request.POST.get('password'))
+		#print(request.POST.get('password'))
 		return JsonResponse({"check":scriptDB.addUser(request.POST),})
 	elif request.method == 'GET':
 		c = {}
@@ -115,7 +113,7 @@ def login(request):
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
 		check = scriptDB.checkLogin(request.POST, request.COOKIES)
-		print(check)
+		#print(check)
 		return JsonResponse({"check":check})
 	elif request.method == 'GET':
 		c = {}
