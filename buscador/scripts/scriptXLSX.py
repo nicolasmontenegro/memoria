@@ -6,7 +6,7 @@ from . import scriptDB
 def xlsfile(id):
 
 	out = readQuery(id)
-	if !out:
+	if out is None :
 		return ""
 	try:
 		wb = Workbook()
