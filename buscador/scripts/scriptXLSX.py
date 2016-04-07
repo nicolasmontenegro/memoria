@@ -6,8 +6,9 @@ from . import scriptDB
 def xlsfile(id):
 	print(id)
 	out = scriptDB.readQuery(id)
-	#if out is None :
-	#	return ""
+	if out is None :
+		print(id + " no encontrado")
+		return ""
 	try:
 		wb = Workbook()
 		ws = wb.active
@@ -29,7 +30,7 @@ def xlsfile(id):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
-			docAux = scriptDB.readSource(doc["name"], doc["db"]) 
+			docAux = scriptDB.readSource(doc["name"], str(doc["db"])) 
 			for item in docAux:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
@@ -45,4 +46,5 @@ def xlsfile(id):
 		wb.save(strout)
 		return strout
 	except:
+		print("error en xlsx")
 		return ""
