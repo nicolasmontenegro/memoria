@@ -1,1 +1,1 @@
-web: gunicorn memoria.wsgi --log-file -
+web: gunicorn --chdir memoria --log-file - memoria.wsgi
