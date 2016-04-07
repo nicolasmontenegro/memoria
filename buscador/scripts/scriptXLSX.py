@@ -5,7 +5,7 @@ from . import scriptDB
 
 def xlsfile(id):
 
-	out = readQuery(id)
+	out = scriptDB.readQuery(id)
 	if out is None :
 		return ""
 	try:
