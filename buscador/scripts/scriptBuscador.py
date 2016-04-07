@@ -36,7 +36,7 @@ def requestELSEVIER(querytext, now, maxres):
 	results = []
 	while totalfound > 0:
 		if now <= maxres:
-			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) #+ '&view=complete'
+			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) + '&view=complete'
 			print(urlWhile)
 			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("entry"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
@@ -49,8 +49,8 @@ def requestELSEVIER(querytext, now, maxres):
 					"title": putAtributeUn(element.find("{http://purl.org/dc/elements/1.1/}title")),
 					"authors": strAuthor[:-2],
 					##"abstract" : putAtributeUn(element.description)[8:],
-					##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
-					"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
+					"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
+					##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
 					"mdurl": element.find("{http://www.w3.org/2005/Atom}link[@ref='scidir']").attrib["href"],
 					"pubN": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}publicationName")),
 					"pubY": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}coverDate")),
