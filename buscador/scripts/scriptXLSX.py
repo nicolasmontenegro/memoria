@@ -1,8 +1,14 @@
 from openpyxl import Workbook
 import sys
+from io import BytesIO
 
+from . import scriptDB
 
-def xlsfile(out):
+def xlsfile(id):
+	out = scriptDB.readQuery(id)
+	if out is None :
+		print(id + " no encontrado")
+		return None
 	try:
 		wb = Workbook()
 		ws = wb.active
@@ -13,7 +19,7 @@ def xlsfile(out):
 		ws['B'+ str(1)] = out["date"]
 		for doc in out["sources"]:
 			ws = wb.create_sheet()
-			ws.title = doc['name']
+			ws.title = doc["name"]
 			ws['A'+ str(1)] = "rank"
 			ws['B'+ str(1)] = "title"
 			ws['C'+ str(1)] = "authors"
@@ -24,7 +30,8 @@ def xlsfile(out):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
-			for item in doc['doc']['results']:
+			docAux = scriptDB.readSource(doc["name"], str(doc["db"]))
+			for item in docAux['results']:
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
 				ws['C'+ str(row)] = item['authors']
@@ -35,8 +42,14 @@ def xlsfile(out):
 				ws['H'+ str(row)] = item['pubP']
 				ws['I'+ str(row)] = item['doi']
 				row += 1
-		strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
-		wb.save(strout)
-		return strout
+		print("saving " + str(out["_id"]) + '.xlsx')
+		#strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
+		#wb.save(strout)
+		#return strout
+		out = BytesIO()
+		wb.save(out)
+		print("saved")
+		return out
 	except:
-		return ""
+		print("error en xlsx")
+		return None

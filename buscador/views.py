@@ -1,9 +1,11 @@
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import RequestContext, loader
 from django.shortcuts import render
 from django.conf import settings
 from django.views.static import serve
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.core.servers.basehttp import FileWrapper
+
 from pymongo import MongoClient
 from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
@@ -39,9 +41,7 @@ def revisar(request):
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
 	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
-		print("hola")
 		if request.POST.get('query'):
-			print("entrando")
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}
 			return JsonResponse(response_data )
@@ -50,32 +50,30 @@ def revisar(request):
 
 def descargar(request):
 	if request.method == 'GET':
-		print("descargar dice: " + request.GET['idquery'])
-		client = MongoClient()
-		out = client.memoria.query.find_one({"_id": ObjectId(request.GET['idquery'])})
-		if out:	
-			for doc in out["sources"]:
-				doc["doc"] = scriptDB.readSource(doc["name"], doc["db"]) 
-			filepath = scriptXLSX.xlsfile(out)
-			print ("fichero de salida: " + filepath)
-			if filepath:
-				print("up up up!!")
-				return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
-			else:
-				print ("no hay fichero :(")
+		print("downloading " + request.GET['idquery'])
+		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
+		if filepath:
+			response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+			response['Content-Disposition'] = 'attachment; filename=' + request.GET['idquery'] + '.xlsx'
+			xlsx = filepath.getvalue()
+			filepath.close()
+			response.write(xlsx)
+			return response
 		else:
-			print ("no existe id")
+			print ("no hay fichero :(")
+			return HttpResponseBadRequest("Error de descarga")
+
 
 def vote(request):
 	if request.method == 'POST':
-		print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
+		#print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
 		result = scriptDB.updateVote(request.POST, request.COOKIES)
 		return JsonResponse(result)
 
 def folder(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:	
 		if request.GET.get('query'):
-			print("new folder dice: " + request.GET['query'])
+			#print("new folder dice: " + request.GET['query'])
 			dbId = scriptDB.createFolder(request.GET['query'], request.COOKIES)
 			return HttpResponseRedirect('/folder?idquery=%s' % dbId)
 		elif request.GET.get('idquery'):
@@ -109,7 +107,7 @@ def signup(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
-		print(request.POST.get('password'))
+		#print(request.POST.get('password'))
 		return JsonResponse({"check":scriptDB.addUser(request.POST),})
 	elif request.method == 'GET':
 		c = {}
@@ -121,7 +119,7 @@ def login(request):
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
 		check = scriptDB.checkLogin(request.POST, request.COOKIES)
-		print(check)
+		#print(check)
 		return JsonResponse({"check":check})
 	elif request.method == 'GET':
 		c = {}

@@ -12,7 +12,6 @@ def countPage(page, totalfound, resultsperpage):
 	for item in range(page-2+sub, page+3+pos):
 		if item > 0 and item <= totalpages:
 			rangepage.append(item)
-			print (str(item))
 	prevpage = page - 1
 	nextpage = page + 1
 	if prevpage < 1:
