@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.static import serve
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.core.servers.basehttp import FileWrapper
+
 from pymongo import MongoClient
 from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
@@ -50,10 +52,13 @@ def descargar(request):
 	if request.method == 'GET':
 		print("downloading " + request.GET['idquery'])
 		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
-		print ("fichero de salida: " + filepath)
 		if filepath:
-			print("up up up!!")
-			return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
+			response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+			response['Content-Disposition'] = 'attachment; filename=' + request.GET['idquery'] + '.xlsx'
+			xlsx = filepath.getvalue()
+			filepath.close()
+			response.write(xlsx)
+			return response
 		else:
 			print ("no hay fichero :(")
 			return HttpResponseBadRequest("Error de descarga")

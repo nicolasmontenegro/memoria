@@ -1,5 +1,6 @@
 from openpyxl import Workbook
 import sys
+from io import BytesIO
 
 from . import scriptDB
 
@@ -7,7 +8,7 @@ def xlsfile(id):
 	out = scriptDB.readQuery(id)
 	if out is None :
 		print(id + " no encontrado")
-		return ""
+		return None
 	try:
 		wb = Workbook()
 		ws = wb.active
@@ -29,11 +30,8 @@ def xlsfile(id):
 			ws['H'+ str(1)] = "publication page"
 			ws['I'+ str(1)] = "doi"
 			row = 2
-			print("check 4")
 			docAux = scriptDB.readSource(doc["name"], str(doc["db"]))
-			print(docAux["_id"])
 			for item in docAux['results']:
-				print("in for") 
 				ws['A'+ str(row)] = item['rank']
 				ws['B'+ str(row)] = item['title']
 				ws['C'+ str(row)] = item['authors']
@@ -44,11 +42,14 @@ def xlsfile(id):
 				ws['H'+ str(row)] = item['pubP']
 				ws['I'+ str(row)] = item['doi']
 				row += 1
-		print("saving " + 'buscador/xls/' +  str(out["_id"]) + '.xlsx')
-		strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
-		wb.save(strout)
+		print("saving " + str(out["_id"]) + '.xlsx')
+		#strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
+		#wb.save(strout)
+		#return strout
+		out = BytesIO()
+		wb.save(out)
 		print("saved")
-		return strout
+		return out
 	except:
 		print("error en xlsx")
-		return ""
+		return None
