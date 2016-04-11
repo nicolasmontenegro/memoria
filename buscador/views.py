@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.static import serve
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.cache import never_cache
 from django.core.servers.basehttp import FileWrapper
 
 from pymongo import MongoClient
@@ -22,6 +23,7 @@ def isLogged(func = None):
 		return decorator(func)
 	return decorator
 
+@never_cache
 @isLogged
 def revisar(request):
 	if request.method == 'GET':
@@ -80,6 +82,7 @@ def vote(request):
 		result = scriptDB.updateVote(request.POST, request.COOKIES)
 		return JsonResponse(result)
 
+@never_cache
 @isLogged
 def folder(request):
 	if request.method == 'GET':
@@ -102,7 +105,7 @@ def folder(request):
 		elif request.POST.get("idquery"):
 			return JsonResponse({"check":scriptDB.addDemand(request.POST, request.COOKIES)})
 
-
+@never_cache
 @isLogged
 def indexfolder(request):
 	if request.method == 'GET':
@@ -133,6 +136,7 @@ def login(request):
 			c = {'new': True}
 		return render(request, 'login.html', c)
 
+@never_cache
 @isLogged
 def profile(request):
 	if request.method == 'GET':
