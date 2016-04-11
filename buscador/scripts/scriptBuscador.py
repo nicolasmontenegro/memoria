@@ -65,7 +65,7 @@ def requestELSEVIER(querytext, now, maxres):
 				totalsave += 1
 				rank += 1
 			now += count
-			client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": results}})
+			client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": {$each: results}}})
 		else:
 			break
 	client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
@@ -103,7 +103,7 @@ def requestIEEE(querytext, now, maxres):
 					})
 				totalsave += 1
 			now += count
-			client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": results}})
+			client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {$each: results}}})
 		else:
 			break
 	client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
