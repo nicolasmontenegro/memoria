@@ -43,9 +43,6 @@ def xlsfile(id):
 				ws['I'+ str(row)] = item['doi']
 				row += 1
 		print("saving " + str(out["_id"]) + '.xlsx')
-		#strout = 'buscador/xls/' +  str(out["_id"]) + '.xlsx'
-		#wb.save(strout)
-		#return strout
 		out = BytesIO()
 		wb.save(out)
 		print("saved")

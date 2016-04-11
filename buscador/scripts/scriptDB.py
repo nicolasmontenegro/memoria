@@ -10,10 +10,6 @@ def add(dbname, doc):
 
 def readSource(dbname, id):
 	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
-	#if dbname == "ieee":
-	#	return client.memoria.ieee.find_one({"_id": ObjectId(id)})
-	#if dbname == "elsevier":
-	#	return client.memoria.elsevier.find_one({"_id": ObjectId(id)})
 
 def updateVote (inputdata, inputcookie):
 	userid = str(unfold(inputcookie)["_id"])
@@ -53,7 +49,6 @@ def createFolder (namefolder, inputcookie):
 def addToFolder(idquery, idfolder):
 	client.memoria.folder.update_one({"_id": ObjectId(idfolder)}, {"$push": {"search": {"id": idquery}}})
 	client.memoria.query.update_one({"_id": ObjectId(idquery)}, {"$set": {"folder": idfolder}})
-
 
 def readQuery(id):
 	algo = client.memoria.query.find_one({"_id": ObjectId(id)})
@@ -147,13 +142,12 @@ def getResults(inputdata, inputcookie):
 		doc["doc"] = readSource(doc["name"], doc["db"]) 
 	return results
 
-def getResult(inputdata):	
+def getResult(inputdata):
 	result = [item for item in client.memoria[inputdata["source"]].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]
 	if result.get("comment"):
 		for item in result["comment"]:
 			item["user"] = getUser(item["user"])
 	return result
-
 
 def addComment(inputdata, inputcookie):
 	user = unfold(inputcookie)

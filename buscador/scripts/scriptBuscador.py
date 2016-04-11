@@ -8,6 +8,8 @@ try:
 	import xml.etree.cElementTree as ET
 except:
 	import xml.etree.ElementTree as ET
+
+client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	
 def putAtributeUn(element):
 	try:
@@ -24,21 +26,23 @@ def putAtribute(ws, x, y, element):
 
 def requestELSEVIER(querytext, now, maxres):
 	url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext
-	print(url)
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
-	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").find("totalResults")))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
-	print(totalfound)
 	totalsave = 0
 	now -=1
 	count = 100
 	rank = 1
-	results = []
+	initObj = {
+		"query" : querytext,
+		"date" : time.asctime(time.localtime(time.time())),
+		"totalfound" : str(totalfound),		
+		"totalsave": totalsave,
+		"results" : []}	
+	queryObj = client.memoria.elsevier.insert(initObj)
 	while totalfound > 0:
 		if now <= maxres:
+			results = []
 			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) + '&view=complete'
-			print(urlWhile)
-			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("entry"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 				strAuthor = ""
 				if element.find("{http://www.w3.org/2005/Atom}authors"):
@@ -60,32 +64,31 @@ def requestELSEVIER(querytext, now, maxres):
 					})
 				totalsave += 1
 				rank += 1
-			now += count				
+			now += count
+			client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": results}})
 		else:
 			break
 	print(time.asctime( time.localtime(time.time())) + " returning " + str(results[0]))
-	return {
-		"query" : querytext,
-		"date" : time.asctime(time.localtime(time.time())),
-		"totalfound" : str(totalfound),
-		"totalsave":  totalsave,
-		"results" : results}
-
+	client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
+	return queryObj
 
 def requestIEEE(querytext, now, maxres):
 	url = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?hc=0&md=' + querytext
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
-	##totalfound = int("0"+putAtributeUn(BeautifulSoup(requests.get(url).text, "xml").totalfound))
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("totalfound")))
-	print(totalfound)	
 	totalsave = 0
 	count = 100
-	results = []
+	initObj = {
+		"query" : querytext,
+		"date" : time.asctime(time.localtime(time.time())),
+		"totalfound" : str(totalfound),		
+		"totalsave": totalsave,
+		"results" : []}	
+	queryObj = client.memoria.ieee.insert(initObj)
 	while totalfound > 0:
 		if now <= maxres:
+			results = []
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext + '&hc=' + str(count) + '&rs=' + str(now)
-			print(str(count) + str(now))
-			##for element in BeautifulSoup(requests.get(urlWhile).text, "xml").find_all("document"):
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("document"):	
 				results.append({
 					"rank": putAtributeUn(element.find("rank")),
@@ -101,19 +104,15 @@ def requestIEEE(querytext, now, maxres):
 					})
 				totalsave += 1
 			now += count
+			client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": results}})
 		else:
 			break
+	client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
 	print(time.asctime( time.localtime(time.time())) + " returning")
-	return {
-		"query" : querytext,
-		"date" : time.asctime(time.localtime(time.time())),
-		"totalfound" : str(totalfound),		
-		"totalsave":  totalsave,
-		"results" : results}
+	return queryObj
 
 def searchComplete(idquery):
 	print("actualizacion" + idquery)
-	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	objInsert = client.memoria.query.find_one({"_id": ObjectId(idquery)})
 	retval = 0
 	if objInsert:
@@ -141,7 +140,6 @@ def searchComplete(idquery):
 			retval = 1
 	return retval
 
-
 def search(querytext):
 	maxres = 100
 	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
@@ -150,8 +148,8 @@ def search(querytext):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [{"name": "ieee", "db": client.memoria.ieee.insert(resultsIEEE)},
-			{"name": "elsevier", "db" : client.memoria.elsevier.insert(resultsELSEVIER)}]
+		"sources": [{"name": "ieee", "db": resultsIEEE},
+			{"name": "elsevier", "db" : resultsELSEVIER}]
 		}
 	return client.memoria.query.insert(objInsert)
 
