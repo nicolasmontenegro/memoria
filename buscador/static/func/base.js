@@ -1,18 +1,6 @@
-// Only enable if the document has a long scroll bar
-// Note the window height + offset
-if ( ($(window).height() + 132) < $(document).height() ) {
-    $('#top-link-block').removeClass('hidden').affix({
-        // how far to scroll down before link "slides" into view
-        offset: {top:132}
-    });
-}
-
 $(document).ready(function(){
-
 	$('[data-toggle="tooltip"]').tooltip();  
 });
-
-
 
 var kkeys = [], konami = "38,38,40,40,37,39,37,39,66,65";
 
@@ -25,8 +13,8 @@ $(document).keydown(function(e) {
     $(document).unbind('keydown',arguments.callee);
     
     // do something awesome
-    $("body").addClass("konami");
-  
+    //$("body").addClass("konami");
+    alert("Roses are #ff0000\nViolets are #0000ff\nThe thesis are Null")
   }
 
 });

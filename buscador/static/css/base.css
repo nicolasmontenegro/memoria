@@ -1,3 +1,8 @@
+
+.content-container {
+    margin: 0 130px;
+}
+
 .navbar-fixed-top + .content-container {
 	padding-top: 70px;
     padding-bottom: 30px;
@@ -26,7 +31,7 @@
 }
 #top-link-block.affix {
     position: fixed; /* keeps it on the bottom once in view */
-    bottom: 50px; /* height of link element */
+    bottom: 100px; /* height of link element */
     left: 10px; /* padding from the left side of the window */
 }
 

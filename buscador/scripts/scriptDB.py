@@ -9,10 +9,11 @@ def add(dbname, doc):
 	return -1
 
 def readSource(dbname, id):
-	if dbname == "ieee":
-		return client.memoria.ieee.find_one({"_id": ObjectId(id)})
-	if dbname == "elsevier":
-		return client.memoria.elsevier.find_one({"_id": ObjectId(id)})
+	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
+	#if dbname == "ieee":
+	#	return client.memoria.ieee.find_one({"_id": ObjectId(id)})
+	#if dbname == "elsevier":
+	#	return client.memoria.elsevier.find_one({"_id": ObjectId(id)})
 
 def updateVote (inputdata, inputcookie):
 	userid = str(unfold(inputcookie)["_id"])
@@ -60,10 +61,9 @@ def readQuery(id):
 
 def addUser(inputdata):
 	try:
-		if client.memoria.username.find_one({"username": inputdata["username"]}) or client.memoria.username.find_one({"email": inputdata["email"]}):
+		if client.memoria.username.find_one({"email": inputdata["email"]}):
 			return 0
 		objInsert = {
-			"username":  inputdata["username"],
 			"firstname":  inputdata["firstname"],
 			"lastname":  inputdata["lastname"],
 			"email":  inputdata["email"],
@@ -79,7 +79,7 @@ def addUser(inputdata):
 
 def checkLogin(inputdata, inputcookie):
 	try:
-		user = client.memoria.username.find_one({"username": inputdata["username"]})
+		user = client.memoria.username.find_one({"email": inputdata["email"]})
 		if user is None:
 			return 0
 		if user["password"] != inputdata["password"]:
@@ -178,7 +178,7 @@ def confirmDemand(inputdata, inputcookie):
 			return {"check": 0}
 		if folder.get("permission") == "admin" or folder.get("permission") == "creator":
 			infoUser = "user." + str(user["_id"])
-			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$set": {infoUser: "admin"}})
+			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$set": {infoUser: "guest"}})
 			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idfolder"]}})
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$pull": {"demand": inputdata["iduser"]}})
 			return {"check": 1}

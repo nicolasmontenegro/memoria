@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.template import RequestContext, loader
 from django.shortcuts import render
 from django.conf import settings
@@ -11,9 +11,20 @@ from buscador.scripts import scriptDB, scriptBuscador, scriptXLSX, scriptPage
 from bson.objectid import ObjectId
 import os
 
-# Create your views here.
+def isLogged(func = None):
+	def decorator(a_view):
+		def _dec(request, *args, **kwargs):
+			if scriptDB.unfold(request.COOKIES) == None:
+				return HttpResponseRedirect('/login')
+			return a_view(request, *args, **kwargs) 
+		return _dec
+	if func:
+		return decorator(func)
+	return decorator
+
+@isLogged
 def revisar(request):
-	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+	if request.method == 'GET':
 		if request.GET.get('source') and request.GET.get('page') and request.GET.get('iddb'):
 			resultsperpage = 24
 			print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
@@ -40,14 +51,13 @@ def revisar(request):
 			dbId = scriptBuscador.search(request.GET['query'])
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
-	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
+	if request.method == 'POST':
 		if request.POST.get('query'):
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}
 			return JsonResponse(response_data )
-	else:
-		return HttpResponseRedirect('/login')
 
+@isLogged
 def descargar(request):
 	if request.method == 'GET':
 		print("downloading " + request.GET['idquery'])
@@ -70,8 +80,9 @@ def vote(request):
 		result = scriptDB.updateVote(request.POST, request.COOKIES)
 		return JsonResponse(result)
 
+@isLogged
 def folder(request):
-	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:	
+	if request.method == 'GET':
 		if request.GET.get('query'):
 			#print("new folder dice: " + request.GET['query'])
 			dbId = scriptDB.createFolder(request.GET['query'], request.COOKIES)
@@ -85,29 +96,24 @@ def folder(request):
 				return render(request, 'folder.html', {'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
 			else:
 				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
-	elif request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:	
+	elif request.method == 'POST':	
 		if request.POST.get("idfolder") and request.POST.get("iduser"):
 			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES))
 		elif request.POST.get("idquery"):
 			return JsonResponse({"check":scriptDB.addDemand(request.POST, request.COOKIES)})
-	else:
-		return HttpResponseRedirect('/login')
 
 
-
+@isLogged
 def indexfolder(request):
-	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:						
+	if request.method == 'GET':
 		lista = scriptDB.getListFolder(request.COOKIES)#list(MongoClient().memoria.folder.find())
 		return render(request, 'indexfolder.html', {'out': lista, "userlogin": scriptDB.unfold(request.COOKIES)})
-	else:
-		return HttpResponseRedirect('/login')
 
 @ensure_csrf_cookie
 def signup(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
-		#print(request.POST.get('password'))
 		return JsonResponse({"check":scriptDB.addUser(request.POST),})
 	elif request.method == 'GET':
 		c = {}
@@ -123,19 +129,19 @@ def login(request):
 		return JsonResponse({"check":check})
 	elif request.method == 'GET':
 		c = {}
+		if request.GET.get('new'):
+			c = {'new': True}
 		return render(request, 'login.html', c)
 
+@isLogged
 def profile(request):
-	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+	if request.method == 'GET':
 		return render(request, 'profile.html', {"userlogin": scriptDB.unfold(request.COOKIES)})
-	elif request.method == 'GET':
-		return HttpResponseRedirect('/login')
 
+@isLogged
 def logout(request):
-	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+	if request.method == 'GET':
 		return render(request, 'logout.html')
-	elif request.method == 'GET':
-		return HttpResponseRedirect('/login')
 
 def comment(request):
 	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:

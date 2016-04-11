@@ -19,7 +19,7 @@ $(document).on('click', "#send", function(e)
 	{	
 		if ($(this).attr("name")=="password")
 			jsonOut[$(this).attr("name")] = $.md5($(this).val());
-		else if ($(this).attr("name")=="username")
+		else if ($(this).attr("name")=="email")
 			jsonOut[$(this).attr("name")] = $(this).val().toLowerCase();
 		else
 			jsonOut[$(this).attr("name")] = $(this).val(); 
@@ -31,8 +31,7 @@ $(document).on('click', "#send", function(e)
 		if (response.check < 1) 
 		{
 			console.log("send");
-			alert("asdf");
-		}//location.reload();};
+		}
 		else 
 		{
 			response.check

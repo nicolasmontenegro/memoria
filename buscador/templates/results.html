@@ -2,7 +2,7 @@
 {% load types %}
 {% load staticfiles %}
 
-{%block title%}Inicio{%endblock%}
+{%block title%}{{out.query}}{%endblock%}
 {%block title_body%}Resultados<i> "{{out.query}}"</i>{%endblock%}
 
 {%block urlback%}folder?idquery={{out.folder}}{%endblock%}

@@ -1,5 +1,7 @@
 from django import template
 import time
+from ..scripts import scriptDB
+
 register = template.Library()
 
 @register.filter(name='id')
@@ -24,3 +26,9 @@ def permission(value):
 def date(value):
 	struct_time = time.strptime(value['date'])
 	return str(struct_time.tm_mday) + "/" + str(struct_time.tm_mon) + "/" + str(struct_time.tm_year) + " " + str(struct_time.tm_hour).zfill(2) + ":" + str(struct_time.tm_min).zfill(2) + ":" + str(struct_time.tm_sec).zfill(2)
+
+@register.filter(name='nameById')
+def nameById(value):
+	user = scriptDB.getUser(value)
+	return user["firstname"] + " " + user["lastname"]
+
