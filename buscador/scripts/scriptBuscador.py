@@ -68,7 +68,6 @@ def requestELSEVIER(querytext, now, maxres):
 			client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": results}})
 		else:
 			break
-	print(time.asctime( time.localtime(time.time())) + " returning " + str(results[0]))
 	client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
 	return queryObj
 
@@ -108,7 +107,6 @@ def requestIEEE(querytext, now, maxres):
 		else:
 			break
 	client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
-	print(time.asctime( time.localtime(time.time())) + " returning")
 	return queryObj
 
 def searchComplete(idquery):
