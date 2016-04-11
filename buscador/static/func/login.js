@@ -28,19 +28,19 @@ $(document).on('click', "#send", function(e)
 	console.log(jsonOut);			
 	ajaxComplete(jsonOut).promise().done(function(response)
 	{
-		if (response.check < 1) 
-		{
-			console.log("send");
-		}
+		if (response.check == 0)
+			alert ("Usuario no existe");
+		else if (response.check == -1)  
+			alert ("Constraseña incorrecta");
+		else if (response.check < 1) 
+			console.log("Otro error!");
 		else 
 		{
-			response.check
 			$.cookie("head", response.check[0], { expires: 360 });
 			$.cookie("body", response.check[1], { expires: 360 });
 			$.cookie("usr", response.check[2]), { expires: 360 };
 			self.location="/";
-		}
-		
+		}		
 	});
 });
 
