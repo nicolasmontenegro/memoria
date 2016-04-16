@@ -35,14 +35,14 @@ def requestELSEVIER(querytext, now, maxres):
 	initObj = {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"totalfound" : str(totalfound),		
+		"totalfound" : totalfound,		
 		"totalsave": totalsave,
 		"results" : []}	
 	queryObj = client.memoria.elsevier.insert(initObj)
 	while totalfound > 0:
 		if now <= maxres:
 			results = []
-			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) + '&view=complete'
+			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) # + '&view=complete'
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 				strAuthor = ""
 				if element.find("{http://www.w3.org/2005/Atom}authors"):
@@ -53,8 +53,8 @@ def requestELSEVIER(querytext, now, maxres):
 					"title": putAtributeUn(element.find("{http://purl.org/dc/elements/1.1/}title")),
 					"authors": strAuthor[:-2],
 					##"abstract" : putAtributeUn(element.description)[8:],
-					"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
-					##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
+					##"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}description"))[8:],
+					"abstract" : putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}teaser")),
 					"mdurl": element.find("{http://www.w3.org/2005/Atom}link[@ref='scidir']").attrib["href"],
 					"pubN": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}publicationName")),
 					"pubY": putAtributeUn(element.find("{http://prismstandard.org/namespaces/basic/2.0/}coverDate")),
@@ -80,7 +80,7 @@ def requestIEEE(querytext, now, maxres):
 	initObj = {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"totalfound" : str(totalfound),		
+		"totalfound" : totalfound,		
 		"totalsave": totalsave,
 		"results" : []}	
 	queryObj = client.memoria.ieee.insert(initObj)
@@ -114,28 +114,25 @@ def searchComplete(idquery):
 	objInsert = client.memoria.query.find_one({"_id": ObjectId(idquery)})
 	retval = 0
 	if objInsert:
-		try:
-			for doc in objInsert["sources"]:
-				if doc["name"] == "ieee":
-					client.memoria.ieee.update_one({"_id": ObjectId(doc["db"])}, {"$set": {"update": 1}})
-					item = client.memoria.ieee.find_one({"_id": ObjectId(doc["db"])})
-					results = {"$set" : requestIEEE(objInsert["query"], 1, int(item["totalfound"]))}
-					client.memoria.ieee.update_one({"_id": ObjectId(doc["db"])}, results)
-					client.memoria.ieee.update_one({"_id": ObjectId(doc["db"])}, {"$set": {"update": 0}})
-				if doc["name"] == "elsevier":
-					client.memoria.elsevier.update_one({"_id": ObjectId(doc["db"])}, {"$set": {"update": 1}})
-					item = client.memoria.elsevier.find_one({"_id": ObjectId(doc["db"])})
-					results = {"$set" : requestELSEVIER(objInsert["query"], 1, int(item["totalfound"]))}
-					client.memoria.elsevier.update_one({"_id": ObjectId(doc["db"])}, results)
-					client.memoria.elsevier.update_one({"_id": ObjectId(doc["db"])}, {"$set": {"update": 0}})
-			client.memoria.query.update_one({"_id": ObjectId(idquery)}, {"$set": {"date" : time.asctime(time.localtime(time.time()))}, "$currentDate": {"lastModified": True}})
-			time.sleep(10)
-		except:
-			raise e
-			print("Error en actualizacion " + idquery)
-			retval = -1
-		finally:			
-			retval = 1
+		#try:
+		for doc in objInsert["sources"]:
+			if doc["name"] == "ieee":
+				client.memoria.ieee.update_one({"_id": doc["db"]}, {"$set": {"update": 1}})
+				item = client.memoria.ieee.find_one({"_id": doc["db"]})
+				results = requestIEEE(objInsert["query"], 1, item["totalfound"])
+				client.memoria.query.update_one({"_id": ObjectId(idquery), "sources.name": "ieee"}, {"$set": {"sources.$.db": results}})
+			if doc["name"] == "elsevier":
+				client.memoria.elsevier.update_one({"_id": doc["db"]}, {"$set": {"update": 1}})
+				item = client.memoria.elsevier.find_one({"_id": doc["db"]})
+				results = requestELSEVIER(objInsert["query"], 1, item["totalfound"])
+				client.memoria.query.update_one({"_id": ObjectId(idquery), "sources.name": "elsevier"}, {"$set": {"sources.$.db": results}})
+		client.memoria.query.update_one({"_id": ObjectId(idquery)}, {"$set": {"date" : time.asctime(time.localtime(time.time()))}, "$currentDate": {"lastModified": True}})
+		#except:
+		#	#raise e
+		#	print("Error en actualizacion " + idquery)
+		#	retval = -1
+		#finally:			
+		#	retval = 1
 	return retval
 
 def search(querytext):
