@@ -53,24 +53,24 @@ $(document).on('click', "#check", function(e)
 			$("#invitation").prop('disabled', true);
 			$("#check").addClass('disabled');
 			modalFooter = $(".modal-footer").collapse('show');
-			alert = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");			
+			alertBox = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");			
 			if (response.check == 1)
 			{
 				$("#send").removeClass('disabled');
-				alert.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
+				alertBox.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
 			}
 			else if (response.check == 2)
 			{
 				$("#send").addClass('disabled');
-				alert.addClass("alert-info").html("El correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
+				alertBox.addClass("alert-info").html("El correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
 			}
 			else if (response.check == -1)
 			{
 				$("#send").removeClass('disabled');
-				alert.addClass("alert-warning").html("El correo no existe o no está registrado. Presione continuar para enviar una invitación.");
+				alertBox.addClass("alert-warning").html("El correo no existe o no está registrado. Presione continuar para enviar una invitación.");
 			}
 			else
-				alert("Error");
+				alarm("Error");
 		});	
 	}
 });
