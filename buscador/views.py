@@ -106,7 +106,7 @@ def folder(request):
 			userChecked = scriptDB.getUser(email = request.POST.get("email"))
 			if userChecked:
 				out = scriptDB.getFolder(request.POST, request.COOKIES, True)
-				if out.folder["user"].get(str(userChecked["_id"])):
+				if (not isinstance(out, int)) and out["user"].get(str(userChecked["_id"])):
 					return JsonResponse({"check":2})
 				else:	
 					return JsonResponse({"check":1, "name": userChecked["firstname"] + " " + userChecked["lastname"]})
