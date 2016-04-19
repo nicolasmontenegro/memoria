@@ -13,11 +13,11 @@ def id(value):
 
 @register.filter(name='permission')
 def permission(value):
-	if value["permission"] == "creator":
+	if value == "creator":
 		return "Creador"
-	elif value["permission"] == "admin":
+	elif value == "admin":
 		return "Administrador"
-	elif value["permission"] == "guest":
+	elif value == "guest":
 		return "Invitado"
 	else:
 		return "none"
@@ -32,3 +32,6 @@ def nameById(value):
 	user = scriptDB.getUser(value)
 	return user["firstname"] + " " + user["lastname"]
 
+@register.filter(name='getItem')
+def getItem(dictionary, key):
+    return dictionary.get(key)

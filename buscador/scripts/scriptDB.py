@@ -84,14 +84,17 @@ def checkLogin(inputdata, inputcookie):
 	except AttributeError:
 		return -2
 
-def getUser(userid):
-	return client.memoria.username.find_one({"_id": ObjectId(userid)})
+def getUser(userid = None, email = None):
+	if userid:
+		return client.memoria.username.find_one({"_id": ObjectId(userid)})
+	if email:
+		return client.memoria.username.find_one({"email": email})
 
 def unfold(inputcookie):
 	try:
 		resolved = signing.loads(inputcookie["head"] + ":" + inputcookie["body"] + ":" +inputcookie["usr"])
 		user = resolved[inputcookie["csrftoken"]]
-		return getUser(user)
+		return getUser(userid = user)
 	except KeyError:
 		print("error unfold")
 		return None
@@ -146,7 +149,7 @@ def getResult(inputdata):
 	result = [item for item in client.memoria[inputdata["source"]].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]
 	if result.get("comment"):
 		for item in result["comment"]:
-			item["user"] = getUser(item["user"])
+			item["user"] = getUser(userid = item["user"])
 	return result
 
 def addComment(inputdata, inputcookie):
@@ -167,7 +170,7 @@ def addDemand(inputdata, inputcookie):
 def confirmDemand(inputdata, inputcookie):
 	try:
 		folder = getFolder({"idquery": inputdata["idfolder"]}, inputcookie, False)
-		user = getUser(inputdata["iduser"])
+		user = getUser(userid = inputdata["iduser"])
 		if user is None:
 			return {"check": 0}
 		if folder.get("permission") == "admin" or folder.get("permission") == "creator":

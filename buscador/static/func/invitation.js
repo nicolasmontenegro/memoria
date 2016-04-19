@@ -11,23 +11,51 @@ $.ajaxSetup({
 
 });
 
-//$(document).ready(function(){
-//
-//	$('#searchButton').click(function (event) 
-//	{
-//		if ($('#searchText').val().length > 0 )
-//			$(location).attr('href', 'revisar?query='+$('#searchText').val());
-//			/*$.get( 
-//				"revisar", 
-//				{query: $('#searchText').val()}
-//			);*/
-//		else
-//			alert("no hay na!");
-//	});
-//});
+$(document).on('click', ".acceptDemand", function(e){
+	inputconnect = 
+	{
+		url: "folder",
+		type: "POST",
+	};
+	inputdata =
+	{
+		idfolder: $("#idfolder").val(),
+		iduser: $(this).attr("iduser"),
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		console.log(response);
+		if (response.check == 1)
+			location.reload();
+	});	
+	console.log(" comentario enviado");
+});
 
 
-function ajaxPages(inputconnect, inputdata)
+$(document).on('click', "#check", function(e)
+{
+	e.preventDefault();
+	alert("hellow");
+	inputconnect = 
+	{
+		url: "folder",
+		type: "POST",
+	};
+	inputdata =
+	{
+		idfolder: $("#idfolder").val(),
+		iduser: $(this).attr("iduser"),
+	};
+	//ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	//{
+	//	console.log(response);
+	//	if (response.check == 1)
+	//		location.reload();
+	//});	
+	console.log(" comentario enviado");
+});
+
+function ajaxComplete(inputconnect, inputdata)
 {
 	return $.ajax({
 		url : inputconnect.url, // the endpoint
