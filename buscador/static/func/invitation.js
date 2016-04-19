@@ -52,8 +52,8 @@ $(document).on('click', "#check", function(e)
 			console.log(response);		
 			$("#invitation").prop('disabled', true);
 			$("#check").addClass('disabled');
-			alert = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");
 			modalFooter = $(".modal-footer").collapse('show');
+			alert = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");			
 			if (response.check == 1)
 				alert.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
 			else if (response.check == 2)
