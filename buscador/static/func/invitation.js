@@ -57,11 +57,18 @@ $(document).on('click', "#check", function(e)
 			if (response.check == 1)
 				alert.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
 			else if (response.check == 2)
-				alert.addClass("alert-info").html("el correo corresponde a " + response.name + ". Pruebe con otra cuenta para continuar");
+				alert.addClass("alert-info").html("el correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
 			else
 				alert.addClass("alert-warning").html("el correo corresponde a " + response.name + ". Pruebe con otra cuenta para continuar");
 		});	
 	}
+});
+
+$(document).on('click', "#back", function(e)
+{
+	$(".modal-footer").collapse('hide');
+	$("#invitation").prop('disabled', false);
+	$("#check").removeClass('disabled');
 });
 
 function ajaxPages(inputconnect, inputdata)
