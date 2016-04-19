@@ -14,7 +14,7 @@ def send_simple_message(to, subject, text):
 		)
 
 def prepareInvitation(fromUser, toUser, folder):
-	outTo: toUser["firstname"] + " " + toUser["lastname"] + " <" + toUser["email"] + ">"
+	outTo =  toUser["firstname"] + " " + toUser["lastname"] + " <" + toUser["email"] + ">"
 	outSubject = fromUser["firstname"] + " Te ha invitado a colaborar"
 	outText = "Hola " + toUser["firstname"] + "<br>" + fromUser["firstname"] + " " + fromUser["lastname"] + " te ha invitado a colaborar en su carpeta <i>" + folder["query"] + "</i><br>Para entrar, inicia sesión y revisa tu lista de carpetas o entra directamente a <a href=\"https://mysterious-badlands-3295.herokuapp.com/folder?idquery=\"" + folder["_id"] + ">este enlace</a>.<br>Recuerda colaborar en las votaciones para mejorar las selecciones<br><br>Saludos<br>Nicolás Montenegro." 
 	send_simple_message(outTo, outSubject, outText)
