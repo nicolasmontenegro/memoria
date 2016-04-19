@@ -57,17 +57,17 @@ $(document).on('click', "#check", function(e)
 			if (response.check == 1)
 			{
 				$("#send").removeClass('disabled');
-				alertBox.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
+				alertBox.addClass("alert-success").html("Se sumará a <b>" + response.name + "</b> como colaborador.<br>Presione aceptar para confirmar, o volver para probar con otro correo");
 			}
 			else if (response.check == 2)
 			{
 				$("#send").addClass('disabled');
-				alertBox.addClass("alert-info").html("El correo corresponde a " + response.name + " quien ya es colaborador. Pruebe con otro correo para continuar");
+				alertBox.addClass("alert-info").html("El correo corresponde a <b>" + response.name + "</b> quien ya es colaborador.<br>Pruebe con otro correo para continuar");
 			}
 			else if (response.check == -1)
 			{
 				$("#send").removeClass('disabled');
-				alertBox.addClass("alert-warning").html("El correo no existe o no está registrado. Presione continuar para enviar una invitación.");
+				alertBox.addClass("alert-warning").html("<b>El correo no existe o no está registrado.</b><br> Presione continuar para enviar una invitación.");
 			}
 			else
 				alarm("Error");
