@@ -55,11 +55,22 @@ $(document).on('click', "#check", function(e)
 			modalFooter = $(".modal-footer").collapse('show');
 			alert = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");			
 			if (response.check == 1)
+			{
+				$("#send").removeClass('disabled');
 				alert.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
+			}
 			else if (response.check == 2)
-				alert.addClass("alert-info").html("el correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
+			{
+				$("#send").addClass('disabled');
+				alert.addClass("alert-info").html("El correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
+			}
+			else if (response.check == -1)
+			{
+				$("#send").removeClass('disabled');
+				alert.addClass("alert-warning").html("El correo no existe o no está registrado. Presione continuar para enviar una invitación.");
+			}
 			else
-				alert.addClass("alert-warning").html("el correo corresponde a " + response.name + ". Pruebe con otra cuenta para continuar");
+				alert("Error");
 		});	
 	}
 });
@@ -69,6 +80,32 @@ $(document).on('click', "#back", function(e)
 	$(".modal-footer").collapse('hide');
 	$("#invitation").prop('disabled', false);
 	$("#check").removeClass('disabled');
+});
+
+$(document).on('click', "#send", function(e)
+{
+	inputconnect = 
+	{
+		url: "folder",
+		type: "POST",
+	};
+	inputdata =
+	{
+		idquery: $("#idfolder").val(),
+		email: $('#invitation').val(),
+		confirm: true,
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		if (response.check == 0)
+			alert("El usuario no existe...\nAlgo mal estás haciendo.")
+		else if (response.check == -1)
+			alert("Error en solicitud")
+		else if (response.check == 1)
+			location.reload();
+		else
+			alert("Error");
+	});	
 });
 
 function ajaxPages(inputconnect, inputdata)

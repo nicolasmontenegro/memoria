@@ -109,6 +109,9 @@ def folder(request):
 				if (not isinstance(out, int)) and out["user"].get(str(userChecked["_id"])):
 					return JsonResponse({"check":2, "name": userChecked["firstname"] + " " + userChecked["lastname"]})
 				else:	
+					if request.POST.get("confirm"):
+						inputdata = {"idquery": request.POST.get("idquery"), "iduser":userChecked["_id"]}
+						return JsonResponse({"check": confirmDemand(inputdata, request.COOKIES)})
 					return JsonResponse({"check":1, "name": userChecked["firstname"] + " " + userChecked["lastname"]})
 			else:
 				return JsonResponse({"check":0})
