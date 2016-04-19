@@ -20,7 +20,7 @@ $(document).on('click', ".acceptDemand", function(e){
 	inputdata =
 	{
 		idfolder: $("#idfolder").val(),
-		iduser: $(this).attr("iduser"),
+		iduser: $(this).attr("iduser"),		
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
@@ -55,7 +55,7 @@ $(document).on('click', "#check", function(e)
 	console.log(" comentario enviado");
 });
 
-function ajaxComplete(inputconnect, inputdata)
+function ajaxPages(inputconnect, inputdata)
 {
 	return $.ajax({
 		url : inputconnect.url, // the endpoint
