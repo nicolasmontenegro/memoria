@@ -44,14 +44,17 @@ $(document).on('click', "#check", function(e)
 	inputdata =
 	{
 		idfolder: $("#idfolder").val(),
-		iduser: $(this).attr("iduser"),
+		email: $('#invitation').val()
 	};
-	//ajaxPages(inputconnect, inputdata).promise().done(function(response)
-	//{
-	//	console.log(response);
-	//	if (response.check == 1)
-	//		location.reload();
-	//});	
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		console.log(response);
+		if (response.check)
+			//location.reload();
+			alert("es " + response.name);
+		else
+			alert("no es na");
+	});	
 	console.log(" comentario enviado");
 });
 
