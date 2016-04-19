@@ -169,7 +169,7 @@ def addDemand(inputdata, inputcookie):
 
 def confirmDemand(inputdata, inputcookie):
 	try:
-		folder = getFolder({"idquery": inputdata["idfolder"]}, inputcookie, False)
+		folder = getFolder({"idquery": inputdata["idquery"]}, inputcookie, False)
 		user = getUser(userid = inputdata["iduser"])
 		if user is None:
 			return {"check": 0}

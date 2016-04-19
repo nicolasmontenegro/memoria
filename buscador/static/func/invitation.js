@@ -19,7 +19,7 @@ $(document).on('click', ".acceptDemand", function(e){
 	};
 	inputdata =
 	{
-		idfolder: $("#idfolder").val(),
+		idquery: $("#idfolder").val(),
 		iduser: $(this).attr("iduser"),		
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
@@ -42,7 +42,7 @@ $(document).on('click', "#check", function(e)
 	};
 	inputdata =
 	{
-		idfolder: $("#idfolder").val(),
+		idquery: $("#idfolder").val(),
 		email: $('#invitation').val()
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)

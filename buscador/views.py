@@ -100,12 +100,12 @@ def folder(request):
 			else:
 				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
 	elif request.method == 'POST':	
-		if request.POST.get("idfolder") and request.POST.get("iduser"):
+		if request.POST.get("idquery") and request.POST.get("iduser"):
 			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES))
-		if request.POST.get("idfolder") and request.POST.get("email"):
+		if request.POST.get("idquery") and request.POST.get("email"):
 			userChecked = scriptDB.getUser(email = request.POST.get("email"))
 			if userChecked:
-				out = scriptDB.getFolder(request.GET, request.COOKIES, True)
+				out = scriptDB.getFolder(request.POST, request.COOKIES, True)
 				if out.folder["user"].get(str(userChecked["_id"])):
 					return JsonResponse({"check":2})
 				else:	
