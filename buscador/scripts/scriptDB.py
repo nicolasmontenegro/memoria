@@ -3,6 +3,8 @@ from bson.objectid import ObjectId
 from django.core import signing
 import time
 
+from . import scriptMail
+
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 
 def add(dbname, doc):
@@ -178,6 +180,7 @@ def confirmDemand(inputdata, inputcookie):
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$set": {infoUser: "guest"}})
 			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idfolder"]}})
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$pull": {"demand": inputdata["iduser"]}})
+			scriptMail.prepareInvitation(unfold(inputcookie), user, folder)
 			return {"check": 1}
 	except Exception:
 		return {"check": -1}

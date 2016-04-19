@@ -62,7 +62,7 @@ $(document).on('click', "#check", function(e)
 			else if (response.check == 2)
 			{
 				$("#send").addClass('disabled');
-				alertBox.addClass("alert-info").html("El correo corresponde a " + response.name + ". Pruebe con otro correo para continuar");
+				alertBox.addClass("alert-info").html("El correo corresponde a " + response.name + " quien ya es colaborador. Pruebe con otro correo para continuar");
 			}
 			else if (response.check == -1)
 			{
