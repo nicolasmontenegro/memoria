@@ -103,7 +103,7 @@ def folder(request):
 		if request.POST.get("idfolder") and request.POST.get("iduser"):
 			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES))
 		if request.POST.get("idfolder") and request.POST.get("email"):
-			userChecked = getUser(email = request.POST.get("email"))
+			userChecked = scriptDB.getUser(email = request.POST.get("email"))
 			if userChecked:
 				return JsonResponse({"check":1, "name": userChecked.firstname + " " + userChecked.lastname})
 			else:
