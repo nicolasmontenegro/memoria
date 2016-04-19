@@ -35,27 +35,33 @@ $(document).on('click', ".acceptDemand", function(e){
 $(document).on('click', "#check", function(e)
 {
 	e.preventDefault();
-	inputconnect = 
-	{
-		url: "folder",
-		type: "POST",
-	};
-	inputdata =
-	{
-		idquery: $("#idfolder").val(),
-		email: $('#invitation').val()
-	};
-	ajaxPages(inputconnect, inputdata).promise().done(function(response)
-	{
-		console.log(response);
-		if (response.check == 1)
-			alert("es " + response.name);
-		else if (response.check == 2)
-			alert("ya está inscrito");
-		else
-			alert("no es na");
-	});	
-	console.log(" comentario enviado");
+	if (!$(this).hasClass('disabled'))
+	{		
+		inputconnect = 
+		{
+			url: "folder",
+			type: "POST",
+		};
+		inputdata =
+		{
+			idquery: $("#idfolder").val(),
+			email: $('#invitation').val()
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log(response);		
+			$("#invitation").prop('disabled', true);
+			$("#check").addClass('disabled');
+			alert = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");
+			modalFooter = $(".modal-footer").collapse('show');
+			if (response.check == 1)
+				alert.addClass("alert-success").html("Se sumará a " + response.name + " como colaborador. Presione aceptar para confirmar, o volver para probar con otro correo");
+			else if (response.check == 2)
+				alert.addClass("alert-info").html("el correo corresponde a " + response.name + ". Pruebe con otra cuenta para continuar");
+			else
+				alert.addClass("alert-warning").html("el correo corresponde a " + response.name + ". Pruebe con otra cuenta para continuar");
+		});	
+	}
 });
 
 function ajaxPages(inputconnect, inputdata)
