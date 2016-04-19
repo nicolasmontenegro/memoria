@@ -35,7 +35,6 @@ $(document).on('click', ".acceptDemand", function(e){
 $(document).on('click', "#check", function(e)
 {
 	e.preventDefault();
-	alert("hellow");
 	inputconnect = 
 	{
 		url: "folder",
@@ -49,9 +48,10 @@ $(document).on('click', "#check", function(e)
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
 		console.log(response);
-		if (response.check)
-			//location.reload();
+		if (response.check == 1)
 			alert("es " + response.name);
+		else if (response.check == 2)
+			alert("ya está inscrito");
 		else
 			alert("no es na");
 	});	
