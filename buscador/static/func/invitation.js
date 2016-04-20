@@ -86,33 +86,36 @@ $(document).on('click', "#back", function(e)
 $(document).on('click', "#send", function(e)
 {
 	e.preventDefault();
-	inputconnect = 
+	if (!$(this).hasClass('disabled'))
 	{
-		url: "folder",
-		type: "POST",
-	};
-	inputdata =
-	{
-		idquery: $("#idfolder").val(),
-		email: $('#invitation').val(),
-		confirm: true,
-	};
-	ajaxPages(inputconnect, inputdata).promise().done(function(response)
-	{
-		if (response.check == 0)
-			alert("El usuario no existe...\nAlgo mal estás haciendo.")
-		else if (response.check == -1)
-			alert("Error en solicitud")
-		else if (response.check == 1)
+		inputconnect = 
 		{
-			$(".modal-footer").collapse('hide');
-			$("#invitation").prop('disabled', false);
-			$("#check").removeClass('disabled');
-			location.reload();
-		}
-		else
-			alert("Error");
-	});	
+			url: "folder",
+			type: "POST",
+		};
+		inputdata =
+		{
+			idquery: $("#idfolder").val(),
+			email: $('#invitation').val(),
+			confirm: true,
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			if (response.check == 0)
+				alert("El usuario no existe...\nAlgo mal estás haciendo.")
+			else if (response.check == -1)
+				alert("Error en solicitud")
+			else if (response.check == 1)
+			{
+				$(".modal-footer").collapse('hide');
+				$("#invitation").prop('disabled', false);
+				$("#check").removeClass('disabled');
+				location.reload();
+			}
+			else
+				alert("Error");
+		});	
+	}
 });
 
 function ajaxPages(inputconnect, inputdata)
