@@ -16,7 +16,7 @@ def isLogged(func = None):
 	def decorator(a_view):
 		def _dec(request, *args, **kwargs):
 			if scriptDB.unfold(request.COOKIES) == None:
-				return HttpResponseRedirect('/login')
+				return HttpResponseRedirect('/logout')
 			return a_view(request, *args, **kwargs) 
 		return _dec
 	if func:

@@ -97,7 +97,7 @@ def unfold(inputcookie):
 		resolved = signing.loads(inputcookie["head"] + ":" + inputcookie["body"] + ":" +inputcookie["usr"])
 		user = resolved[inputcookie["csrftoken"]]
 		return getUser(userid = user)
-	except KeyError:
+	except:
 		print("error unfold")
 		return None
 	
