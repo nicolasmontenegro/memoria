@@ -64,10 +64,10 @@ $(document).on('click', "#check", function(e)
 				$("#send").addClass('disabled');
 				alertBox.addClass("alert-info").html("El correo corresponde a <b>" + response.name + "</b> quien ya es colaborador.<br>Pruebe con otro correo para continuar");
 			}
-			else if (response.check == -1)
+			else if (response.check == 0)
 			{
-				$("#send").removeClass('disabled');
-				alertBox.addClass("alert-warning").html("<b>El correo no existe o no está registrado.</b><br> Presione continuar para enviar una invitación.");
+				$("#send").addClass('disabled');
+				alertBox.addClass("alert-warning").html("<b>El correo no existe o no está registrado.</b>");
 			}
 			else
 				alarm("Error");
@@ -77,6 +77,7 @@ $(document).on('click', "#check", function(e)
 
 $(document).on('click', "#back", function(e)
 {
+	e.preventDefault();
 	$(".modal-footer").collapse('hide');
 	$("#invitation").prop('disabled', false);
 	$("#check").removeClass('disabled');
@@ -84,6 +85,7 @@ $(document).on('click', "#back", function(e)
 
 $(document).on('click', "#send", function(e)
 {
+	e.preventDefault();
 	inputconnect = 
 	{
 		url: "folder",
