@@ -149,12 +149,10 @@ def login(request):
 			c = {'new': True}
 		return render(request, 'login.html', c)
 
-@never_cache
 @isLogged
 def profile(request):
 	if request.method == 'GET':
 		return render(request, 'profile.html', {"userlogin": scriptDB.unfold(request.COOKIES)})
-
 
 def logout(request):
 	if request.method == 'GET':
