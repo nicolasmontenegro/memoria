@@ -155,7 +155,7 @@ def profile(request):
 	if request.method == 'GET':
 		return render(request, 'profile.html', {"userlogin": scriptDB.unfold(request.COOKIES)})
 
-@isLogged
+
 def logout(request):
 	if request.method == 'GET':
 		return render(request, 'logout.html')
