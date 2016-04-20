@@ -102,7 +102,12 @@ $(document).on('click', "#send", function(e)
 		else if (response.check == -1)
 			alert("Error en solicitud")
 		else if (response.check == 1)
+		{
+			$(".modal-footer").collapse('hide');
+			$("#invitation").prop('disabled', false);
+			$("#check").removeClass('disabled');
 			location.reload();
+		}
 		else
 			alert("Error");
 	});	

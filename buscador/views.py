@@ -101,17 +101,17 @@ def folder(request):
 				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
 	elif request.method == 'POST':	
 		if request.POST.get("idquery") and request.POST.get("iduser"):
-			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES))
+			return JsonResponse(scriptDB.confirmDemand(request.POST, request.COOKIES, email="confirm"))
 		if request.POST.get("idquery") and request.POST.get("email"):
 			userChecked = scriptDB.getUser(email = request.POST.get("email"))
 			if userChecked:
-				out = scriptDB.getFolder(request.POST, request.COOKIES, True)
+				out = scriptDB.getFolder(request.POST, request.COOKIES, False)
 				if (not isinstance(out, int)) and out["user"].get(str(userChecked["_id"])):
 					return JsonResponse({"check":2, "name": userChecked["firstname"] + " " + userChecked["lastname"]})
 				else:	
 					if request.POST.get("confirm"):
 						inputdata = {"idquery": request.POST.get("idquery"), "iduser":userChecked["_id"]}
-						return JsonResponse({"check": scriptDB.confirmDemand(inputdata, request.COOKIES)})
+						return JsonResponse(scriptDB.confirmDemand(inputdata, request.COOKIES, email="invitation"))
 					return JsonResponse({"check":1, "name": userChecked["firstname"] + " " + userChecked["lastname"]})
 			else:
 				return JsonResponse({"check":0})

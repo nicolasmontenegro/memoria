@@ -169,7 +169,7 @@ def addDemand(inputdata, inputcookie):
 	user = unfold(inputcookie)
 	return client.memoria.folder.update_one({"_id": ObjectId(inputdata["idquery"])}, {"$addToSet": {"demand": str(user["_id"])}}).modified_count
 
-def confirmDemand(inputdata, inputcookie):
+def confirmDemand(inputdata, inputcookie, email=None):
 	try:
 		folder = getFolder({"idquery": inputdata["idquery"]}, inputcookie, False)
 		user = getUser(userid = inputdata["iduser"])
@@ -178,9 +178,12 @@ def confirmDemand(inputdata, inputcookie):
 		if folder.get("permission") == "admin" or folder.get("permission") == "creator":
 			infoUser = "user." + str(user["_id"])
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$set": {infoUser: "guest"}})
-			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idfolder"]}})
+			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idquery"]}})
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$pull": {"demand": inputdata["iduser"]}})
-			scriptMail.prepareInvitation(unfold(inputcookie), user, folder)
+			if email == "invitation":
+				scriptMail.prepareInvitation(unfold(inputcookie), user, folder, "te ha invitado a colaborar en su carpeta")
+			elif email == "confirm":
+				scriptMail.prepareInvitation(unfold(inputcookie), user, folder, "ha aceptado tu solicitud a colaborar en su carpeta")
 			return {"check": 1}
 	except Exception:
 		return {"check": -1}
