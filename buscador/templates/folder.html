@@ -12,6 +12,11 @@
 {%block body%}
 {% if out.permission == "creator" or out.permission == "admin" %}
 	<div class="row">
+		<div class="col-md-3 col-sm-3">
+			<!-- Trigger the modal with a button -->
+			<label>Invitar a colaborar</label>
+			<button type="button" class="btn btn-info btn-default btn-block" data-toggle="modal" data-target="#ModalInvite">Invitar</button>
+		</div>
 		<div class="col-md-9 col-sm-9">
 			<label>Termino a buscar</label>
 			<form class="input-group" action="revisar" method="GET" >
@@ -21,12 +26,7 @@
 					<button class="btn btn-default" type="submit">buscar</button>
 				</span>
 			</form>
-		</div>
-		<div class="col-md-3 col-sm-3">
-			<!-- Trigger the modal with a button -->
-			<label>Invitar a colaborar</label>
-			<button type="button" class="btn btn-info btn-default btn-block" data-toggle="modal" data-target="#ModalInvite">Invitar</button>
-		</div>
+		</div>		
 	</div>
 	<br>
 	<!-- Modal -->

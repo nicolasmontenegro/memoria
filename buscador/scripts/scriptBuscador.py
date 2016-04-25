@@ -54,7 +54,7 @@ def requestACM(querytext, full = False):
 			"rank": str(totalsave + 1),
 			"title": element.get("title"),
 			"authors": element.get("author"),
-			"abstract": element.get("author"),
+#			"abstract": element.get("author"),
 			"mdurl": element.get("url"),
 			"pubN": pubN,
 			"pubY": element.get("year"),
