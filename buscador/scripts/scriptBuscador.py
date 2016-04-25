@@ -1,13 +1,16 @@
-from bs4 import BeautifulSoup
 import requests
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+
 import time
 import threading
+
 try:
 	import xml.etree.cElementTree as ET
 except:
 	import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
+import bibtexparser
 
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	
@@ -23,6 +26,50 @@ def putAtribute(ws, x, y, element):
 		c.value = element
 	except AttributeError:
 		c.value = ""
+
+def requestACM(querytext, full = False):
+	url = "http://dl.acm.org/exportformats_search.cfm?filtered=&within=owners%2Eowner%3DHOSTED&dte=&bfr=&srt=%5Fscore&expformat=bibtex&query=" + querytext
+	print(time.asctime(time.localtime(time.time()))  + " query from: " + url)
+	downBit = requests.get(url).text
+	parsered = bibtexparser.loads(downBit)
+
+	totalsave = 0
+	initObj = {
+		"query" : querytext,
+		"date" : time.asctime(time.localtime(time.time())),
+		"totalfound" : len(parsered.entries),		
+		"totalsave": totalsave,
+		"results" : []}	
+	queryObj = client.memoria.acm.insert(initObj)
+
+	results = []
+	for element in parsered.entries:
+		totalsave += 1
+		pubN = ""
+		if element.get("journal"):
+			pubN = element.get("journal")
+		elif element.get("booktitle"):
+			pubN = element.get("booktitle")
+		results.append({
+			"rank": str(totalsave + 1),
+			"title": element.get("title"),
+			"authors": element.get("author"),
+			"abstract": element.get("author"),
+			"mdurl": element.get("url"),
+			"pubN": pubN,
+			"pubY": element.get("year"),
+			"pubP": element.get("pages"),
+			"doi": element.get("doi"),
+			"vote": {},
+			})
+		if (totalsave%100) is 0:
+			client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
+			results.clear()
+			if full and totalsave is 100 :
+				break
+	client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
+	return queryObj
+
 
 def requestELSEVIER(querytext, now, maxres):
 	url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext
@@ -143,8 +190,9 @@ def search(querytext):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [{"name": "ieee", "db": resultsIEEE},
-			{"name": "elsevier", "db" : resultsELSEVIER}]
+		"sources": [{"name": "ieee", "db": requestIEEE(querytext, 1, maxres)},
+			{"name": "elsevier", "db" : requestELSEVIER(querytext, 1, maxres)},
+			{"name": "acm", "db": requestACM(querytext, full = False)}]
 		}
 	return client.memoria.query.insert(objInsert)
 
