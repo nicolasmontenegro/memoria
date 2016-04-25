@@ -184,9 +184,6 @@ def searchComplete(idquery):
 
 def search(querytext):
 	maxres = 100
-	client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
-	resultsIEEE = requestIEEE(querytext, 1, maxres)
-	resultsELSEVIER = requestELSEVIER(querytext, 1, maxres)
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
