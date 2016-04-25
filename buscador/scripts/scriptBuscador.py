@@ -32,12 +32,12 @@ def requestACM(querytext, full = False):
 	print(time.asctime(time.localtime(time.time()))  + " query from: " + url)
 	downBit = requests.get(url).text
 	parsered = bibtexparser.loads(downBit)
-
+	totalfound = len(parsered.entries)
 	totalsave = 0
 	initObj = {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"totalfound" : len(parsered.entries),		
+		"totalfound" : totalfound,		
 		"totalsave": totalsave,
 		"results" : []}	
 	queryObj = client.memoria.acm.insert(initObj)
@@ -51,7 +51,7 @@ def requestACM(querytext, full = False):
 		elif element.get("booktitle"):
 			pubN = element.get("booktitle")
 		results.append({
-			"rank": str(totalsave + 1),
+			"rank": str(totalsave),
 			"title": element.get("title"),
 			"authors": element.get("author"),
 #			"abstract": element.get("author"),
@@ -62,10 +62,10 @@ def requestACM(querytext, full = False):
 			"doi": element.get("doi"),
 			"vote": {},
 			})
-		if (totalsave%100) is 0:
+		if (totalsave%100) is 0 or (totalsave is totalfound):
 			client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
 			results.clear()
-			if full and totalsave is 100 :
+			if full and (totalsave is 100):
 				break
 	client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
 	return queryObj
