@@ -14,9 +14,9 @@ def xlsfile(id):
 		ws = wb.active
 		ws.title = out["query"][:10]
 		ws['A'+ str(1)] = "query" 
-		ws['A'+ str(2)] = out["query"]
+		ws['A'+ str(2)] = out.get("query")
 		ws['B'+ str(1)] = "date" 
-		ws['B'+ str(1)] = out["date"]
+		ws['B'+ str(1)] = out.get("date")
 		for doc in out["sources"]:
 			ws = wb.create_sheet()
 			ws.title = doc["name"]
@@ -32,15 +32,15 @@ def xlsfile(id):
 			row = 2
 			docAux = scriptDB.readSource(doc["name"], str(doc["db"]))
 			for item in docAux['results']:
-				ws['A'+ str(row)] = item['rank']
-				ws['B'+ str(row)] = item['title']
-				ws['C'+ str(row)] = item['authors']
-				ws['D'+ str(row)] = item['abstract']
-				ws['E'+ str(row)] = item['mdurl']
-				ws['F'+ str(row)] = item['pubN']
-				ws['G'+ str(row)] = item['pubY']
-				ws['H'+ str(row)] = item['pubP']
-				ws['I'+ str(row)] = item['doi']
+				ws['A'+ str(row)] = item.get('rank')
+				ws['B'+ str(row)] = item.get('title')
+				ws['C'+ str(row)] = item.get('authors')
+				ws['D'+ str(row)] = item.get('abstract')
+				ws['E'+ str(row)] = item.get('mdurl')
+				ws['F'+ str(row)] = item.get('pubN')
+				ws['G'+ str(row)] = item.get('pubY')
+				ws['H'+ str(row)] = item.get('pubP')
+				ws['I'+ str(row)] = item.get('doi')
 				row += 1
 		print("saving " + str(out["_id"]) + '.xlsx')
 		out = BytesIO()
