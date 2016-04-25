@@ -154,7 +154,7 @@ $(document).on('click', ".buttonpagination", function(e){
 			iddb: $(".tab-pane.active").attr("id"),
 			idquery: $("#idquery").val(),
 		};
-		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
 		{
 			console.log("toggle");
 			$('html,body').animate({scrollTop:0},'slow');
