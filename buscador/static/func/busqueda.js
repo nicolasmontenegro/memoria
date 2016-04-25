@@ -149,7 +149,7 @@ $(document).on('click', ".buttonpagination", function(e){
 		};
 		inputdata =
 		{
-			source: (".tab-pane.active").attr("name"),
+			source: $(".tab-pane.active").attr("name"),
 			page: $(btn).val(),
 			iddb: $(".tab-pane.active").attr("id"),
 			idquery: $("#idquery").val(),
