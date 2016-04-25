@@ -168,8 +168,24 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	inputconnect = 
 	{
 		url : "revisar",
-		type : "POST",
 	};
+
+	inputconnect.type = "GET"; 
+		inputdata =
+		{
+			source: $(".tab-pane.active").attr("name"),
+			page: 1,
+			iddb: $(".tab-pane.active").attr("id"),
+			idquery: $("#idquery").val(),
+		};
+		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log("toggle");
+			$('html,body').animate({scrollTop:0},'slow');
+		});
+
+
+	inputconnect.type = "POST"; 
 	inputdata =
 	{
 		query: $("#idquery").val(),
@@ -180,19 +196,7 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	});
 
 
-	inputconnect.type = "GET"; 
-	inputdata =
-	{
-		source: $(".tab-pane.active").attr("name"),
-		page: 1,
-		iddb: $(".tab-pane.active").attr("id"),
-		idquery: $("#idquery").val(),
-	};
-	ajaxPages(inputconnect, inputdata).promise().done(function(response)
-	{
-		console.log("toggle");
-		$('html,body').animate({scrollTop:0},'slow');
-	});
+	
 	
 });
 
