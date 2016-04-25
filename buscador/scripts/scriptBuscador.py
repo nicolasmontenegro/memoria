@@ -174,6 +174,7 @@ def searchComplete(idquery):
 				results = requestELSEVIER(objInsert["query"], 1, item["totalfound"])
 				client.memoria.query.update_one({"_id": ObjectId(idquery), "sources.name": "elsevier"}, {"$set": {"sources.$.db": results}})
 			if doc["name"] == "acm":
+				client.memoria.acm.update_one({"_id": doc["db"]}, {"$set": {"update": 1}})
 				item = client.memoria.acm.find_one({"_id": doc["db"]})
 				results = requestACM(objInsert["query"], full = True)
 				client.memoria.query.update_one({"_id": ObjectId(idquery), "sources.name": "acm"}, {"$set": {"sources.$.db": results}})
