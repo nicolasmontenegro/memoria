@@ -62,10 +62,10 @@ def requestACM(querytext, full = False):
 			"doi": element.get("doi"),
 			"vote": {},
 			})
-		if (totalsave%100) is 0 or (totalsave is totalfound):
+		if ((totalsave%100) is 0) or (totalsave is totalfound):
 			client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
 			results.clear()
-			if full and (totalsave is 100):
+			if (full is False) and (totalsave is 100):
 				break
 	client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
 	return queryObj
