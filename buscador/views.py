@@ -141,13 +141,25 @@ def login(request):
 		return HttpResponseRedirect('/')
 	elif request.method == 'POST':
 		check = scriptDB.checkLogin(request.POST, request.COOKIES)
-		#print(check)
 		return JsonResponse({"check":check})
 	elif request.method == 'GET':
-		c = {}
-		if request.GET.get('new'):
-			c = {'new': True}
-		return render(request, 'login.html', c)
+		return render(request, 'login.html', {'new': request.GET.get('new'), 'recover': request.GET.get('recover') })
+
+
+@ensure_csrf_cookie
+def recover(request):	
+	if request.method == 'GET' and scriptDB.unfold(request.COOKIES) != None:
+		return HttpResponseRedirect('/')
+	elif request.method == 'GET' and request.GET.get("idRecover"):
+		user = scriptDB.recoverPasswordCheck(request.GET)
+		return render(request, 'recoverPassword.html',{"user": user, "idRecover": request.GET.get("idRecover")})
+	elif request.method == 'POST' and request.POST.get("idRecover"):
+		return JsonResponse({"check": scriptDB.recoverPasswordReplace(request.POST)})
+	elif request.method == 'POST':		
+		scriptDB.recoverPassword(request.POST)
+		return HttpResponseRedirect('/login')
+	elif request.method == 'GET':
+		return render(request, 'recover.html')
 
 @isLogged
 def profile(request):

@@ -13,7 +13,8 @@ urlpatterns = [
 	url(r'^logout', views.logout, name='logout'),
 	url(r'^profile', views.profile, name='profile'),
 	url(r'^comment', views.comment, name='comment'),
-	url(r'^testing', views.testing, name='testing'),
+	#url(r'^testing', views.testing, name='testing'),
+	url(r'^recoverpassword', views.recover, name='recover password'),
 ]
 
 

@@ -7,9 +7,6 @@ from . import scriptMail
 
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 
-def add(dbname, doc):
-	return -1
-
 def readSource(dbname, id):
 	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
 
@@ -188,3 +185,45 @@ def confirmDemand(inputdata, inputcookie, email=None):
 	except Exception:
 		return {"check": -1}
 
+def recoverPassword(inputdata):
+	user = getUser(email = inputdata.get('query'))
+	if user is not None:
+		timeRecover = time.asctime(time.localtime(time.time()))
+		client.memoria.username.update_one({"_id": user["_id"]}, {"$set": {"recoverDate": timeRecover}})
+		signed = signing.dumps({str(user["_id"]) : timeRecover})
+		scriptMail.prepareRecoverPassword(user, signed)
+
+def recoverPasswordCheck(inputdata):
+	try:
+		unsigned = signing.loads(inputdata.get("idRecover"))
+		user = getUser(userid = list(unsigned)[0])
+		if (user is not None) and (user.get("recoverDate") == unsigned[list(unsigned)[0]]):
+			now = time.localtime(time.time())
+			before = time.strptime(unsigned[list(unsigned)[0]])
+			delta = time.mktime(now) - time.mktime(before)
+			print(delta)
+			if delta > 86400 :
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$unset": {"recoverDate": ""}})
+				return None
+			else:
+				return user
+	except Exception:
+		return None
+
+def recoverPasswordReplace(inputdata):
+	try:
+		unsigned = signing.loads(inputdata.get("idRecover"))
+		user = getUser(userid = list(unsigned)[0])
+		if (user is not None) and (user.get("recoverDate") == unsigned[list(unsigned)[0]]):
+			now = time.localtime(time.time())
+			before = time.strptime(unsigned[list(unsigned)[0]])
+			delta = time.mktime(now) - time.mktime(before)
+			print(delta)
+			if delta > 86400 :
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$unset": {"recoverDate": ""}})			
+				return 0
+			else:
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$set": {"password": inputdata.get("password")}, "$unset": {"recoverDate": ""}})
+				return 1
+	except Exception:
+		return -1
