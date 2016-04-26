@@ -23,6 +23,12 @@
 		  Cuenta creada con éxito.
 		</div>
 		{% endif%}
+		{% if recover %}
+		<div class="alert alert-success alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  Contraseña restaurada con éxito.
+		</div>
+		{% endif%}
 		<form class="form-horizontal">
 			<div class="form-group">
 				<label for="email" class="col-sm-2 control-label">Nombre de usuario</label>
@@ -43,6 +49,7 @@
 				</div>
 			</div>
 		</form>
+		<a href="/recoverpassword">He olvidado mi contraseña...</a>
 	</div>
 	<div class="col-xs-12 col-md-12">
 		<div class="page-header">

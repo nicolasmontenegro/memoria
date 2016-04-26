@@ -18,7 +18,9 @@
 		$.cookie.remove("head");
 		$.cookie.remove("body");
 		$.cookie.remove("usr");
-		self.location="/";
+		$.cookie.remove("csrftoken");
+		//self.location="/";
+		window.location.replace("/login");
 	</script>
 </body>
 </html>

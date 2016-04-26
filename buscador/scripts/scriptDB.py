@@ -3,10 +3,9 @@ from bson.objectid import ObjectId
 from django.core import signing
 import time
 
-client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
+from . import scriptMail
 
-def add(dbname, doc):
-	return -1
+client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 
 def readSource(dbname, id):
 	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
@@ -95,7 +94,7 @@ def unfold(inputcookie):
 		resolved = signing.loads(inputcookie["head"] + ":" + inputcookie["body"] + ":" +inputcookie["usr"])
 		user = resolved[inputcookie["csrftoken"]]
 		return getUser(userid = user)
-	except KeyError:
+	except:
 		print("error unfold")
 		return None
 	
@@ -167,18 +166,64 @@ def addDemand(inputdata, inputcookie):
 	user = unfold(inputcookie)
 	return client.memoria.folder.update_one({"_id": ObjectId(inputdata["idquery"])}, {"$addToSet": {"demand": str(user["_id"])}}).modified_count
 
-def confirmDemand(inputdata, inputcookie):
+def confirmDemand(inputdata, inputcookie, email=None):
 	try:
-		folder = getFolder({"idquery": inputdata["idfolder"]}, inputcookie, False)
+		folder = getFolder({"idquery": inputdata["idquery"]}, inputcookie, False)
 		user = getUser(userid = inputdata["iduser"])
 		if user is None:
 			return {"check": 0}
 		if folder.get("permission") == "admin" or folder.get("permission") == "creator":
 			infoUser = "user." + str(user["_id"])
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$set": {infoUser: "guest"}})
-			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idfolder"]}})
+			client.memoria.username.update_one({"_id": user["_id"]}, {"$addToSet": {"folder": inputdata["idquery"]}})
 			client.memoria.folder.update_one({"_id": folder["_id"]}, {"$pull": {"demand": inputdata["iduser"]}})
+			if email == "invitation":
+				scriptMail.prepareInvitation(unfold(inputcookie), user, folder, "te ha invitado a colaborar en su carpeta")
+			elif email == "confirm":
+				scriptMail.prepareInvitation(unfold(inputcookie), user, folder, "ha aceptado tu solicitud a colaborar en su carpeta")
 			return {"check": 1}
 	except Exception:
 		return {"check": -1}
 
+def recoverPassword(inputdata):
+	user = getUser(email = inputdata.get('query'))
+	if user is not None:
+		timeRecover = time.asctime(time.localtime(time.time()))
+		client.memoria.username.update_one({"_id": user["_id"]}, {"$set": {"recoverDate": timeRecover}})
+		signed = signing.dumps({str(user["_id"]) : timeRecover})
+		scriptMail.prepareRecoverPassword(user, signed)
+
+def recoverPasswordCheck(inputdata):
+	try:
+		unsigned = signing.loads(inputdata.get("idRecover"))
+		user = getUser(userid = list(unsigned)[0])
+		if (user is not None) and (user.get("recoverDate") == unsigned[list(unsigned)[0]]):
+			now = time.localtime(time.time())
+			before = time.strptime(unsigned[list(unsigned)[0]])
+			delta = time.mktime(now) - time.mktime(before)
+			print(delta)
+			if delta > 86400 :
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$unset": {"recoverDate": ""}})
+				return None
+			else:
+				return user
+	except Exception:
+		return None
+
+def recoverPasswordReplace(inputdata):
+	try:
+		unsigned = signing.loads(inputdata.get("idRecover"))
+		user = getUser(userid = list(unsigned)[0])
+		if (user is not None) and (user.get("recoverDate") == unsigned[list(unsigned)[0]]):
+			now = time.localtime(time.time())
+			before = time.strptime(unsigned[list(unsigned)[0]])
+			delta = time.mktime(now) - time.mktime(before)
+			print(delta)
+			if delta > 86400 :
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$unset": {"recoverDate": ""}})			
+				return 0
+			else:
+				client.memoria.username.update_one({"_id": user["_id"]}, {"$set": {"password": inputdata.get("password")}, "$unset": {"recoverDate": ""}})
+				return 1
+	except Exception:
+		return -1

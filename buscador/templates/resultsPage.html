@@ -17,12 +17,14 @@
 		{% else %}
 			<div class="page-header">
 				<h1>Faltan resultados por descargar <small>para ver los resultados faltantes...</small></h1>
-				<button type="button" class="btn btn-info"data-toggle="modal" data-target="#ModalInfoComplete">haga click aquí</button>
+				<!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalInfoComplete">haga click aquí</button> -->
 				<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
+				<p>No se preocupe: si cambia de página o cierra el explorador el proceso continuará de todos modos.</p>
+				<button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button>
 
 
 				<!-- Modal -->
-				<div class="modal fade" id="ModalInfoComplete" tabindex="-1" role="dialog" aria-labelledby="InfoComplete">
+				<!-- <div class="modal fade" id="ModalInfoComplete" tabindex="-1" role="dialog" aria-labelledby="InfoComplete">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -40,7 +42,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>	
 		{% endif %}
 	{% else %}
@@ -55,7 +57,7 @@
 					</div>
 				</div> 
 				<div class="col-sm-8 col-md-8 col-lg-9">
-					<p><h3 class="paperTitle"><a href="{{doc.mdurl}}">{{doc.title}}</a></h3></p>
+					<p><h3 class="paperTitle"><a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
 				</div>
 				<div class="col-sm-1 col-md-1 col-lg-1">
 					<p><h3>{{doc.rank}}</h3></p>

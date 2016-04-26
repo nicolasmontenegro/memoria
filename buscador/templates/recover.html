@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Papers{%endblock%}
+{%block title_body%}Buscador{%endblock%}
+
+{%block body%}
+<div>
+	<legend>Recuperar contraseña</legend>
+	<label>Correo electrónico</label>
+	<form class="input-group" action="recoverpassword" method="POST" >
+		{% csrf_token %}
+		<input type="text" class="form-control" placeholder="alguien@ejemplo.com" id="query" type="email" name="query" required>
+		<span class="input-group-btn">
+			<button class="btn btn-default" type="submit">enviar</button>
+		</span>
+	</form>
+</div>
+<div>
+	<p>Si el correo ingresado es correcto, se enviará un mensaje para que pueda recuperar su contraseña.</p>		
+</div>
+{%endblock%}

@@ -12,6 +12,11 @@
 {%block body%}
 {% if out.permission == "creator" or out.permission == "admin" %}
 	<div class="row">
+		<div class="col-md-3 col-sm-3">
+			<!-- Trigger the modal with a button -->
+			<label>Invitar a colaborar</label>
+			<button type="button" class="btn btn-info btn-default btn-block" data-toggle="modal" data-target="#ModalInvite">Invitar</button>
+		</div>
 		<div class="col-md-9 col-sm-9">
 			<label>Termino a buscar</label>
 			<form class="input-group" action="revisar" method="GET" >
@@ -21,12 +26,7 @@
 					<button class="btn btn-default" type="submit">buscar</button>
 				</span>
 			</form>
-		</div>
-		<div class="col-md-3 col-sm-3">
-			<!-- Trigger the modal with a button -->
-			<label>Invitar a colaborar</label>
-			<button type="button" class="btn btn-info btn-default btn-block" data-toggle="modal" data-target="#ModalInvite">Invitar</button>
-		</div>
+		</div>		
 	</div>
 	<br>
 	<!-- Modal -->
@@ -45,13 +45,13 @@
 					<form class="input-group">
 						<input type="text" class="form-control" placeholder="foo@bar.not" id="invitation" type="text" name="invitation" required>				
 						<span class="input-group-btn">
-							<button class="btn btn-default" id="check" type="submit">Enviar</button>
+							<button class="btn btn-default" id="check" type="submit">Verificar</button>
 						</span>
 					</form>
 				</div>
 				
 				<div class="modal-footer collapse">
-					<div class="alert alert-success" role="alert">
+					<div class="alert text-left" role="alert">
 					</div>
 					<div>
 					  	<button class="btn btn-default" id="back" >Volver</button>

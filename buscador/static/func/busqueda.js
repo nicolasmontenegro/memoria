@@ -22,7 +22,19 @@ $(document).ready(function(){
 	$(".tab-pane.source").each(function()
 	{
 		divsource=this;
-		ajaxPage($(divsource).attr("name"), 1, $(divsource).attr("id")).promise().done(function(response)
+		inputconnect = 
+		{
+			url: "revisar",
+			type: "GET",
+		};
+		inputdata =
+		{
+			source: $(divsource).attr("name"),
+			page: 1,
+			iddb: $(divsource).attr("id"),
+			idquery: $("#idquery").val(),
+		};
+		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
 		{
 			console.log("toggle");
 		});
@@ -31,9 +43,22 @@ $(document).ready(function(){
 
 $(document).on('click', ".button-ok", function(){
 	btn = this;
+	inputconnect = 
+	{
+		url: "vote",
+		type: "POST",
+	};
+	inputdata =
+	{
+		source: $(btn).parent().attr("source"),
+		rank: $(btn).parent().attr("rank"),
+		value: 0, 
+		id: $(btn).parent().attr("id"),
+	};
 	if ($(btn).hasClass('active')) 
 	{
-		ajaxVote(0, btn).promise().done(function(json)
+		inputdata.value = 0;
+		ajaxPages(inputconnect, inputdata).promise().done(function(json)
 		{
 			if (json.remove)
 			{
@@ -45,7 +70,8 @@ $(document).on('click', ".button-ok", function(){
 	}
 	else
 	{
-		ajaxVote(1, btn).promise().done(function(json)
+		inputdata.value = 1;
+		ajaxPages(inputconnect, inputdata).promise().done(function(json)
 		{
 			if (json.add) 
 			{
@@ -62,9 +88,22 @@ console.log("remove ok");
 
 $(document).on('click', ".button-remove", function(){
 	btn = this;
+	inputconnect = 
+	{
+		url: "vote",
+		type: "POST",
+	};
+	inputdata =
+	{
+		source: $(btn).parent().attr("source"),
+		rank: $(btn).parent().attr("rank"),
+		value: 0, 
+		id: $(btn).parent().attr("id"),
+	};
 	if ($(btn).hasClass('active')) 
 	{
-		ajaxVote(0, btn).promise().done(function(json)
+		inputdata.value = 0;
+		ajaxPages(inputconnect, inputdata).promise().done(function(json)
 		{
 			if (json.remove)
 			{
@@ -76,7 +115,8 @@ $(document).on('click', ".button-remove", function(){
 	}
 	else
 	{
-		ajaxVote(-1, btn).promise().done(function(json)
+		inputdata.value = -1;
+		ajaxPages(inputconnect, inputdata).promise().done(function(json)
 		{
 			if (json.add) 
 			{
@@ -102,7 +142,19 @@ $(document).on('click', ".buttonpagination", function(e){
 	if (!$(this).hasClass('disabled'))
 	{	
 		btn = this;
-		ajaxPage($(".tab-pane.active").attr("name"), $(btn).val(), $(".tab-pane.active").attr("id")).promise().done(function(response)
+		inputconnect = 
+		{
+			url: "revisar",
+			type: "GET",
+		};
+		inputdata =
+		{
+			source: $(".tab-pane.active").attr("name"),
+			page: $(btn).val(),
+			iddb: $(".tab-pane.active").attr("id"),
+			idquery: $("#idquery").val(),
+		};
+		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
 		{
 			console.log("toggle");
 			$('html,body').animate({scrollTop:0},'slow');
@@ -112,16 +164,40 @@ $(document).on('click', ".buttonpagination", function(e){
 
 
 $(document).on('click', "#ConfirmInfoComplete", function(e){
-	$('#ModalInfoComplete').modal('hide')
-	ajaxPage($(".tab-pane.active").attr("name"), 1, $(".tab-pane.active").attr("id")).promise().done(function(response)
+	//$('#ModalInfoComplete').modal('hide')
+	inputconnect = 
 	{
-		console.log("toggle");
-		$('html,body').animate({scrollTop:0},'slow');
-	});
-	ajaxComplete($("#idquery").val()).promise().done(function(response)
+		url : "revisar",
+	};
+
+	inputconnect.type = "GET"; 
+		inputdata =
+		{
+			source: $(".tab-pane.active").attr("name"),
+			page: 1,
+			iddb: $(".tab-pane.active").attr("id"),
+			idquery: $("#idquery").val(),
+		};
+		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log("toggle");
+			$('html,body').animate({scrollTop:0},'slow');
+		});
+
+
+	inputconnect.type = "POST"; 
+	inputdata =
+	{
+		query: $("#idquery").val(),
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{	
 	 	location.reload();
 	});
+
+
+	
+	
 });
 
 $(document).on('click', ".button-comment", function(e){
@@ -171,85 +247,6 @@ $(document).on('click', "#sendComment", function(e){
 	console.log(" comentario enviado");
 });
 
-function ajaxVote(valueVote, button)
-{
-	return $.ajax({
-		url : "vote", // the endpoint
-		type : "POST", // http method
-		data : 
-			{
-				source: $(button).parent().attr("source"),
-				rank: $(button).parent().attr("rank"),
-				value: valueVote, 
-				id: $(button).parent().attr("id"),
-			},// data sent with the post request
-
-		// handle a successful response
-		success : function(json)
-		{
-			return json;
-		},
-
-		// handle a non-successful response
-		error : function(xhr,errmsg,err) {
-		$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-		console.log("ERROR: " + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-		}
-	});
-};
-
-
-function ajaxPage(source_, page_, iddb_)
-{
-	return $.ajax({
-		url : "revisar", // the endpoint
-		type : "GET", // http method
-		data : 
-			{
-				source: source_,
-				page: page_,
-				iddb: iddb_,
-				idquery: $("#idquery").val(),
-			},// data sent with the post request
-
-		// handle a successful response
-		success : function(response)
-		{
-			console.log(iddb_);
-			$("#" + iddb_).empty().append(response);
-			return response;
-		},
-
-		// handle a non-successful response
-		error : function(xhr,errmsg,err) {
-		//$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-		console.log("ERROR: " + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-		}
-	});
-};
-
-function ajaxComplete(query_)
-{
-	return $.ajax({
-		url : "revisar", // the endpoint
-		type : "POST", // http method
-		data : 
-			{
-				query: query_,
-			},// data sent with the post request
-		// handle a successful response
-		success : function(response)
-		{
-			console.log(response);
-		},
-		// handle a non-successful response
-		error : function(xhr,errmsg,err) {
-		//$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-		console.log("ERROR: " + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-		}
-	});
-};
-
 function ajaxPages(inputconnect, inputdata)
 {
 	return $.ajax({
@@ -259,6 +256,27 @@ function ajaxPages(inputconnect, inputdata)
 		// handle a successful response
 		success : function(response)
 		{
+			return response;
+		},
+		// handle a non-successful response
+		error : function(xhr,errmsg,err) {
+		//$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+		console.log("ERROR: " + xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+		}
+	});
+};
+
+function ajaxPagesAUX(inputconnect, inputdata)
+{
+	return $.ajax({
+		url : inputconnect.url, // the endpoint
+		type : inputconnect.type, // http method
+		data : inputdata,// data sent with the post request
+		// handle a successful response
+		success : function(response)
+		{
+			console.log(inputdata.iddb);
+			$("#" + inputdata.iddb).empty().append(response);
 			return response;
 		},
 		// handle a non-successful response

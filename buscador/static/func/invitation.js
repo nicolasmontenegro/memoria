@@ -19,7 +19,7 @@ $(document).on('click', ".acceptDemand", function(e){
 	};
 	inputdata =
 	{
-		idfolder: $("#idfolder").val(),
+		idquery: $("#idfolder").val(),
 		iduser: $(this).attr("iduser"),		
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
@@ -35,27 +35,87 @@ $(document).on('click', ".acceptDemand", function(e){
 $(document).on('click', "#check", function(e)
 {
 	e.preventDefault();
-	inputconnect = 
+	if (!$(this).hasClass('disabled'))
+	{		
+		inputconnect = 
+		{
+			url: "folder",
+			type: "POST",
+		};
+		inputdata =
+		{
+			idquery: $("#idfolder").val(),
+			email: $('#invitation').val()
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log(response);		
+			$("#invitation").prop('disabled', true);
+			$("#check").addClass('disabled');
+			modalFooter = $(".modal-footer").collapse('show');
+			alertBox = modalFooter.find(".alert").removeClass("alert-success alert-info alert-warning");			
+			if (response.check == 1)
+			{
+				$("#send").removeClass('disabled');
+				alertBox.addClass("alert-success").html("Se sumará a <b>" + response.name + "</b> como colaborador.<br>Presione aceptar para confirmar, o volver para probar con otro correo");
+			}
+			else if (response.check == 2)
+			{
+				$("#send").addClass('disabled');
+				alertBox.addClass("alert-info").html("El correo corresponde a <b>" + response.name + "</b> quien ya es colaborador.<br>Pruebe con otro correo para continuar");
+			}
+			else if (response.check == 0)
+			{
+				$("#send").addClass('disabled');
+				alertBox.addClass("alert-warning").html("<b>El correo no existe o no está registrado.</b>");
+			}
+			else
+				alarm("Error");
+		});	
+	}
+});
+
+$(document).on('click', "#back", function(e)
+{
+	e.preventDefault();
+	$(".modal-footer").collapse('hide');
+	$("#invitation").prop('disabled', false);
+	$("#check").removeClass('disabled');
+});
+
+$(document).on('click', "#send", function(e)
+{
+	e.preventDefault();
+	if (!$(this).hasClass('disabled'))
 	{
-		url: "folder",
-		type: "POST",
-	};
-	inputdata =
-	{
-		idfolder: $("#idfolder").val(),
-		email: $('#invitation').val()
-	};
-	ajaxPages(inputconnect, inputdata).promise().done(function(response)
-	{
-		console.log(response);
-		if (response.check == 1)
-			alert("es " + response.name);
-		else if (response.check == 2)
-			alert("ya está inscrito");
-		else
-			alert("no es na");
-	});	
-	console.log(" comentario enviado");
+		inputconnect = 
+		{
+			url: "folder",
+			type: "POST",
+		};
+		inputdata =
+		{
+			idquery: $("#idfolder").val(),
+			email: $('#invitation').val(),
+			confirm: true,
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			if (response.check == 0)
+				alert("El usuario no existe...\nAlgo mal estás haciendo.")
+			else if (response.check == -1)
+				alert("Error en solicitud")
+			else if (response.check == 1)
+			{
+				$(".modal-footer").collapse('hide');
+				$("#invitation").prop('disabled', false);
+				$("#check").removeClass('disabled');
+				location.reload();
+			}
+			else
+				alert("Error");
+		});	
+	}
 });
 
 function ajaxPages(inputconnect, inputdata)
