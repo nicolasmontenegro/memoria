@@ -1,10 +1,13 @@
 import requests
 PUBLICKEY = "key-49722d2d33ca7a54a9402144aa4ed089"
-MAILMASTER = "Papered <postmaster@sandbox9f0b2fced6974aa1acadc8d52dd1de23.mailgun.org>"
+#MAILMASTER = "Papered <postmaster@sandbox9f0b2fced6974aa1acadc8d52dd1de23.mailgun.org>"
+MAILMASTER = "Papered <postmaster@papered.xyz>"
+#APIBase =  "https://api.mailgun.net/v3/sandbox9f0b2fced6974aa1acadc8d52dd1de23.mailgun.org"
+APIBase = "https://api.mailgun.net/v3/papered.xyz"
 
 def send_simple_message(to, subject, text):
     return requests.post(
-        "https://api.mailgun.net/v3/sandbox9f0b2fced6974aa1acadc8d52dd1de23.mailgun.org/messages",
+        APIBase + "/messages",
         auth=("api", PUBLICKEY),
         data={"from": MAILMASTER,
             "to": to,
