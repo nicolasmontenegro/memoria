@@ -10,27 +10,37 @@ client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/mem
 def readSource(dbname, id):
 	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
 
+def countingVotes (inputdata, modified = None):
+	paper = [item for item in client.memoria[inputdata['source']].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]
+	results = {}
+	results["yes"] = results["no"] = results["comment"] = 0
+	if paper["vote"].get("yes") != None:
+		results["yes"] = len(paper["vote"].get("yes"))
+	if paper["vote"].get("no") != None:
+		results["no"] = len(paper["vote"].get("no"))
+	if paper.get("comment") != None:
+		results["comment"] = len(paper.get("comment"))
+	results["value"] = inputdata.get("value")
+	if modified:
+		if modified.get("add") != None:
+			results["add"] = modified.get("add")
+		if modified.get("remove") != None:
+			results["remove"] = modified.get("remove")
+	return results
+
 def updateVote (inputdata, inputcookie):
 	userid = str(unfold(inputcookie)["_id"])
-	results = {}
+	modifiedValues = {}
 	if int(inputdata["value"]) == 1:
-		results["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.yes": userid}}).modified_count
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.yes": userid}}).modified_count
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
 	if int(inputdata["value"]) == -1:
-		results["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.no": userid}}).modified_count
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count
+		modifiedValues["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count
 	if int(inputdata["value"]) == 0:
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
-		results["remove"] +=  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count	
-	votes = [item for item in client.memoria[inputdata['source']].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]["vote"]
-	#print(votes)
-	results["yes"] = results["no"] = 0
-	if votes.get("yes") != None:
-		results["yes"] = len(votes.get("yes"))
-	if votes.get("no") != None:
-		results["no"] = len(votes.get("no"))
-	results["value"] = inputdata["value"]
-	return results
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["remove"] +=  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count	
+	return countingVotes(inputdata, modified = modifiedValues)
 
 def createFolder (namefolder, inputcookie):
 	user = unfold(inputcookie)

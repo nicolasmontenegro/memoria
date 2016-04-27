@@ -75,12 +75,12 @@ def descargar(request):
 			print ("no hay fichero :(")
 			return HttpResponseBadRequest("Error de descarga")
 
-
+@isLogged
 def vote(request):
-	if request.method == 'POST':
-		#print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
-		result = scriptDB.updateVote(request.POST, request.COOKIES)
-		return JsonResponse(result)
+	if request.method == 'GET' and request.GET.get("update"):
+		return JsonResponse(scriptDB.countingVotes(request.GET))
+	elif request.method == 'POST':
+		return JsonResponse(scriptDB.updateVote(request.POST, request.COOKIES))
 
 @never_cache
 @isLogged
