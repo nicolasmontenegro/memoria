@@ -222,7 +222,17 @@ $(document).on('click', ".button-comment", function(e){
 	console.log("mostrado comentario");
 });
 
+$(document).on('input propertychange paste', "#textComment", function(e){
+	if ($("#textComment").val() != "")
+		$("#sendComment").removeClass('disabled');
+	else
+		$("#sendComment").addClass('disabled');
+});
+
 $(document).on('click', "#sendComment", function(e){
+	e.preventDefault();
+	if ($(this).hasClass('disabled'))
+		return null;
 	inputconnect = 
 	{
 		url: "comment",
@@ -235,19 +245,25 @@ $(document).on('click', "#sendComment", function(e){
 		id: $("#ModalComment").attr("idpub"),
 		comment: $("#textComment").val(),
 	};
+	$("#sendComment").addClass('disabled');
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
 		console.log("llegado nuevos comentarios");
 		$(".modal-dialog").html(response);
 		$('#ModalComment').modal('show');
-	});	
+		updateButtonsValues();
+	});		
 	console.log(" comentario enviado");
 });
 
 
 
 $('#ModalComment').on('hidden.bs.modal', function () {
-    inputconnect = 
+    updateButtonsValues();
+})
+
+function updateButtonsValues() {	
+	inputconnect = 
 	{
 		url: "vote",
 		type: "GET",
@@ -264,9 +280,7 @@ $('#ModalComment').on('hidden.bs.modal', function () {
 		btn = $("[source='" + inputdata.source + "'][rank='" + inputdata.rank + "'][id='" + inputdata.id + "']").find(".button-comment");
 		updateCountVote (btn, response); 
 	});	
-    console.log(inputdata);
-})
-
+}
 
 
 function ajaxPages(inputconnect, inputdata)

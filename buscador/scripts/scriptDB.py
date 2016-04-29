@@ -60,8 +60,7 @@ def addToFolder(idquery, idfolder):
 	client.memoria.query.update_one({"_id": ObjectId(idquery)}, {"$set": {"folder": idfolder}})
 
 def readQuery(id):
-	algo = client.memoria.query.find_one({"_id": ObjectId(id)})
-	return algo
+	return client.memoria.query.find_one({"_id": ObjectId(id)})
 
 def addUser(inputdata):
 	try:
@@ -237,3 +236,44 @@ def recoverPasswordReplace(inputdata):
 				return 1
 	except Exception:
 		return -1
+
+def Progress(inputdata, inputcookie):
+	user = unfold(inputcookie)
+	results = getResults(inputdata, inputcookie)
+	folder = client.memoria.folder.find_one({"_id": ObjectId(results["folder"])})	
+
+	matchAll = {"yes":[], "no":[]}
+	for userId in folder["user"] :
+		matchAll["yes"].append( {"results.vote.yes": userId} )
+		matchAll["no"].append( {"results.vote.no": userId} )
+	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}], "no":[{"results.vote.no": str(user["_id"])}]}
+	
+	for doc in results["sources"]:
+		doc["votes"] = {"my": progressQuery(doc, matchMy), "all": progressQuery(doc, matchAll)}
+
+	return results
+
+def progressQuery(doc, match):
+
+	values = {"yes": 0 , "no": 0}
+	auxyes = client.memoria[doc["name"]].aggregate([
+		{ "$match": {"_id": doc["db"]}},
+		{ "$unwind": '$results'},
+		{ "$match": { "$and": match["yes"]}},
+		{ "$group": {"_id": '$_id', "count": { "$sum": 1 }}}])
+	for x in auxyes:
+		values["yes"] = x["count"]
+		values["yesPercent"] = round((x["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	auxno = client.memoria[doc["name"]].aggregate([
+		{ "$match": {"_id": doc["db"]}},
+		{ "$unwind": '$results'},
+		{ "$match": { "$and": match["no"]}},
+		{ "$group": {"_id": '$_id', "count": { "$sum": 1 }}}])
+	for x in auxno:
+		values["no"] = x["count"]
+		values["noPercent"] = round((x["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	values["votesComplete"] = values["no"] + values["yes"]
+	values["votesPercentComplete"] = round((values["votesComplete"]/ doc["doc"]["totalfound"])*100, 0)
+	values["votesRemain"] = doc["doc"]["totalsave"] - values["votesComplete"]
+	values["votesPercentRemain"] = round((values["votesRemain"]/ doc["doc"]["totalfound"])*100, 0)
+	return values

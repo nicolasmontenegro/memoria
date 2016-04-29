@@ -47,7 +47,7 @@ def revisar(request):
 				elif out == -1:
 					HttpResponseNotFound('<h1>Página no encontrada</h1>')
 			return render(request, 'results.html', 
-				{'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
+				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
 		elif request.GET.get('query'):
 			print("busqueda dice: " + request.GET['query'])
 			dbId = scriptBuscador.search(request.GET['query'])
@@ -96,7 +96,7 @@ def folder(request):
 				if out == -1:
 					HttpResponseNotFound('<h1>Página no encontrada</h1>')
 			if out.get("permission"):
-				return render(request, 'folder.html', {'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
+				return render(request, 'folder.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 			else:
 				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
 	elif request.method == 'POST':	
