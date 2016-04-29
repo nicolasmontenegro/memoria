@@ -35,8 +35,7 @@
 		<div role="tabpanel" class="tab-pane active{% for item in out.sources %} source"  name="{{item.name}}" id="{{item.doc|id}}">
 						
 		</div>
-		<div role="tabpanel" class="tab-pane{% endfor %}" id="download">
-			<div><a class="btn btn-default" href="descargar?idquery={{out|id}}" role="button">xlsx</a></div>	
+		<div role="tabpanel" class="tab-pane{% endfor %}" id="download">	
 			{% for item in progress.sources %}
 			<div class="rows">
 				<div class="col-md-8">
@@ -45,7 +44,7 @@
 						<div class="col-md-3">
 							<label>Mi progreso </label>
 						</div>
-						<div class="col-md-10">
+						<div class="col-md-9">
 							<div class="progress">
 								<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.my.yes}} aprobados" data-placement="top" style="width: {{item.votes.my.yesPercent|stringformat:"d"}}%">
 									{{item.votes.my.yesPercent|stringformat:"d"}}%
@@ -59,11 +58,11 @@
 							</div>
 						</div>
 					</div>
-					<div class="rows">
+					<div>
 						<div class="col-md-3">
 							<label>Progreso total </label>
 						</div>
-						<div class="col-md-10">
+						<div class="col-md-9">
 							<div class="progress">
 								<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.all.yes}} aprobados" data-placement="top" style="width: {{item.votes.all.yesPercent|stringformat:"d"}}%">
 									{{item.votes.all.yesPercent|stringformat:"d"}}%
@@ -84,6 +83,26 @@
 				</div>
 			</div>
 			{% endfor %}	
+			<div class="rows">
+				<div class="col-md-12">
+					<legend>Descargar artículos</legend>
+					<form class="form-inline" action="descargar" method="GET" >
+							<label for="typeQuery">Selección </label>
+							<div class="form-group">
+							{% csrf_token %}
+							<input type="hidden" name="idquery" value="{{out|id}}">
+							<select class="form-control" name="typeQuery">
+								<option value=0>Todos</option>
+								<option value=1>Aprobados por mi</option>
+								<option value=2>Aprobados por todos</option>
+								<option value=-1>Rechazados por mi</option>
+								<option value=-2>Rechazados por todos</option>
+							</select>
+							<button class="btn btn-default" type="submit">Descargar</button>
+						</div>						
+					</form>
+				</div>
+			</div>
 		</div>
 	</div><!-- Tab panes end -->
 

@@ -61,9 +61,9 @@ def revisar(request):
 
 @isLogged
 def descargar(request):
-	if request.method == 'GET':
+	if request.method == 'GET' and request.GET.get("typeQuery"):
 		print("downloading " + request.GET['idquery'])
-		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
+		filepath = scriptXLSX.xlsfile(request.GET, request.COOKIES)
 		if filepath:
 			response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 			response['Content-Disposition'] = 'attachment; filename=' + request.GET['idquery'] + '.xlsx'

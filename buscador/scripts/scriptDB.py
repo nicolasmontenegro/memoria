@@ -254,26 +254,35 @@ def Progress(inputdata, inputcookie):
 	return results
 
 def progressQuery(doc, match):
-
 	values = {"yes": 0 , "no": 0}
-	auxyes = client.memoria[doc["name"]].aggregate([
-		{ "$match": {"_id": doc["db"]}},
-		{ "$unwind": '$results'},
-		{ "$match": { "$and": match["yes"]}},
-		{ "$group": {"_id": '$_id', "count": { "$sum": 1 }}}])
-	for x in auxyes:
-		values["yes"] = x["count"]
-		values["yesPercent"] = round((x["count"] / doc["doc"]["totalfound"]) * 100, 0)
-	auxno = client.memoria[doc["name"]].aggregate([
-		{ "$match": {"_id": doc["db"]}},
-		{ "$unwind": '$results'},
-		{ "$match": { "$and": match["no"]}},
-		{ "$group": {"_id": '$_id', "count": { "$sum": 1 }}}])
-	for x in auxno:
-		values["no"] = x["count"]
-		values["noPercent"] = round((x["count"] / doc["doc"]["totalfound"]) * 100, 0)
+
+	auxyes = simpleAggregateSource(doc, match =  { "$and": match["yes"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	if auxyes:
+		values["yes"] = auxyes["count"]
+		values["yesPercent"] = round((auxyes["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	
+	auxno = simpleAggregateSource(doc, match =  { "$and": match["no"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	if auxno:
+		values["no"] = auxno["count"]
+		values["noPercent"] = round((auxno["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	
 	values["votesComplete"] = values["no"] + values["yes"]
 	values["votesPercentComplete"] = round((values["votesComplete"]/ doc["doc"]["totalfound"])*100, 0)
+	
 	values["votesRemain"] = doc["doc"]["totalsave"] - values["votesComplete"]
 	values["votesPercentRemain"] = round((values["votesRemain"]/ doc["doc"]["totalfound"])*100, 0)
+	
 	return values
+
+def simpleAggregateSource(doc, match = None, group = None):
+	query = [{ "$match": {"_id": doc["db"]} }, { "$unwind": '$results' }]
+	if match:
+		query.append({ "$match": match })
+	if group:
+		query.append({ "$group": group })
+
+	result = list(client.memoria[doc["name"]].aggregate(query))
+	if len(result):
+		return result[0]
+	else:
+		return None
