@@ -58,28 +58,28 @@ $(document).on('click', ".button-ok", function(){
 	if ($(btn).hasClass('active')) 
 	{
 		inputdata.value = 0;
-		ajaxPages(inputconnect, inputdata).promise().done(function(json)
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
 		{
-			if (json.remove)
+			if (response.remove)
 			{
 				$(btn).button('toggle');
 				console.log("toggle ok from 1");
-				updateCountVote (btn, json); 
+				updateCountVote (btn, response); 
 			}
 		});
 	}
 	else
 	{
 		inputdata.value = 1;
-		ajaxPages(inputconnect, inputdata).promise().done(function(json)
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
 		{
-			if (json.add) 
+			if (response.add) 
 			{
 				$(btn).button('toggle');
 				if ($(btn).parent().find(".button-remove").hasClass('active'))
 					$(btn).parent().find(".button-remove").button('toggle');
 				console.log("toggle ok from 0");
-				updateCountVote (btn, json); 
+				updateCountVote (btn, response); 
 			};
 		});
 	}
@@ -103,37 +103,38 @@ $(document).on('click', ".button-remove", function(){
 	if ($(btn).hasClass('active')) 
 	{
 		inputdata.value = 0;
-		ajaxPages(inputconnect, inputdata).promise().done(function(json)
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
 		{
-			if (json.remove)
+			if (response.remove)
 			{
 				$(btn).button('toggle');
 				console.log("toggle end from -1");
-				updateCountVote (btn, json); 
+				updateCountVote (btn, response); 
 			}
 		});
 	}
 	else
 	{
 		inputdata.value = -1;
-		ajaxPages(inputconnect, inputdata).promise().done(function(json)
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
 		{
-			if (json.add) 
+			if (response.add) 
 			{
 				$(btn).button('toggle');
 				if ($(btn).parent().find(".button-ok").hasClass('active'))
 					$(btn).parent().find(".button-ok").button('toggle');
 				console.log("toggle end from 0");
-				updateCountVote (btn, json); 
+				updateCountVote (btn, response); 
 			};
 		});
 	}
 console.log("remove end");
 });
 
-function updateCountVote (btn, json) {
-	$(btn).parent().find(".button-ok strong").html(" " + json.yes);
-	$(btn).parent().find(".button-remove strong").html( " " + json.no);
+function updateCountVote (btn, response) {
+	$(btn).parent().find(".button-ok strong").html(" " + response.yes);
+	$(btn).parent().find(".button-remove strong").html( " " + response.no);
+	$(btn).parent().find(".button-comment strong").html( " " + response.comment);
 };
 
 
@@ -194,10 +195,6 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	{	
 	 	location.reload();
 	});
-
-
-	
-	
 });
 
 $(document).on('click', ".button-comment", function(e){
@@ -225,7 +222,17 @@ $(document).on('click', ".button-comment", function(e){
 	console.log("mostrado comentario");
 });
 
+$(document).on('input propertychange paste', "#textComment", function(e){
+	if ($("#textComment").val() != "")
+		$("#sendComment").removeClass('disabled');
+	else
+		$("#sendComment").addClass('disabled');
+});
+
 $(document).on('click', "#sendComment", function(e){
+	e.preventDefault();
+	if ($(this).hasClass('disabled'))
+		return null;
 	inputconnect = 
 	{
 		url: "comment",
@@ -238,14 +245,43 @@ $(document).on('click', "#sendComment", function(e){
 		id: $("#ModalComment").attr("idpub"),
 		comment: $("#textComment").val(),
 	};
+	$("#sendComment").addClass('disabled');
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
 		console.log("llegado nuevos comentarios");
 		$(".modal-dialog").html(response);
 		$('#ModalComment').modal('show');
-	});	
+		updateButtonsValues();
+	});		
 	console.log(" comentario enviado");
 });
+
+
+
+$('#ModalComment').on('hidden.bs.modal', function () {
+    updateButtonsValues();
+})
+
+function updateButtonsValues() {	
+	inputconnect = 
+	{
+		url: "vote",
+		type: "GET",
+	};
+    inputdata =
+	{
+		source: $("#ModalComment").attr("source"),
+		rank: $("#ModalComment").attr("rank"),
+		id: $("#ModalComment").attr("idpub"),
+		update: true,
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		btn = $("[source='" + inputdata.source + "'][rank='" + inputdata.rank + "'][id='" + inputdata.id + "']").find(".button-comment");
+		updateCountVote (btn, response); 
+	});	
+}
+
 
 function ajaxPages(inputconnect, inputdata)
 {

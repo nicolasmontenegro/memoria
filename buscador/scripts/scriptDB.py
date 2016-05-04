@@ -10,27 +10,37 @@ client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/mem
 def readSource(dbname, id):
 	return client.memoria[dbname].find_one({"_id": ObjectId(id)})
 
+def countingVotes (inputdata, modified = None):
+	paper = [item for item in client.memoria[inputdata['source']].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]
+	results = {}
+	results["yes"] = results["no"] = results["comment"] = 0
+	if paper["vote"].get("yes") != None:
+		results["yes"] = len(paper["vote"].get("yes"))
+	if paper["vote"].get("no") != None:
+		results["no"] = len(paper["vote"].get("no"))
+	if paper.get("comment") != None:
+		results["comment"] = len(paper.get("comment"))
+	results["value"] = inputdata.get("value")
+	if modified:
+		if modified.get("add") != None:
+			results["add"] = modified.get("add")
+		if modified.get("remove") != None:
+			results["remove"] = modified.get("remove")
+	return results
+
 def updateVote (inputdata, inputcookie):
 	userid = str(unfold(inputcookie)["_id"])
-	results = {}
+	modifiedValues = {}
 	if int(inputdata["value"]) == 1:
-		results["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.yes": userid}}).modified_count
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.yes": userid}}).modified_count
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
 	if int(inputdata["value"]) == -1:
-		results["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.no": userid}}).modified_count
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count
+		modifiedValues["add"] = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$addToSet": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count
 	if int(inputdata["value"]) == 0:
-		results["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
-		results["remove"] +=  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count	
-	votes = [item for item in client.memoria[inputdata['source']].find_one({"_id": ObjectId(inputdata["id"])})["results"] if item["rank"] == inputdata["rank"]][0]["vote"]
-	#print(votes)
-	results["yes"] = results["no"] = 0
-	if votes.get("yes") != None:
-		results["yes"] = len(votes.get("yes"))
-	if votes.get("no") != None:
-		results["no"] = len(votes.get("no"))
-	results["value"] = inputdata["value"]
-	return results
+		modifiedValues["remove"] =  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.no": userid}}).modified_count
+		modifiedValues["remove"] +=  client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["id"]), "results.rank": inputdata["rank"]}, {"$pull": {"results.$.vote.yes": userid}}).modified_count	
+	return countingVotes(inputdata, modified = modifiedValues)
 
 def createFolder (namefolder, inputcookie):
 	user = unfold(inputcookie)
@@ -50,8 +60,7 @@ def addToFolder(idquery, idfolder):
 	client.memoria.query.update_one({"_id": ObjectId(idquery)}, {"$set": {"folder": idfolder}})
 
 def readQuery(id):
-	algo = client.memoria.query.find_one({"_id": ObjectId(id)})
-	return algo
+	return client.memoria.query.find_one({"_id": ObjectId(id)})
 
 def addUser(inputdata):
 	try:
@@ -227,3 +236,53 @@ def recoverPasswordReplace(inputdata):
 				return 1
 	except Exception:
 		return -1
+
+def Progress(inputdata, inputcookie):
+	user = unfold(inputcookie)
+	results = getResults(inputdata, inputcookie)
+	folder = client.memoria.folder.find_one({"_id": ObjectId(results["folder"])})	
+
+	matchAll = {"yes":[], "no":[]}
+	for userId in folder["user"] :
+		matchAll["yes"].append( {"results.vote.yes": userId} )
+		matchAll["no"].append( {"results.vote.no": userId} )
+	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}], "no":[{"results.vote.no": str(user["_id"])}]}
+	
+	for doc in results["sources"]:
+		doc["votes"] = {"my": progressQuery(doc, matchMy), "all": progressQuery(doc, matchAll)}
+
+	return results
+
+def progressQuery(doc, match):
+	values = {"yes": 0 , "no": 0}
+
+	auxyes = simpleAggregateSource(doc, match =  { "$and": match["yes"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	if auxyes:
+		values["yes"] = auxyes["count"]
+		values["yesPercent"] = round((auxyes["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	
+	auxno = simpleAggregateSource(doc, match =  { "$and": match["no"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	if auxno:
+		values["no"] = auxno["count"]
+		values["noPercent"] = round((auxno["count"] / doc["doc"]["totalfound"]) * 100, 0)
+	
+	values["votesComplete"] = values["no"] + values["yes"]
+	values["votesPercentComplete"] = round((values["votesComplete"]/ doc["doc"]["totalfound"])*100, 0)
+	
+	values["votesRemain"] = doc["doc"]["totalsave"] - values["votesComplete"]
+	values["votesPercentRemain"] = round((values["votesRemain"]/ doc["doc"]["totalfound"])*100, 0)
+	
+	return values
+
+def simpleAggregateSource(doc, match = None, group = None):
+	query = [{ "$match": {"_id": doc["db"]} }, { "$unwind": '$results' }]
+	if match:
+		query.append({ "$match": match })
+	if group:
+		query.append({ "$group": group })
+
+	result = list(client.memoria[doc["name"]].aggregate(query))
+	if len(result):
+		return result[0]
+	else:
+		return None

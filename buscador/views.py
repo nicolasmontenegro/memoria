@@ -47,7 +47,7 @@ def revisar(request):
 				elif out == -1:
 					HttpResponseNotFound('<h1>Página no encontrada</h1>')
 			return render(request, 'results.html', 
-				{'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
+				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
 		elif request.GET.get('query'):
 			print("busqueda dice: " + request.GET['query'])
 			dbId = scriptBuscador.search(request.GET['query'])
@@ -61,9 +61,9 @@ def revisar(request):
 
 @isLogged
 def descargar(request):
-	if request.method == 'GET':
+	if request.method == 'GET' and request.GET.get("typeQuery"):
 		print("downloading " + request.GET['idquery'])
-		filepath = scriptXLSX.xlsfile(request.GET['idquery'])
+		filepath = scriptXLSX.xlsfile(request.GET, request.COOKIES)
 		if filepath:
 			response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 			response['Content-Disposition'] = 'attachment; filename=' + request.GET['idquery'] + '.xlsx'
@@ -75,12 +75,12 @@ def descargar(request):
 			print ("no hay fichero :(")
 			return HttpResponseBadRequest("Error de descarga")
 
-
+@isLogged
 def vote(request):
-	if request.method == 'POST':
-		#print("votos dice: " + request.POST['value'] + " to " + request.POST['rank'] + " " +request.POST['source'] + request.POST['id'])
-		result = scriptDB.updateVote(request.POST, request.COOKIES)
-		return JsonResponse(result)
+	if request.method == 'GET' and request.GET.get("update"):
+		return JsonResponse(scriptDB.countingVotes(request.GET))
+	elif request.method == 'POST':
+		return JsonResponse(scriptDB.updateVote(request.POST, request.COOKIES))
 
 @never_cache
 @isLogged
@@ -96,7 +96,7 @@ def folder(request):
 				if out == -1:
 					HttpResponseNotFound('<h1>Página no encontrada</h1>')
 			if out.get("permission"):
-				return render(request, 'folder.html', {'out': out, 'back': 1, "userlogin": scriptDB.unfold(request.COOKIES)})
+				return render(request, 'folder.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 			else:
 				return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})	
 	elif request.method == 'POST':	

@@ -10,7 +10,7 @@
 		<meta http-equiv="Cache-Control" CONTENT="no-cache">
 		<meta http-equiv="Pragma" CONTENT="no-cache">
 
-		<title>Buscador: {%block title%}Papers{%endblock%}</title>
+		<title>{%block title%}Papered{%endblock%} - Papered</title>
 
 
 	</head>
@@ -25,14 +25,14 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					  </button>         
-					<a class="navbar-brand">{%block title_body%}Papers{%endblock%}</a>
+					<a class="navbar-brand hidden-sm hidden-xs">{%block title_body%}Papered{%endblock%}</a>
 				</div>
 
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					{%block nav_left%}{%endblock%}
 					<ul class="nav navbar-nav navbar-right">
-						<li><p class="navbar-text hidden-sm">{%block nav_right%}{%endblock%}</p></li>
+						<li><p class="navbar-text hidden-sm hidden-md">{%block nav_right%}{%endblock%}</p></li>
 						<li role="separator" class="divider"></li>
 						{% if userlogin %}
 							<li class="dropdown">
