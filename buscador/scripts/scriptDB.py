@@ -249,7 +249,8 @@ def Progress(inputdata, inputcookie):
 	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}], "no":[{"results.vote.no": str(user["_id"])}]}
 	
 	for doc in results["sources"]:
-		doc["votes"] = {"my": progressQuery(doc, matchMy), "all": progressQuery(doc, matchAll)}
+		if doc["doc"]["totalfound"] > 0:
+			doc["votes"] = {"my": progressQuery(doc, matchMy), "all": progressQuery(doc, matchAll)}
 
 	return results
 

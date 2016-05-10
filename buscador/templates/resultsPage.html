@@ -1,6 +1,6 @@
 {% load types %}
 
-{% ifequal out.totalfound "0" %}
+{% ifequal out.totalfound 0 %}
 <div class="page-header">
 	<h1>Sin resultados <small>intente otra busqueda</small></h1>
 </div>			
@@ -21,28 +21,6 @@
 				<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
 				<p>No se preocupe: si cambia de página o cierra el explorador el proceso continuará de todos modos.</p>
 				<button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button>
-
-
-				<!-- Modal -->
-				<!-- <div class="modal fade" id="ModalInfoComplete" tabindex="-1" role="dialog" aria-labelledby="InfoComplete">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="myModalLabel">Actualizar resultados</h4>
-							</div>
-							<div class="modal-body">
-								<p>Los resultados estarán listos pronto. Cuando esto suceda, la página se recargará automáticamente.</p>
-								<p>No se preocupe: si cambia de página o cierra el explorador el proceso continuará de todos modos.</p>
-								<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-								<button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button>
-							</div>
-						</div>
-					</div>
-				</div> -->
 			</div>	
 		{% endif %}
 	{% else %}
