@@ -123,7 +123,8 @@ def requestIEEE(querytext, now, maxres):
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("totalfound")))
 	totalsave = 0
-	count = 100
+	##count = 100
+	count = 25
 	initObj = {
 		"query" : querytext,
 		"date" : time.asctime(time.localtime(time.time())),
@@ -131,28 +132,28 @@ def requestIEEE(querytext, now, maxres):
 		"totalsave": totalsave,
 		"results" : []}	
 	queryObj = client.memoria.ieee.insert(initObj)
-	while totalfound > 0:
-		if now <= maxres:
-			results = []
-			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext + '&hc=' + str(count) + '&rs=' + str(now)
-			for element in ET.fromstring(requests.get(urlWhile).text).findall("document"):	
-				results.append({
-					"rank": putAtributeUn(element.find("rank")),
-					"title": putAtributeUn(element.find("title")),
-					"authors": putAtributeUn(element.find("authors")),
-					"abstract" : putAtributeUn(element.find("abstract")),
-					"mdurl": putAtributeUn(element.find("mdurl")),
-					"pubN": putAtributeUn(element.find("pubtitle")),
-					"pubY": putAtributeUn(element.find("py")),
-					"pubP": putAtributeUn(element.find("epage")),
-					"doi": putAtributeUn(element.find("doi")),
-					"vote": {},
-					})
-				totalsave += 1
-			now += count
-			client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
-		else:
-			break
+	#while totalfound > 0:
+		#if now <= maxres:
+	results = []
+	urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + querytext #+ '&hc=' + str(count) + '&rs=' + str(now)
+	for element in ET.fromstring(requests.get(urlWhile).text).findall("document"):	
+		results.append({
+			"rank": putAtributeUn(element.find("rank")),
+			"title": putAtributeUn(element.find("title")),
+			"authors": putAtributeUn(element.find("authors")),
+			"abstract" : putAtributeUn(element.find("abstract")),
+			"mdurl": putAtributeUn(element.find("mdurl")),
+			"pubN": putAtributeUn(element.find("pubtitle")),
+			"pubY": putAtributeUn(element.find("py")),
+			"pubP": putAtributeUn(element.find("epage")),
+			"doi": putAtributeUn(element.find("doi")),
+			"vote": {},
+			})
+		totalsave += 1
+	now += count
+	client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+		#else:
+		#	break
 	client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
 	return queryObj
 
@@ -192,7 +193,8 @@ def search(querytext):
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [{"name": "ieee", "db": requestIEEE(querytext, 1, maxres)},
+		"sources": [
+			{"name": "ieee", "db": requestIEEE(querytext, 1, maxres)},
 			{"name": "elsevier", "db" : requestELSEVIER(querytext, 1, maxres)},
 			{"name": "acm", "db": requestACM(querytext, full = False)}]
 		}
