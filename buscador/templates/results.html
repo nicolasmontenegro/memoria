@@ -13,6 +13,13 @@
 
 {%block body%}
 <input type="hidden" id="idquery" value="{{ out|id }}">
+
+<div class="panel panel-default panel-bookmark {% if not userlogin|id in out.bookmark %}collapse{% endif %}">
+	<div class="panel-body">
+		Tienes un marcador activo <b><a href="#" class="button-bookmarkGoTo" {% if userlogin|id in out.bookmark %} iddb = "{{out.bookmark|getBookmark:userlogin|getItem:"iddb"}}" rank = "{{out.bookmark|getBookmark:userlogin|getItem:"rank"}}"	source = "{{out.bookmark|getBookmark:userlogin|getItem:"source"}}{% endif %}">Ir al marcador</a></b>
+	</div>
+</div>
+
 	
 <div role="tabpanel">
 

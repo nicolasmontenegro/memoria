@@ -116,11 +116,12 @@
 </div>
 {%else%}
 <div class="page-header">
+	<h1>No hay registros 
 	{% if out.permission == "creator" or out.permission == "admin" %}	
-	<h1>No hay registros <small>empieza buscando algo desde el cuadro superior</small></h1>
+		<small>empieza buscando algo desde el cuadro superior</small>
 	{% else %}	
-	<h1>No hay registros <small>solo los administradores pueden generar busquedas</small></h1>
-	{% endif %}
+		<small>solo los administradores pueden generar busquedas</small>
+	{% endif %}</h1>
 </div>	
 {%endif%}
 

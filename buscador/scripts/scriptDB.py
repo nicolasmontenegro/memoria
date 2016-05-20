@@ -135,13 +135,13 @@ def getFolder(inputdata, inputcookie, complete):
 		print("error en getFolder")
 		return -1
 
-def getPageResults():
-	resultsperpage = 24
-	#print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
-	out = readSource(request.GET['source'], request.GET['iddb'])
-	lapsus = (int(request.GET['page'])-1)*(resultsperpage)
-	out["results"] = out["results"][lapsus:(lapsus+resultsperpage)]	
-	out["name"] = request.GET['source']
+# def getPageResults():
+# 	resultsperpage = 24
+# 	#print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
+# 	out = readSource(request.GET['source'], request.GET['iddb'])
+# 	lapsus = (int(request.GET['page'])-1)*(resultsperpage)
+# 	out["results"] = out["results"][lapsus:(lapsus+resultsperpage)]	
+# 	out["name"] = request.GET['source']
 
 def getResults(inputdata, inputcookie):
 	results = client.memoria.query.find_one({"_id": ObjectId(inputdata['idquery'])})
@@ -287,3 +287,13 @@ def simpleAggregateSource(doc, match = None, group = None):
 		return result[0]
 	else:
 		return None
+
+def bookmark(inputdata, inputcookie):
+	user = unfold(inputcookie)
+	query = readQuery(inputdata.get("idquery"))
+	if query:
+		bookmarkQuery = "bookmark." +  str(user["_id"])
+		results = client.memoria.query.update_one({"_id": query["_id"]}, {"$set":{bookmarkQuery: {"source": inputdata.get("source"), "rank": inputdata.get("rank"), "iddb": inputdata.get("iddb")}}})
+		return {"modified" : results.modified_count}
+	else:
+		return {"modified" : 0}

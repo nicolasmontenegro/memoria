@@ -1,9 +1,3 @@
-$('#nav-tabs').click(function (e) 
-{
-	e.preventDefault()
-	$(this).tab('show')
-})
-
 function csrfSafeMethod(method) {
 	// these HTTP methods do not require CSRF protection
 	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -50,10 +44,10 @@ $(document).on('click', ".button-ok", function(){
 	};
 	inputdata =
 	{
-		source: $(btn).parent().attr("source"),
-		rank: $(btn).parent().attr("rank"),
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
 		value: 0, 
-		id: $(btn).parent().attr("id"),
+		id: $(btn).parents(".source").attr("id"),
 	};
 	if ($(btn).hasClass('active')) 
 	{
@@ -95,10 +89,10 @@ $(document).on('click', ".button-remove", function(){
 	};
 	inputdata =
 	{
-		source: $(btn).parent().attr("source"),
-		rank: $(btn).parent().attr("rank"),
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
 		value: 0, 
-		id: $(btn).parent().attr("id"),
+		id: $(btn).parents(".source").attr("id"),
 	};
 	if ($(btn).hasClass('active')) 
 	{
@@ -150,9 +144,9 @@ $(document).on('click', ".buttonpagination", function(e){
 		};
 		inputdata =
 		{
-			source: $(".tab-pane.active").attr("name"),
+			source: $(btn).parents(".source").attr("name"),
+			iddb: $(btn).parents(".source").attr("id"),
 			page: $(btn).val(),
-			iddb: $(".tab-pane.active").attr("id"),
 			idquery: $("#idquery").val(),
 		};
 		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
@@ -174,6 +168,7 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	inputconnect.type = "GET"; 
 		inputdata =
 		{
+
 			source: $(".tab-pane.active").attr("name"),
 			page: 1,
 			iddb: $(".tab-pane.active").attr("id"),
@@ -199,9 +194,9 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 
 $(document).on('click', ".button-comment", function(e){
 	btn = this;
-	$("#ModalComment").attr("source", $(btn).parent().attr("source"));
-	$("#ModalComment").attr("rank", $(btn).parent().attr("rank"));
-	$("#ModalComment").attr("idpub", $(btn).parent().attr("id"));	
+	$("#ModalComment").attr("source", $(btn).parents(".source").attr("name"));
+	$("#ModalComment").attr("rank", $(btn).parents(".well").attr("rank"));
+	$("#ModalComment").attr("idpub", $(btn).parents(".source").attr("id"));	
 	inputconnect = 
 	{
 		url: "comment",
@@ -257,7 +252,6 @@ $(document).on('click', "#sendComment", function(e){
 });
 
 
-
 $('#ModalComment').on('hidden.bs.modal', function () {
     updateButtonsValues();
 })
@@ -282,6 +276,53 @@ function updateButtonsValues() {
 	});	
 }
 
+$(document).on('click', ".button-bookmark", function(){
+	btn = this;
+	inputconnect = 
+	{
+		url: "bookmark",
+		type: "POST",
+	};
+	inputdata =
+	{
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
+		iddb: $(btn).parents(".source").attr("id"),
+		idquery: $("#idquery").val(),
+	};
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		$(".panel-bookmark").removeClass("collapse");
+		$(".panel-bookmark a").attr("iddb", inputdata.iddb).attr("rank", inputdata.rank).attr("source", inputdata.source);
+		alert("Marcador guardado");
+		console.log("bookmark check " +  response.modified);
+	});
+});
+
+$(document).on('click', ".button-bookmarkGoTo", function(e){
+	e.preventDefault()
+	btn=this;
+	inputconnect = 
+	{
+		url: "revisar",
+		type: "GET",
+	};
+	inputdata =
+	{
+		source: $(btn).attr("source"),
+		iddb: $(btn).attr("iddb"),
+		idquery: $("#idquery").val(),
+		page: parseInt((parseInt($(btn).attr("rank"))-1)/24)+1,
+	};
+	ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
+	{
+		$('.nav-tabs a[href="#' + inputdata.iddb + '"]').tab('show');
+		$('html,body').animate({
+        scrollTop: $('#' + $(btn).attr("iddb")).find('[rank="' + $(btn).attr("rank") +  '"]').offset().top - 70},
+        'slow');
+        $('#' + $(btn).attr("iddb")).find('[rank="' + $(btn).attr("rank") +  '"]').effect( "highlight", {color:"#4080bf"}, 1000 );
+	});
+});
 
 function ajaxPages(inputconnect, inputdata)
 {

@@ -82,6 +82,11 @@ def vote(request):
 	elif request.method == 'POST':
 		return JsonResponse(scriptDB.updateVote(request.POST, request.COOKIES))
 
+@isLogged
+def bookmark(request):
+	if request.method == 'POST':
+		return JsonResponse(scriptDB.bookmark(request.POST, request.COOKIES))
+
 @never_cache
 @isLogged
 def folder(request):
