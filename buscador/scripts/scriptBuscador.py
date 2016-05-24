@@ -74,7 +74,7 @@ def requestACM(querytext, full = False):
 
 
 def requestELSEVIER(querytext, now, maxres):
-	url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext
+	url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + querytext # &oa=true
 	print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 	totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
 	totalsave = 0
@@ -91,7 +91,7 @@ def requestELSEVIER(querytext, now, maxres):
 	while totalfound > 0:
 		if now <= maxres:
 			results = []
-			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&oa=true&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) # + '&view=complete'
+			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + querytext + '&count=' + str(count) + '&start=' + str(now) # + '&oa=true&view=complete'
 			for element in ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry"):##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 				strAuthor = ""
 				if element.find("{http://www.w3.org/2005/Atom}authors"):
