@@ -51,8 +51,8 @@ class threadACM(threading.Thread):
 			"totalsave": totalsave,
 			"results" : []}	
 		queryObj = client.memoria.acm.insert(initObj)
-
 		results = []
+		print(self.name + " to saving!")
 		for element in parsered.entries:
 			totalsave += 1
 			pubN = ""
@@ -73,8 +73,10 @@ class threadACM(threading.Thread):
 				"vote": {},
 				})
 			if ((totalsave%100) is 0) or (totalsave is totalfound):
+				print(self.name + " " + str(totalsave))
 				client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
 				results.clear()
+		print(self.name + " saved!" + str(totalsave))
 		client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
 		threadLock.acquire()
 		outObjectId[self.name] = queryObj
@@ -103,6 +105,7 @@ class threadELSEVIER(threading.Thread):
 			"totalsave": totalsave,
 			"results" : []}	
 		queryObj = client.memoria.elsevier.insert(initObj)
+		print(self.name + " to saving!")
 		while totalfound > 0:
 			results = []
 			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + self.querytext + '&count=' + str(count) + '&start=' + str(now) # + '&oa=true&view=complete'
@@ -130,7 +133,11 @@ class threadELSEVIER(threading.Thread):
 					totalsave += 1
 					rank += 1
 				now += count
+				print(self.name + " " +  str(totalsave))
 				client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+			else:
+				break
+		print(self.name + " saved!" + str(totalsave))
 		client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
 		threadLock.acquire()
 		outObjectId[self.name] = queryObj
@@ -147,8 +154,8 @@ class threadIEEE(threading.Thread):
 		print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
 		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("totalfound")))
 		totalsave = 0
-		now = 0
-		count = 100
+		now = 1
+		count = 300
 		rank = 1
 		initObj = {
 		"query" : self.querytext,
@@ -157,6 +164,7 @@ class threadIEEE(threading.Thread):
 		"totalsave": totalsave,
 		"results" : []}	
 		queryObj = client.memoria.ieee.insert(initObj)
+		print(self.name + " to saving!")
 		while totalfound > 0:
 			results = []
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + self.querytext + '&hc=' + str(count) + '&rs=' + str(now)
@@ -176,10 +184,12 @@ class threadIEEE(threading.Thread):
 						"vote": {},
 						})
 					totalsave += 1
-					now += count
-					client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
-				else:
-					break
+				now += count
+				print(self.name + " " + str(totalsave))
+				client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+			else:
+				break
+		print(self.name + " saved!" + str(totalsave))
 		client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
 		threadLock.acquire()
 		outObjectId[self.name] = queryObj
@@ -232,7 +242,7 @@ def search(querytext):
 	for t in threads:
 		t.join()
 
-	print (results)
+	print (outObjectId)
 
 
 	objInsert = {
@@ -244,7 +254,9 @@ def search(querytext):
 			{"name": "acm", "db": outObjectId["acm"]}]
 		}
 	saved = client.memoria.query.insert(objInsert)
+	print("to compare " + querytext)
 	scriptDB.duplicates(str(saved))
+	print("return " + querytext)
 	return saved
 
 def testing():
