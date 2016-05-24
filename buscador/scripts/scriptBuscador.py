@@ -96,7 +96,7 @@ class threadELSEVIER(threading.Thread):
 		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
 		totalsave = 0
 		now = 0
-		count = 100
+		count = 200
 		rank = 1
 		initObj = {
 			"query" : self.querytext,
