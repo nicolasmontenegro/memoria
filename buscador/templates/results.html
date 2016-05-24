@@ -40,84 +40,12 @@
 	<!-- Tab panes -->
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active{% for item in out.sources %} source"  name="{{item.name}}" id="{{item.doc|id}}">
-						
 		</div>
-		<div role="tabpanel" class="tab-pane{% endfor %}" id="download">	
-			{% for item in progress.sources %}
-				{% if item.doc.totalfound > 0 %}
-				<div class="rows">
-					<div class="col-md-8">
-						<legend>{{item.name}}</legend>
-						<div class="rows">
-							<div class="col-md-3">
-								<label>Mi progreso </label>
-							</div>
-							<div class="col-md-9">
-								<div class="progress">
-									<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.my.yes}} aprobados" data-placement="top" style="width: {{item.votes.my.yesPercent|stringformat:"d"}}%">
-										{{item.votes.my.yesPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-danger" data-toggle="tooltip" title="{{item.votes.my.no}} rechazados" data-placement="top" style="width: {{item.votes.my.noPercent|stringformat:"d"}}%">
-										{{item.votes.my.noPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-warning" data-toggle="tooltip" title="{{item.votes.my.votesRemain}} restantes" data-placement="top" style="width: {{item.votes.my.votesPercentRemain|stringformat:"d"}}%">
-										{{item.votes.my.votesPercentRemain|stringformat:"d"}}%
-									</div>
-								</div>
-							</div>
-						</div>
-						<div>
-							<div class="col-md-3">
-								<label>Progreso total </label>
-							</div>
-							<div class="col-md-9">
-								<div class="progress">
-									<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.all.yes}} aprobados" data-placement="top" style="width: {{item.votes.all.yesPercent|stringformat:"d"}}%">
-										{{item.votes.all.yesPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-danger" data-toggle="tooltip" title="{{item.votes.all.no}} rechazados" data-placement="top" style="width: {{item.votes.all.noPercent|stringformat:"d"}}%">
-										{{item.votes.all.noPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-warning" data-toggle="tooltip" title="{{item.votes.all.votesRemain}} restantes" data-placement="top" style="width: {{item.votes.all.votesPercentRemain|stringformat:"d"}}%">
-										{{item.votes.all.votesPercentRemain|stringformat:"d"}}%
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<h1>{{item.votes.all.votesPercentComplete|stringformat:"d"}}% <small>completado</small></h1>
-						<p>{{item.votes.all.votesComplete}}/{{item.doc.totalfound}} artículos</p>
-					</div>
-				</div>
-				{% endif %}
-			{% endfor %}	
-			<div class="rows">
-				<div class="col-md-12">
-					<legend>Descargar artículos</legend>
-					<form class="form-inline" action="descargar" method="GET" >
-							<label for="typeQuery">Selección </label>
-							<div class="form-group">
-							{% csrf_token %}
-							<input type="hidden" name="idquery" value="{{out|id}}">
-							<select class="form-control" name="typeQuery">
-								<option value=0>Todos</option>
-								<option value=1>Aprobados por mi</option>
-								<option value=2>Aprobados por todos</option>
-								<option value=-1>Rechazados por mi</option>
-								<option value=-2>Rechazados por todos</option>
-							</select>
-							<button class="btn btn-default" type="submit">Descargar</button>
-						</div>						
-					</form>
-				</div>
-			</div>
-		</div>
+		<div role="tabpanel" class="tab-pane{% endfor %}" id="download"><legend>Cargando...</legend></div>
 	</div><!-- Tab panes end -->
 
 	<div class="modal fade" id="ModalComment" role="dialog" aria-labelledby="ModalComment" source="" rank="" idpub="">
 		<div class="modal-dialog">
-			
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 

@@ -242,11 +242,12 @@ def Progress(inputdata, inputcookie):
 	results = getResults(inputdata, inputcookie)
 	folder = client.memoria.folder.find_one({"_id": ObjectId(results["folder"])})	
 
-	matchAll = {"yes":[], "no":[]}
+	matchAll = {"yes":[{"results.isDuplicate": {"$in": [False, None]}}], "no":[{"results.isDuplicate": {"$in": [False, None]}}]}
 	for userId in folder["user"] :
 		matchAll["yes"].append( {"results.vote.yes": userId} )
 		matchAll["no"].append( {"results.vote.no": userId} )
-	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}], "no":[{"results.vote.no": str(user["_id"])}]}
+	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ], 
+		"no":[{"results.vote.no": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ]}
 	
 	for doc in results["sources"]:
 		if doc["doc"]["totalfound"] > 0:

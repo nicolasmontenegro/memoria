@@ -11,6 +11,24 @@ $.ajaxSetup({
 
 });
 
+ $("a[href='#download']").on('shown.bs.tab', function (e) {
+ 	divsource=this;
+		inputconnect = 
+		{
+			url: "revisar",
+			type: "GET",
+		};
+		inputdata =
+		{
+			idquery: $("#idquery").val(),
+			download: true,
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			$("#download").empty().append(response);
+			console.log("toggle");
+		});  
+});
 
 $(document).ready(function(){
 	$(".tab-pane.source").each(function()

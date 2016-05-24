@@ -38,6 +38,9 @@ def revisar(request):
 				{'page': scriptPage.countPage(int(request.GET['page']), int(out["totalfound"]), resultsperpage),
 				'out': out,
 				"userlogin": scriptDB.unfold(request.COOKIES)})
+		elif request.GET.get('idquery') and request.GET.get("download"):
+			return render(request, 'resultsDownload.html', 
+				{"userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
 		elif request.GET.get('idquery'):
 			print("revisar dice: " + request.GET['idquery'])
 			out = scriptDB.getResults(request.GET, request.COOKIES)
@@ -45,9 +48,9 @@ def revisar(request):
 				if out == -2:
 					return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 				elif out == -1:
-					HttpResponseNotFound('<h1>Página no encontrada</h1>')
+					HttpResponseNotFound('<h1>Página no encontrada</h1>')				
 			return render(request, 'results.html', 
-				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
+				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 		elif request.GET.get('query'):
 			print("busqueda dice: " + request.GET['query'])
 			dbId = scriptBuscador.search(request.GET['query'])

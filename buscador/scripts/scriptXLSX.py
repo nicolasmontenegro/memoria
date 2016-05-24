@@ -12,15 +12,15 @@ def xlsfile(inputdata, inputcookie):
 	user = scriptDB.unfold(inputcookie)
 	folder = scriptDB.getFolder({"idquery": out["folder"]}, inputcookie, False)
 	
-	matchDowload = { "$and": []}
+	matchDowload = { "$and": [{"results.isDuplicate": {"$in": [False, None]}}]}
 
 	if inputdata["typeQuery"] is "2":
 		for userId in folder["user"] :
-			matchDowload["$and"].append( {"results.vote.yes": userId} )
+			matchDowload["$and"].append( {"results.vote.yes": userId, } )
 	elif inputdata["typeQuery"] is "1":
 		matchDowload["$and"].append({"results.vote.yes": str(user["_id"])})
-	elif inputdata["typeQuery"] is "0":
-		matchDowload = None
+	#elif inputdata["typeQuery"] is "0":
+	#	matchDowload = None
 	elif inputdata["typeQuery"] is "-1":
 		matchDowload["$and"].append({"results.vote.no": str(user["_id"])})
 	elif inputdata["typeQuery"] is "-2":
