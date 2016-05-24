@@ -12,6 +12,8 @@ except:
 from bs4 import BeautifulSoup
 import bibtexparser
 
+from . import scriptDB
+
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
 	
 def putAtributeUn(element):
@@ -55,7 +57,7 @@ def requestACM(querytext, full = False):
 			"title": element.get("title"),
 			"authors": element.get("author"),
 #			"abstract": element.get("author"),
-			"mdurl": element.get("url"),
+			"mdurl": element.get("link"),
 			"pubN": pubN,
 			"pubY": element.get("year"),
 			"pubP": element.get("pages"),
@@ -198,7 +200,9 @@ def search(querytext):
 			{"name": "elsevier", "db" : requestELSEVIER(querytext, 1, maxres)},
 			{"name": "acm", "db": requestACM(querytext, full = False)}]
 		}
-	return client.memoria.query.insert(objInsert)
+	saved = client.memoria.query.insert(objInsert)
+	scriptDB.duplicates(str(saved))
+	return saved
 
 def testing():
 	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math'

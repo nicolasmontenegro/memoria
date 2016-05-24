@@ -25,35 +25,41 @@
 		{% endif %}
 	{% else %}
 		{% for doc in out.results %}
-		<div class="well well-sm" rank={{doc.rank}}>
-			<div class="row">
-				<div class="col-sm-3 col-md-3 col-lg-2">						
-					<div class="btn-group btn-group-justified paperButton " role="group" aria-label="control">
-						<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><strong> {{doc.vote.no|length }}</strong></a>
-						<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><strong> {{doc.comment|length}}</strong></a>
-						<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong> {{doc.vote.yes|length }}</strong></a>
-					</div>					
-				</div> 
-				<div class="col-sm-8 col-md-8 col-lg-9">
-					<p><h3 class="paperTitle"><small>rank </small>{{doc.rank}} <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
-				</div>				
-				<div class="col-sm-1 col-md-1 col-lg-1">
-					<div class="btn-group btn-group-justified paperButton">
-						<a type="button" class="btn btn-default button-bookmark"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+			{% if doc.isDuplicate %}
+			<div class="well well-sm" rank={{doc.rank}}>
+			<p>Artículo borrado por duplicado. [<a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a>]</p>
+			</div>
+			{% else %}
+			<div class="well well-sm" rank={{doc.rank}}>
+				<div class="row">
+					<div class="col-sm-3 col-md-3 col-lg-2">						
+						<div class="btn-group btn-group-justified paperButton " role="group" aria-label="control">
+							<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><strong> {{doc.vote.no|length }}</strong></a>
+							<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><strong> {{doc.comment|length}}</strong></a>
+							<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong> {{doc.vote.yes|length }}</strong></a>
+						</div>					
+					</div> 
+					<div class="col-sm-8 col-md-8 col-lg-9">
+						<p><h3 class="paperTitle"><small>rank </small>{{doc.rank}} <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
+					</div>				
+					<div class="col-sm-1 col-md-1 col-lg-1">
+						<div class="btn-group btn-group-justified paperButton">
+							<a type="button" class="btn btn-default button-bookmark"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+						</div>
 					</div>
 				</div>
+				<div class="row">                
+					<!-- Optional: clear the XS cols if their content doesn't match in height -->
+					<!-- <div class="clearfix visible-xs-block"></div> -->
+					<div class="col-sm-12">
+						<p><b>Publicación: </b>{{doc.pubN}}, p. {{doc.pubP}}. {{doc.pubY}} </p>
+						<p><b>Autores: </b>{{doc.authors}}</p>
+						<p><b>DOI: </b>{{doc.doi}}</p>
+						<p><b>Abstract: </b>{{doc.abstract}}</p>
+					</div>
+				</div>				
 			</div>
-			<div class="row">                
-				<!-- Optional: clear the XS cols if their content doesn't match in height -->
-				<!-- <div class="clearfix visible-xs-block"></div> -->
-				<div class="col-sm-12">
-					<p><b>Publicación: </b>{{doc.pubN}}, p. {{doc.pubP}}. {{doc.pubY}} </p>
-					<p><b>Autores: </b>{{doc.authors}}</p>
-					<p><b>DOI: </b>{{doc.doi}}</p>
-					<p><b>Abstract: </b>{{doc.abstract}}</p>
-				</div>
-			</div>				
-		</div>		
+			{% endif %}		
 		{% endfor %}		
 	{% endif %}
 	<nav class="navbar navbar-default navbar-fixed-bottom">

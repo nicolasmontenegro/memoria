@@ -297,3 +297,33 @@ def bookmark(inputdata, inputcookie):
 		return {"modified" : results.modified_count}
 	else:
 		return {"modified" : 0}
+
+def duplicates(iddb):
+	query = readQuery(iddb)
+	for doc in query["sources"]:
+		titles = list(client.memoria[doc["name"]].aggregate([{ 
+			"$match": {"_id": doc["db"]} }, 
+			{ "$unwind": '$results' }, 
+			{ "$match": {"results.isDuplicate": {"$in": [False, None]}}},
+			{ "$group": {"_id":"_id", "results": {"$push": {"$toLower": "$results.title"}}}},
+			]))
+		if len(titles) and titles[0].get("results"):
+			for toComapre in query["sources"]:				
+				if toComapre["name"] != doc["name"]:
+					matches = list(client.memoria[toComapre["name"]].aggregate([
+						{ "$match": {"_id": toComapre["db"]} }, 
+						{ "$unwind": '$results' },
+						{ "$project" :{ "rank": "$results.rank", "title": {"$toLower": "$results.title"}}},
+						{ "$match": { "title": {"$in":titles[0].get("results")}}},
+						{ "$group": { "_id": "_id", "matches": {"$push": "$rank"}}},
+						]))
+					if len(matches) and matches[0].get("matches"):
+						for match in matches[0].get("matches"):
+							client.memoria[toComapre["name"]].update_one(
+								{"_id": toComapre["db"], "results.rank": match}, 
+								{"$set": {"results.$.isDuplicate": True} })
+
+
+
+
+
