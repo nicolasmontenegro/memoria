@@ -1,76 +1,52 @@
 {% load types %}
 {% load staticfiles %}
-
-
-			{% for item in progress.sources %}
-				{% if item.doc.totalfound > 0 %}
-				<div class="rows">					
-					<div class="col-md-8">
-					<legend>{{item.name}}</legend>						
-							<ul class="list-inline">
-								<li><h3>Mi progreso</h3></li>
-								<li><h4>{{item.votes.my.yes}} aprobados<small>({{item.votes.my.yesPercent|stringformat:"d"}}%)</small></h4> </li>
-								<li><h4>{{item.votes.my.no}} rechazados <small>({{item.votes.my.noPercent|stringformat:"d"}}%)</small></h4></li>
-							</ul>
-							<!-- <div class="col-md-9">
-								<div class="progress">
-									<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.my.yes}} aprobados" data-placement="top" style="width: {{item.votes.my.yesPercent|stringformat:"d"}}%">
-										{{item.votes.my.yesPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-danger" data-toggle="tooltip" title="{{item.votes.my.no}} rechazados" data-placement="top" style="width: {{item.votes.my.noPercent|stringformat:"d"}}%">
-										{{item.votes.my.noPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-warning" data-toggle="tooltip" title="{{item.votes.my.votesRemain}} restantes" data-placement="top" style="width: {{item.votes.my.votesPercentRemain|stringformat:"d"}}%">
-										{{item.votes.my.votesPercentRemain|stringformat:"d"}}%
-									</div>
-								</div>
-							</div>
-						</div> -->	
-							<ul class="list-inline">
-								<li><h3>Progreso total </h3></li>
-								<li><h4>{{item.votes.all.yes}} aprobados <small>({{item.votes.all.yesPercent|stringformat:"d"}}%)</small></h4></li>
-								<li><h4>{{item.votes.all.no}} rechazados <small>({{item.votes.all.noPercent|stringformat:"d"}}%)</small></h4></li>
-							</ul>					
-							<!-- <div class="col-md-3">
-								<label>Progreso total </label>
-							</div>
-							<div class="col-md-9">
-								<div class="progress">
-									<div class="progress-bar progress-bar-success" data-toggle="tooltip" title="{{item.votes.all.yes}} aprobados" data-placement="top" style="width: {{item.votes.all.yesPercent|stringformat:"d"}}%">
-										{{item.votes.all.yesPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-danger" data-toggle="tooltip" title="{{item.votes.all.no}} rechazados" data-placement="top" style="width: {{item.votes.all.noPercent|stringformat:"d"}}%">
-										{{item.votes.all.noPercent|stringformat:"d"}}%
-									</div>
-									<div class="progress-bar progress-bar-warning" data-toggle="tooltip" title="{{item.votes.all.votesRemain}} restantes" data-placement="top" style="width: {{item.votes.all.votesPercentRemain|stringformat:"d"}}%">
-										{{item.votes.all.votesPercentRemain|stringformat:"d"}}%
-									</div>
-								</div>
-							</div> -->
-					</div>
-					<div class="col-md-4">						
-						<h1>{{item.doc.totalfound}} artículos</h1>
-					</div>
-				</div>
-				{% endif %}
-			{% endfor %}	
+<div>
+	<legend>Progreso votaciones</legend>
+	{% for item in progress.sources %}
+	{% if item.doc.totalfound > 0 %}
+	<div class="panel panel-primary"> 
+		<div class="panel-heading"> 
+			<h3 class="panel-title">{{item.name}}</h3> 
+		</div> 
+		<div class="panel-body"> 
 			<div class="rows">
-				<div class="col-md-12">
-					<legend>Descargar artículos</legend>
-					<form class="form-inline" action="descargar" method="GET" >
-							<label for="typeQuery">Selección </label>
-							<div class="form-group">
-							{% csrf_token %}
-							<input type="hidden" name="idquery" value="{{progress|id}}">
-							<select class="form-control" name="typeQuery">
-								<option value=0>Todos</option>
-								<option value=1>Aprobados por mi</option>
-								<option value=2>Aprobados por todos</option>
-								<option value=-1>Rechazados por mi</option>
-								<option value=-2>Rechazados por todos</option>
-							</select>
-							<button class="btn btn-default" type="submit">Descargar</button>
-						</div>						
-					</form>
+				<div class="col-md-10">
+					<ul class="list-inline">
+						<li><label>Progreso personal</label></li>
+						<li>{{item.votes.my.yes}} aprobados ({{item.votes.my.yesPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.my.no}} rechazados ({{item.votes.my.noPercent|stringformat:"d"}}%)</li>
+					</ul>
+					<ul class="list-inline">
+						<li><label>Progreso total</label></li>
+						<li>{{item.votes.all.yes}} aprobados ({{item.votes.all.yesPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.all.no}} rechazados ({{item.votes.all.noPercent|stringformat:"d"}}%)</li>
+					</ul>
+				</div>	
+				<div class="col-md-2">
+					<h4>{{item.doc.totalfound}} <small>total artículos</small></h4>
 				</div>
 			</div>
+		</div> 
+	</div>
+	{% endif %}
+	{% endfor %}	
+</div>
+<div>
+	<legend>Descargar artículos</legend>
+	<form class="form-inline" action="descargar" method="GET" >
+			<label for="typeQuery">Selección </label>
+			<div class="form-group">
+			{% csrf_token %}
+			<input type="hidden" name="idquery" value="{{progress|id}}">
+			<select class="form-control" name="typeQuery">
+				<option value=0>Todos</option>
+				<option value=1>Aprobados por mi</option>
+				<option value=2>Aprobados por todos</option>
+				<option value=-1>Rechazados por mi</option>
+				<option value=-2>Rechazados por todos</option>
+			</select>
+			<input type="checkbox" aria-label="download duplicate" name="duplicate"> Descargar duplicados    </input>
+			<button class="btn btn-default" type="submit">Descargar</button>
+		</div>						
+	</form>
+</div>

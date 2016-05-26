@@ -12,7 +12,10 @@ def xlsfile(inputdata, inputcookie):
 	user = scriptDB.unfold(inputcookie)
 	folder = scriptDB.getFolder({"idquery": out["folder"]}, inputcookie, False)
 	
-	matchDowload = { "$and": [{"results.isDuplicate": {"$in": [False, None]}}]}
+	matchDowload = { "$and": []}
+
+	if (inputdata.get("duplicate") is None) or (inputdata.get("duplicate") is "off") :
+		matchDowload["$and"].append( {"results.isDuplicate": {"$in": [False, None]} } )
 
 	if inputdata["typeQuery"] is "2":
 		for userId in folder["user"] :
@@ -26,6 +29,9 @@ def xlsfile(inputdata, inputcookie):
 	elif inputdata["typeQuery"] is "-2":
 		for userId in folder["user"] :
 			matchDowload["$and"].append( {"results.vote.no": userId} )
+
+	if len(matchDowload["$and"]) is 0:
+		matchDowload = None
 
 	#try:
 	wb = Workbook()

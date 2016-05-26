@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 
 import time
 import threading
+import queue
 
 try:
 	import xml.etree.cElementTree as ET
@@ -15,7 +16,7 @@ import bibtexparser
 from . import scriptDB
 
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
-outObjectId= {}
+
 threadLock = threading.Lock()
 	
 def putAtributeUn(element):
@@ -32,11 +33,11 @@ def putAtribute(ws, x, y, element):
 		c.value = ""
 
 class threadACM(threading.Thread):
-	def __init__(self, threadID, querytext):
+	def __init__(self, querytext, q):
 		threading.Thread.__init__(self)
-		self.threadID = threadID
 		self.name = "acm"
 		self.querytext = querytext
+		self.q = q
 	def run(self):
 		url = "http://dl.acm.org/exportformats_search.cfm?filtered=&within=owners%2Eowner%3DHOSTED&dte=&bfr=&srt=%5Fscore&expformat=bibtex&query=" + self.querytext
 		print(time.asctime(time.localtime(time.time()))  + " query from: " + url)
@@ -49,6 +50,7 @@ class threadACM(threading.Thread):
 			"date" : time.asctime(time.localtime(time.time())),
 			"totalfound" : totalfound,		
 			"totalsave": totalsave,
+			"update": 1,
 			"results" : []}	
 		queryObj = client.memoria.acm.insert(initObj)
 		results = []
@@ -72,24 +74,23 @@ class threadACM(threading.Thread):
 				"doi": element.get("doi"),
 				"vote": {},
 				})
-			if ((totalsave%100) is 0) or (totalsave is totalfound):
+			if ((totalsave%100) is 0) or (totalsave == totalfound):
 				print(self.name + " " + str(totalsave))
 				client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
 				results.clear()
+				if totalsave is 100:
+					self.q.put({"name": self.name, "db": queryObj})
+					print(self.name + "return a id")
 		print(self.name + " saved!" + str(totalsave))
-		client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
-		threadLock.acquire()
-		outObjectId[self.name] = queryObj
-		threadLock.release()
-
+		client.memoria.acm.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave, "update": 0}})
 
 
 class threadELSEVIER(threading.Thread):
-	def __init__(self, threadID, querytext):
+	def __init__(self, querytext, q):
 		threading.Thread.__init__(self)
-		self.threadID = threadID
 		self.name = "elsevier"
 		self.querytext = querytext
+		self.q = q
 	def run(self):
 		url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + self.querytext # &oa=true
 		print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
@@ -103,6 +104,7 @@ class threadELSEVIER(threading.Thread):
 			"date" : time.asctime(time.localtime(time.time())),
 			"totalfound" : totalfound,		
 			"totalsave": totalsave,
+			"update": 1,
 			"results" : []}	
 		queryObj = client.memoria.elsevier.insert(initObj)
 		print(self.name + " to saving!")
@@ -133,22 +135,22 @@ class threadELSEVIER(threading.Thread):
 					totalsave += 1
 					rank += 1
 				now += count
-				print(self.name + " " +  str(totalsave))
+				print(self.name + " " +  str(now))
 				client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+				if now == 200:
+					self.q.put({"name": self.name, "db": queryObj})
+					print(self.name + "return a id")
 			else:
 				break
 		print(self.name + " saved!" + str(totalsave))
-		client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})
-		threadLock.acquire()
-		outObjectId[self.name] = queryObj
-		threadLock.release()
+		client.memoria.elsevier.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave, "update": 0}})
 
 class threadIEEE(threading.Thread):
-	def __init__(self, threadID, querytext):
+	def __init__(self, querytext, q):
 		threading.Thread.__init__(self)
-		self.threadID = threadID
 		self.name = "ieee"
 		self.querytext = querytext
+		self.q = q
 	def run(self):
 		url = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?hc=0&md=' + self.querytext
 		print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
@@ -162,6 +164,7 @@ class threadIEEE(threading.Thread):
 		"date" : time.asctime(time.localtime(time.time())),
 		"totalfound" : totalfound,		
 		"totalsave": totalsave,
+		"update": 1,
 		"results" : []}	
 		queryObj = client.memoria.ieee.insert(initObj)
 		print(self.name + " to saving!")
@@ -185,16 +188,49 @@ class threadIEEE(threading.Thread):
 						})
 					totalsave += 1
 				now += count
-				print(self.name + " " + str(totalsave))
+				print(self.name + " " + str(now))
 				client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+				if now == 301:
+					self.q.put({"name": self.name, "db": queryObj})
+					print(self.name + "return a id")
 			else:
 				break
 		print(self.name + " saved!" + str(totalsave))
-		client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave}})		
-		threadLock.acquire()
-		outObjectId[self.name] = queryObj
-		threadLock.release()
+		client.memoria.ieee.update_one({"_id": queryObj}, {"$set": {"totalsave": totalsave, "update": 0}})
 
+class threadDuplicates(threading.Thread):
+	def __init__(self, threads, iddb):
+		threading.Thread.__init__(self)
+		self.name = "duplicates"		
+		self.threads = threads
+		self.iddb = iddb
+	def run(self):
+		for t in self.threads:
+			t.join()
+		query = client.memoria.query.find_one({"_id": ObjectId(self.iddb)})
+		for doc in query["sources"]:
+			titles = list(client.memoria[doc["name"]].aggregate([{ 
+				"$match": {"_id": doc["db"]} }, 
+				{ "$unwind": '$results' }, 
+				{ "$match": {"results.isDuplicate": {"$in": [False, None]}}},
+				{ "$group": {"_id":"_id", "results": {"$push": {"$toLower": "$results.title"}}}},
+				]))
+			if len(titles) and titles[0].get("results"):
+				for toComapre in query["sources"]:				
+					if toComapre["name"] != doc["name"]:
+						matches = list(client.memoria[toComapre["name"]].aggregate([
+							{ "$match": {"_id": toComapre["db"]} }, 
+							{ "$unwind": '$results' },
+							{ "$project" :{ "rank": "$results.rank", "title": {"$toLower": "$results.title"}}},
+							{ "$match": { "title": {"$in":titles[0].get("results")}}},
+							{ "$group": { "_id": "_id", "matches": {"$push": "$rank"}}},
+							]))
+						if len(matches) and matches[0].get("matches"):
+							for match in matches[0].get("matches"):
+								client.memoria[toComapre["name"]].update_one(
+									{"_id": toComapre["db"], "results.rank": match}, 
+									{"$set": {"results.$.isDuplicate": True} })
+	
 def searchComplete(idquery):
 	print("actualizacion" + idquery)
 	objInsert = client.memoria.query.find_one({"_id": ObjectId(idquery)})
@@ -228,34 +264,38 @@ def searchComplete(idquery):
 
 def search(querytext):
 	# Create new threads
-	thread1 = threadIEEE(1, querytext)
-	thread2 = threadELSEVIER(2, querytext)
-	thread3 = threadACM(3, querytext)
+	q = queue.Queue()
+	thread2 = threadACM(querytext, q)
+	thread1 = threadIEEE(querytext, q)
+#	thread3 = threadELSEVIER(2, querytext)
 
 	# Start new Threads
 	thread1.start()
 	thread2.start()
-	thread3.start()
-	threads = [thread1, thread2, thread3]
+#	thread3.start()
+	threads = [thread1, thread2]
 
-	# Wait for all threads to complete
-	for t in threads:
-		t.join()
+	# Wait for all threads to respond
+	while q.qsize() < 2:
+		pass
 
-	print (outObjectId)
+	results = []
+	while q.empty() is False:
+		results.append(q.get())
 
+	print(results)
 
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
-		"sources": [
-			{"name": "ieee", "db": outObjectId["ieee"]},
-			{"name": "elsevier", "db" : outObjectId["elsevier"]},
-			{"name": "acm", "db": outObjectId["acm"]}]
+		"sources": results,
+#		[
+#			{"name": "ieee", "db": outObjectId["ieee"]},
+#			{"name": "elsevier", "db" : outObjectId["elsevier"]},
+#			{"name": "acm", "db": outObjectId["acm"]}]
 		}
 	saved = client.memoria.query.insert(objInsert)
-	print("to compare " + querytext)
-	scriptDB.duplicates(str(saved))
+	threadDuplicates(threads, str(saved)).start()
 	print("return " + querytext)
 	return saved
 

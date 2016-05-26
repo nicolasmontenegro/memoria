@@ -43,3 +43,7 @@
 .paperButton {
     margin-top: 6px;
 }
+
+.well.duplicate {
+    background: #F2DEDE;
+}

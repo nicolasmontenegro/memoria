@@ -3,7 +3,7 @@
 {% ifequal out.totalfound 0 %}
 <div class="page-header">
 	<h1>Sin resultados <small>intente otra busqueda</small></h1>
-</div>			
+</div>
 {% else %}
 	{% ifequal page.thispage 1 %}
 	<div class="row">
@@ -20,28 +20,25 @@
 				<!-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalInfoComplete">haga click aquí</button> -->
 				<p><b>Atención:</b> Esto borrará las votaciónes y comentarios realizados. Los nuevos resultados pueden variar de los ya existentes.</p>
 				<p>No se preocupe: si cambia de página o cierra el explorador el proceso continuará de todos modos.</p>
-				<button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button>
+				<!-- <button type="button" class="btn btn-primary" id="ConfirmInfoComplete">Continuar</button> -->
 			</div>	
 		{% endif %}
 	{% else %}
 		{% for doc in out.results %}
-			{% if doc.isDuplicate %}
-			<div class="well well-sm" rank={{doc.rank}}>
-			<p>Artículo duplicado: <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></p>
-			</div>
-			{% else %}
-			<div class="well well-sm" rank={{doc.rank}}>
+			<div class="well well-sm {% if doc.isDuplicate %}duplicate{% endif %}" rank={{doc.rank}}>
+			{% if doc.isDuplicate %}<label>Artículo identificado como duplicado</label>{% endif %}
 				<div class="row">
+				<div class="col-sm-8 col-md-8 col-lg-9">
+						<p><h3 class="paperTitle"><small>rank </small>{{doc.rank}} <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
+					</div>	
 					<div class="col-sm-3 col-md-3 col-lg-2">						
-						<div class="btn-group btn-group-justified paperButton " role="group" aria-label="control">
+						<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control">
 							<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><strong> {{doc.vote.no|length }}</strong></a>
 							<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><strong> {{doc.comment|length}}</strong></a>
 							<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong> {{doc.vote.yes|length }}</strong></a>
 						</div>					
 					</div> 
-					<div class="col-sm-8 col-md-8 col-lg-9">
-						<p><h3 class="paperTitle"><small>rank </small>{{doc.rank}} <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
-					</div>				
+								
 					<div class="col-sm-1 col-md-1 col-lg-1">
 						<div class="btn-group btn-group-justified paperButton">
 							<a type="button" class="btn btn-default button-bookmark"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
@@ -55,11 +52,14 @@
 						<p><b>Publicación: </b>{{doc.pubN}}, p. {{doc.pubP}}. {{doc.pubY}} </p>
 						<p><b>Autores: </b>{{doc.authors}}</p>
 						<p><b>DOI: </b>{{doc.doi}}</p>
-						<p><b>Abstract: </b>{{doc.abstract}}</p>
+						<button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#abs{{out|id}}R{{doc.rank}}">Mostrar abstract</button>
+						<div id="abs{{out|id}}R{{doc.rank}}" class="collapse {% if not doc.abstract %}empty {% endif %} ">
+							<p><b>Abstract: </b>{{doc.abstract}}</p>
+						</div>
+						
 					</div>
 				</div>				
 			</div>
-			{% endif %}		
 		{% endfor %}		
 	{% endif %}
 	<nav class="navbar navbar-default navbar-fixed-bottom">
