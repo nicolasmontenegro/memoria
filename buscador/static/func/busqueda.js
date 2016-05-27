@@ -342,6 +342,40 @@ $(document).on('click', ".button-bookmarkGoTo", function(e){
 	});
 });
 
+$(document).on('click', ".button-abstract", function(e){
+	e.preventDefault()
+	var objective = $($(this).attr("target"));
+	if (objective.hasClass("empty") && !objective.hasClass("in") && "acm" == $(this).parents(".source").attr("name"))
+	{
+		inputconnect = 
+		{
+			url: "revisar",
+			type: "POST",
+		};
+		inputdata =
+		{
+			getAbstract: true,
+			source: $(this).parents(".source").attr("name"),
+			rank: $(this).parents(".well").attr("rank"),
+			iddb: $(this).parents(".source").attr("id"),
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log(response);
+			if (response.update)
+			{
+				objective.removeClass("empty");
+				objective.empty().append("<p><b>Abstract: </b>" + response.abstract + "</p>");
+			}
+			else
+			{
+				objective.empty().append("<p><b>Error al obtener abstract. Intentelo más tarde...</b></p>");
+			}
+		});
+	}
+	objective.collapse("toggle");
+});
+
 function ajaxPages(inputconnect, inputdata)
 {
 	return $.ajax({

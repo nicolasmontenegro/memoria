@@ -57,6 +57,9 @@ def revisar(request):
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
 	if request.method == 'POST':
+		if request.POST.get("getAbstract"):
+			return JsonResponse(scriptBuscador.getAbstract(request.POST))
+
 		if request.POST.get('query'):
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}

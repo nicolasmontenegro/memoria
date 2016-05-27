@@ -263,7 +263,7 @@ def searchComplete(idquery):
 	return retval
 
 def search(querytext):
-	 Create new threads
+	#Create new threads
 	q = queue.Queue()
 	thread2 = threadACM(querytext, q)
 	thread1 = threadIEEE(querytext, q)
@@ -283,8 +283,6 @@ def search(querytext):
 	while q.empty() is False:
 		results.append(q.get())
 
-	print(results)
-
 	objInsert = {
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
@@ -298,6 +296,24 @@ def search(querytext):
 	threadDuplicates(threads, str(saved)).start()
 	print("return " + querytext)
 	return saved
+
+
+def getAbstract(inputdata):
+	returnObject = {"update": 0, "code": "nothing"}
+	if inputdata.get("source") == "acm":
+		match = scriptDB.simpleAggregateSource({"name": inputdata.get("source"), "db": ObjectId(inputdata.get("iddb"))}, match = {"results.rank": inputdata.get("rank")})
+		try:
+			response = requests.get(match["results"]["mdurl"] + "&preflayout=flat")
+			soup = BeautifulSoup(response.text, 'html.parser')
+			abstract = soup.find("div", {"class":"flatbody"}).div.text
+			if abstract:
+				modifiedValues = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["iddb"]), "results.rank": inputdata["rank"]}, {"$set": {"results.$.abstract": abstract}}).modified_count
+				if modifiedValues:
+					returnObject["update"] = modifiedValues
+					returnObject["abstract"] = abstract
+		except:
+			returnObject = {"update": 0, "code": "fail"}
+	return returnObject
 
 def testing():
 	urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=0d60bd360e3210fb90c335d1c538fe19&httpAccept=application/xml&oa=true&query=math'
