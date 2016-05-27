@@ -263,16 +263,16 @@ def searchComplete(idquery):
 	return retval
 
 def search(querytext):
-	# Create new threads
+	 Create new threads
 	q = queue.Queue()
 	thread2 = threadACM(querytext, q)
 	thread1 = threadIEEE(querytext, q)
-#	thread3 = threadELSEVIER(2, querytext)
+	#thread3 = threadELSEVIER(2, querytext)
 
 	# Start new Threads
 	thread1.start()
 	thread2.start()
-#	thread3.start()
+	#thread3.start()
 	threads = [thread1, thread2]
 
 	# Wait for all threads to respond
@@ -289,10 +289,10 @@ def search(querytext):
 		"query" :  querytext,
 		"date" : time.asctime(time.localtime(time.time())),
 		"sources": results,
-#		[
-#			{"name": "ieee", "db": outObjectId["ieee"]},
-#			{"name": "elsevier", "db" : outObjectId["elsevier"]},
-#			{"name": "acm", "db": outObjectId["acm"]}]
+#	[
+#		{"name": "ieee", "db": outObjectId["ieee"]},
+#		{"name": "elsevier", "db" : outObjectId["elsevier"]},
+#		{"name": "acm", "db": outObjectId["acm"]}]
 		}
 	saved = client.memoria.query.insert(objInsert)
 	threadDuplicates(threads, str(saved)).start()

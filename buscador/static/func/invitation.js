@@ -118,6 +118,15 @@ $(document).on('click', "#send", function(e)
 	}
 });
 
+$(document).ready(function(){
+	$("#serach").submit(function(e){
+		$("#whenSearchQuery").append("\"" + $("#query").val() +  "\"");
+		$(".row").addClass("collapse in").collapse("hide");
+		$("#whenSearch").collapse("show");
+	});
+});
+
+
 function ajaxPages(inputconnect, inputdata)
 {
 	return $.ajax({

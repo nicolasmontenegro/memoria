@@ -9,6 +9,8 @@
 
 {%block script%}<script type="text/javascript" src="{% static 'func/invitation.js' %}"></script>{%endblock%}
 
+
+
 {%block body%}
 {% if out.permission == "creator" or out.permission == "admin" %}
 	<div class="row">
@@ -19,8 +21,8 @@
 		</div>
 		<div class="col-md-9 col-sm-9">
 			<label>Termino a buscar</label>
-			<form class="input-group" action="revisar" method="GET" >
-				<input type="text" class="form-control" placeholder="buscar" id="query" type="text" name="query" required>				
+			<form class="input-group" action="revisar" method="GET" id="serach" >
+				<input type="text" class="form-control" placeholder="buscar" id="query" type="text" name="query" required>			
 				<input type="hidden" name="idfolder" id="idfolder" value="{{ out|id }}">
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="submit">buscar</button>
@@ -151,4 +153,15 @@
 		</div>
 	</div>
 	{% endif %}
+
+	<div id="whenSearch" class="collapse">
+	<center><h2> Buscando <i id="whenSearchQuery"></i></h2></center>
+	<center><label>Por favor, espere...</label></center>
+	<div class="progress">
+		<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+		</div>
+	</div>
+	</div>
+
 {%endblock%}	
+

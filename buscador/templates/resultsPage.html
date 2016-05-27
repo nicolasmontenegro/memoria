@@ -5,11 +5,6 @@
 	<h1>Sin resultados <small>intente otra busqueda</small></h1>
 </div>
 {% else %}
-	{% ifequal page.thispage 1 %}
-	<div class="row">
-		<div class="col-xs-11"><h3>Total resultados: {{out.totalsave}} descargados de {{out.totalfound}} en total</h3></div>
-	</div>
-	{% endifequal %}
 	{% if out.results|length_is:"0"%}
 		{% if out.update == 1 %}
 			<h1>Faltan resultados por descargar <small>descargando</small></h1>
@@ -24,6 +19,9 @@
 			</div>	
 		{% endif %}
 	{% else %}
+		<div class="row">
+			<div class="col-xs-11"><h3>Total resultados: {{out.totalsave}} descargados de {{out.totalfound}} en total</h3></div>
+		</div>
 		{% for doc in out.results %}
 			<div class="well well-sm {% if doc.isDuplicate %}duplicate{% endif %}" rank={{doc.rank}}>
 			{% if doc.isDuplicate %}<label>Artículo identificado como duplicado</label>{% endif %}
