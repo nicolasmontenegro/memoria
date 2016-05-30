@@ -289,7 +289,7 @@ function updateButtonsValues() {
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
-		btn = $("[source='" + inputdata.source + "'][rank='" + inputdata.rank + "'][id='" + inputdata.id + "']").find(".button-comment");
+		btn = $("#" + inputdata.id).find("[rank='" + inputdata.rank + "']").find(".button-comment");
 		updateCountVote (btn, response); 
 	});	
 }
@@ -406,6 +406,8 @@ function ajaxPagesAUX(inputconnect, inputdata)
 		{
 			console.log(inputdata.iddb);
 			$("#" + inputdata.iddb).empty().append(response);
+			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="popover"]').popover();
 			return response;
 		},
 		// handle a non-successful response

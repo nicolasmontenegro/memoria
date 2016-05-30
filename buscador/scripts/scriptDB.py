@@ -256,7 +256,7 @@ def Progress(inputdata, inputcookie):
 	return results
 
 def progressQuery(doc, match):
-	values = {"yes": 0 , "no": 0}
+	values = {"yes": 0 , "yesPercent": 0,  "no": 0, "noPercent": 0}
 
 	auxyes = simpleAggregateSource(doc, match =  { "$and": match["yes"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
 	if auxyes:
