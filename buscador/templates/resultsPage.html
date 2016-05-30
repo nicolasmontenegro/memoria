@@ -27,18 +27,33 @@
 			{% if doc.isDuplicate %}<label>Artículo identificado como duplicado</label>{% endif %}
 				<div class="row">
 				<div class="col-sm-8 col-md-8 col-lg-9">
-						<p><h3 class="paperTitle"><small>rank </small>{{doc.rank}} <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
+						<p><h3 class="paperTitle"><small>{{doc.rank}}</small> <a href="{{doc.mdurl}}" target="_blank">{{doc.title}}</a></h3></p>
 					</div>	
 					<div class="col-sm-3 col-md-3 col-lg-2">						
 						<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control">
-							<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><strong> {{doc.vote.no|length }}</strong></a>
-							<a type="button" class="btn btn-default button-comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><strong> {{doc.comment|length}}</strong></a>
-							<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong> {{doc.vote.yes|length }}</strong></a>
+							<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}">
+								<div data-toggle="tooltip" data-placement="top" title="Rechazar comentario">
+									<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+									<strong> {{doc.vote.no|length }}</strong>
+								</div>
+							</a>
+							<a type="button" class="btn btn-default button-comment">
+								<div data-toggle="tooltip" data-placement="top" title="Comentar">
+									<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+									<strong> {{doc.comment|length}}</strong>
+								</div>
+							</a>
+							<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}">
+								<div data-toggle="tooltip" data-placement="top" title="Aprobar comentario">
+									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+									<strong> {{doc.vote.yes|length }}</strong>
+								</div>
+							</a>
 						</div>					
 					</div> 
 								
 					<div class="col-sm-1 col-md-1 col-lg-1">
-						<div class="btn-group btn-group-justified paperButton">
+						<div class="btn-group btn-group-justified paperButton" data-toggle="tooltip" data-placement="top" title="Poner marcador">
 							<a type="button" class="btn btn-default button-bookmark"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
 						</div>
 					</div>
