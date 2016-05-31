@@ -13,21 +13,22 @@ $.ajaxSetup({
 
  $("a[href='#download']").on('shown.bs.tab', function (e) {
  	divsource=this;
-		inputconnect = 
-		{
-			url: "revisar",
-			type: "GET",
-		};
-		inputdata =
-		{
-			idquery: $("#idquery").val(),
-			download: true,
-		};
-		ajaxPages(inputconnect, inputdata).promise().done(function(response)
-		{
-			$("#download").empty().append(response);
-			console.log("toggle");
-		});  
+	inputconnect = 
+	{
+		url: "revisar",
+		type: "GET",
+	};
+	inputdata =
+	{
+		idquery: $("#idquery").val(),
+		download: true,
+	};
+	$("#download").empty().append("<legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p>");
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		$("#download").empty().append(response);
+		console.log("toggle");
+	});  
 });
 
 $(document).ready(function(){
@@ -176,7 +177,7 @@ $(document).on('click', ".buttonpagination", function(e){
 });
 
 
-$(document).on('click', "#ConfirmInfoComplete", function(e){
+/*$(document).on('click', "#ConfirmInfoComplete", function(e){
 	//$('#ModalInfoComplete').modal('hide')
 	inputconnect = 
 	{
@@ -208,7 +209,7 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	{	
 	 	location.reload();
 	});
-});
+});*/
 
 $(document).on('click', ".button-comment", function(e){
 	btn = this;
@@ -306,14 +307,21 @@ $(document).on('click', ".button-bookmark", function(){
 		source: $(btn).parents(".source").attr("name"),
 		rank: $(btn).parents(".well").attr("rank"),
 		iddb: $(btn).parents(".source").attr("id"),
-		idquery: $("#idquery").val(),
 	};
+	console.log(inputdata);
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
-		$(".panel-bookmark").removeClass("collapse");
-		$(".panel-bookmark a").attr("iddb", inputdata.iddb).attr("rank", inputdata.rank).attr("source", inputdata.source);
-		alert("Marcador guardado");
-		console.log("bookmark check " +  response.modified);
+		if (response.modified){
+			$("#" + inputdata.iddb + " .panel-bookmark").removeClass("collapse");
+			$("#" + inputdata.iddb + " .panel-bookmark a").attr("rank", inputdata.rank);
+			$("#" + inputdata.iddb + " .button-bookmark").removeClass("active");
+			$(btn).addClass("active");
+		}
+		else
+		{
+			console.log("bookmark check " +  response.modified);
+		}
+
 	});
 });
 
@@ -327,18 +335,21 @@ $(document).on('click', ".button-bookmarkGoTo", function(e){
 	};
 	inputdata =
 	{
-		source: $(btn).attr("source"),
-		iddb: $(btn).attr("iddb"),
+		source: $(btn).parents(".source").attr("name"),
+		iddb: $(btn).parents(".source").attr("id"),
 		idquery: $("#idquery").val(),
 		page: parseInt((parseInt($(btn).attr("rank"))-1)/24)+1,
+		rank: $(btn).attr("rank"),
 	};
+	
 	ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
 	{
+		console.log(inputdata);
 		$('.nav-tabs a[href="#' + inputdata.iddb + '"]').tab('show');
 		$('html,body').animate({
-        scrollTop: $('#' + $(btn).attr("iddb")).find('[rank="' + $(btn).attr("rank") +  '"]').offset().top - 70},
+        scrollTop: $('#' + inputdata.iddb).find('.well[rank="' + inputdata.rank +  '"]').offset().top - 70},
         'slow');
-        $('#' + $(btn).attr("iddb")).find('[rank="' + $(btn).attr("rank") +  '"]').effect( "highlight", {color:"#4080bf"}, 1000 );
+        $('#' + inputdata.iddb).find('.well[rank="' + inputdata.rank +  '"]').effect( "highlight", {color:"#4080bf"}, 1000 );
 	});
 });
 

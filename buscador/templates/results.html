@@ -14,12 +14,6 @@
 {%block body%}
 <input type="hidden" id="idquery" value="{{ out|id }}">
 
-<div class="panel panel-default panel-bookmark {% if not userlogin|id in out.bookmark %}collapse{% endif %}">
-	<div class="panel-body">
-		Tienes un marcador activo <b><a href="#" class="button-bookmarkGoTo" {% if userlogin|id in out.bookmark %} iddb = "{{out.bookmark|getBookmark:userlogin|getItem:"iddb"}}" rank = "{{out.bookmark|getBookmark:userlogin|getItem:"rank"}}"	source = "{{out.bookmark|getBookmark:userlogin|getItem:"source"}}{% endif %}">Ir al marcador</a></b>
-	</div>
-</div>
-
 	
 <div role="tabpanel">
 
@@ -41,7 +35,7 @@
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active{% for item in out.sources %} source"  name="{{item.name}}" id="{{item.doc|id}}">
 		</div>
-		<div role="tabpanel" class="tab-pane{% endfor %}" id="download"><legend>Cargando...</legend></div>
+		<div role="tabpanel" class="tab-pane{% endfor %}" id="download"><legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p></div>
 	</div><!-- Tab panes end -->
 
 	<div class="modal fade" id="ModalComment" role="dialog" aria-labelledby="ModalComment" source="" rank="" idpub="">

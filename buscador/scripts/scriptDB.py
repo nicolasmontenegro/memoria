@@ -291,10 +291,10 @@ def simpleAggregateSource(doc, match = None, group = None):
 
 def bookmark(inputdata, inputcookie):
 	user = unfold(inputcookie)
-	query = readQuery(inputdata.get("idquery"))
-	if query:
+	#source = readSource(inputdata["source"], inputdata["iddb"])
+	if user:
 		bookmarkQuery = "bookmark." +  str(user["_id"])
-		results = client.memoria.query.update_one({"_id": query["_id"]}, {"$set":{bookmarkQuery: {"source": inputdata.get("source"), "rank": inputdata.get("rank"), "iddb": inputdata.get("iddb")}}})
+		results = client.memoria[inputdata["source"]].update_one({"_id": ObjectId(inputdata["iddb"])}, {"$set":{bookmarkQuery: {"rank": inputdata.get("rank")}}})
 		return {"modified" : results.modified_count}
 	else:
 		return {"modified" : 0}
