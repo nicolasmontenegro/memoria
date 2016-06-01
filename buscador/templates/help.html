@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load types %}
+{% load staticfiles %}
+
+{%block title%}Ayuda{%endblock%}
+{%block title_body%}Ayuda de Papered{%endblock%}
+
+
+
+
+{%block script%}{%endblock%}
+
+{%block body%}
+<h1>Página de ayuda</h1>
+<p>Si está en está página por algún problema o explicación de algo, ha llegado al sitio correcto. A continuación se explica algunos detalles de la aplicación, qué significan ciertas cosas y cómo sortear problemas.</p>
+<p>Si tiene algún problema o duda y no se explica en esta sección, puede enviar un mensaje a la dirección de correo electrónico que se muestra en <a href="/about">Acerca de</a>.</p>
+<h2 id="account">Cuentas de usuario</h2>
+<h3>¿Cómo creo mi usuario?</h3>
+<p>Para crear una cuenta debe llenar el <a href="/signup">formulario de registro</a> con todos los datos. El correo debe ser válido para poder recibir invitaciones y recuperar la contraseña (y usar otras funciones a futuro).</p>
+<h3>¿Cómo recuperar mi  contraseña?</h3>
+<p>Si se ha registrado con un correo válido, puede recuperar su contraseña desde la página de <a href="/recoverpassword">recuperar contraseña</a>. Se enviará un mensaje a tu correo con las instrucciones a seguir. <b>Atención</b>, puede que el mensaje sea identificado como correo no deseado, para ello revise las carpetas <i>spam</i> o <i>correo no deseado</i> en tu servicio de correo.</p>
+<h2 id="folder">Carpetas</h2>
+<h3>¿Qué son?</h3>
+<p>Al igual como ordena sus archivos en el computador, las carpetas son organizadores para las búsquedas. En cada carpeta tendrá sus búsquedas, y podrás invitar a otros usuarios del sitio a colaborar.</p>
+<p>Puede crear tantas carpetas como quiera, tanto para organizar las búsquedas como los equipos que colabora.</p>
+<h3>¿Cómo invito a otros usuarios?</h3>
+<p>Una vez que crea una carpeta, ingrese a esta y pulse el botón <button type="button" class="btn btn-info btn-xs">Invitar</button> para abrir el cuadro de invitación. Ingrese el correo con que se registró el usuario a invitar en el cuadro respectivo. Si es incorrecto, corrija la información y vuelva a intentarlo. Si es correcto, confirma la invitación, e inmediatamente el usuario será añadido a la carpeta.</p>
+<h3>¿Creador? ¿Invitado?</h3>
+<p>Son los permisos sobre las acciones que los usuarios pueden hacer sobre las carpetas. Cuando se crea una carpeta, al usuario se le asigna el permiso de <i>creador</i>. Este podrá generar nuevas búsquedas y gestionar usuarios.</p>
+<p>Los invitados solo pueden visualizar los resultados y realizar votaciones sobre estos.</p>
+<h2 id="results">Vista de resultados</h2>
+<h3>¿Qué son esas pestañas?</h3>
+<p>Son las diferentes fuentes de información y secciones que están asociados a una búsqueda. Las primeras pestañas (como <i>ieee</i> o <i>acm</i>) son fuente primarias de información. La penúltima pestaña <b>Resumen</b> es sobre los votos realizados organizado por fuente. La última pestaña <b>Descargar</b> te permite descargar una selección de la búsqueda.</p>
+<div>
+	
+	<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="">
+				<a aria-expanded="false" aria-controls="ieee">ieee</a>
+			</li>	
+		<li class="" role="presentation">
+			<a aria-expanded="false" aria-controls="acm">acm</a>
+		</li>	
+		<li class="active" role="presentation">
+			<a aria-expanded="true" aria-controls="summary">Resumen</a>
+		</li>
+		<li class="" role="presentation">
+			<a aria-expanded="false" aria-controls="download">Descargar</a>
+		</li>
+	</ul>
+</div>
+<br>
+<i>Ejemplo de pestañas</i>
+<h3>¿Que significa los elementos del cuadro?</h3>
+<p>Cada cuadro es un resultado de la búsqueda, donde contiene los elementos necesarios para una referencia bibliográfica. Estos resultados son ordenados según la relevancia que haya asignado la fuente, la cual se puede ver como el número al principio del título.</p>
+<div class="well well-sm">
+
+	<div class="row">
+	<div class="col-sm-8 col-md-8 col-lg-9">
+			<p></p><h3 class="paperTitle navi"><div class="infoi"><center>Título</center></div><small>2</small><a href="#" target="_blank" class="">Scalable DTN Distribution over Uni-directional Links</a></h3><p></p>
+		</div>	
+		<div class="col-sm-3 col-md-3 col-lg-2">	
+			<div class="infoi"><center>Votación</center></div>					
+			<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control">
+				<a type="button" class="btn btn-default button-remove ">
+					<div data-original-title="Rechazar comentario" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						<strong> 0</strong>
+					</div>
+				</a>
+				<a type="button" class="btn btn-default button-comment">
+					<div data-original-title="Comentar" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+						<strong> 0</strong>
+					</div>
+				</a>
+				<a type="button" class="btn btn-default button-ok ">
+					<div data-original-title="Aprobar comentario" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+						<strong> 0</strong>
+					</div>
+				</a>
+			</div>					
+		</div> 
+					
+		<div class="col-sm-1 col-md-1 col-lg-1">
+			<div class="infoi"><center>Marcador</center></div>
+			<div data-original-title="Poner marcador" class="btn-group btn-group-justified paperButton" data-toggle="tooltip" data-placement="top" title="">
+				<a type="button" class="btn btn-default button-bookmark  "><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+			</div>
+		</div>
+	</div>
+	<div class="row">                
+		<!-- Optional: clear the XS cols if their content doesn't match in height -->
+		<!-- <div class="clearfix visible-xs-block"></div> -->
+		<div class="col-sm-12">
+			<p class="navi"><div class="infoi"><center>Nombre, fecha y página de publicación</center></div><b>Publicación: </b>Proceedings of the 2007 Workshop on Networked Systems for Developing Regions, p. 6:1--6:6. 2007 </p>
+			<p class="navi"><div class="infoi"><center>Nombre autores</center></div><b>Autores: </b>Kutscher, Dirk and Greifenberg, Janico and Loos, Kevin</p>
+			<p class="navi"><div class="infoi"><center>Referencia <a href="https://www.doi.org/">Digital Object Identifier System</a> </center></div><b>DOI: </b>10.1145/1326571.1326580</p>
+			<button type="button" class="btn btn-default btn-xs button-abstract" target="#abs574ceaf1aa20c000079d725bR2">Mostrar abstract</button>
+			<div id="abs574ceaf1aa20c000079d725bR2" class="collapse empty  ">
+				<p><b>Abstract: </b>Cargando abstract...</p>
+			</div>
+			
+		</div>
+	</div>				
+</div>
+<h3>¿Qué significa la votación? ¿Cómo voto?</h3>
+<p>Para hacer una selección de los artículos que estarán o no incluidos en una revisión bibliográfica, se ha dispuesto un sistema de votaciones para que los usuarios de una carpeta puedan poner su apreciación sobre un <i>paper</i></p>
+<p>Los <b>botones de aprobación <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></b> o <b>rechazo <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></b> permiten seleccionar los artículos deseados. Los votos se suman a la postura elegida. El número adjunto al ícono es el conteo total de votos; en caso de haber otros usuarios en la carpeta, podrá ver el conteo de votos sumados en total.</p>
+<div class="row">
+	<div class="col-sm-3 col-md-3 col-lg-2">					
+			<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control">
+				<a type="button" class="btn btn-default button-remove ">
+					<div data-original-title="Rechazar comentario" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						<strong> 0</strong>
+					</div>
+				</a>
+				<a type="button" class="btn btn-default button-comment">
+					<div data-original-title="Comentar" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+						<strong> 0</strong>
+					</div>
+				</a>
+				<a type="button" class="btn btn-default button-ok active ">
+					<div data-original-title="Aprobar comentario" data-toggle="tooltip" data-placement="top" title="">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+						<strong> 1</strong>
+					</div>
+				</a>
+			</div>					
+		</div> 
+</div>
+<i>Ejemplo de voto de aprobación sobre un artículo.</i>
+<br>
+<p>Para realizar una votación, simplemente pulse el botón de su postura. El botón quedará marcado y el contador sumará su voto. Puede cambiar su voto pulsando el botón de a postura contraria, o quitar el voto volviendo a pulsar el botón de la postura ya seleccionada.</p>
+<h3>¿Qué es el marcador?</h3>
+<p>El marcador <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span> permite guardar la posición de la vista en el artículo en que haya marcado. Ya sea que cambie de pestaña, refresque la página, o visite el sitio desde otro dispositivo, el marcador estará disponible, y podrá acceder a él a través del aviso en la parte superior de cada página de las fuentes de datos.</p>
+<p>Los marcadores son guardado por cada fuente (o pestaña), y son independientes para cada usuario.</p>
+<h2 id="summary">Resumen</h2>
+<h3>¿Qué significan estos números?</h3>
+<p>Estos son contadores de los artículos seleccionados organizados por fuente. Tenga en cuenta que <b>los votos válidos</b> son aquellos realizados a través de los <b>botones de aprobación <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></b> o <b>rechazo <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></b> sobre cada artículo. <b>Los comentarios <span class="glyphicon glyphicon-comment" aria-hidden="true"></span> no son contabilizados</b>.</p>
+<h4>Progreso Personal</h4>
+<p>Son los artículos <b>marcados por usted</b>, que están asociados a su cuenta. Este contador es personal, y no considera las elecciones de otros usuarios.</p>
+<h4>Progreso total</h4>
+<p>Son los artículos marcados por <b>todos los miembros de la carpeta</b>. A diferencia del progreso personal, para que los valores se vean reflejados, debe existir una decisión unánime en las votaciones, es decir, que todas las votaciones sobre un artículo deben ser de aprobación o rechazo. Si un artículo <b>no cumple tal requerimiento, no es considerado</b>, por lo que se sugiere su discusión en la <b>caja de comentarios</b> <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>.</p>
+<p>En caso de haber un solo usuario en la carpeta, este contador será igual al progreso personal. En caso de agregar un nuevo usuario, este deberá realizar su selección, de caso contrario, solo habrá 0 votos.</p>
+<h2 id="download">Descargas</h2>
+<h3>¿Cómo descargar?</h3>
+<p>Baje hasta la sección <b>Descargar artículos</b> en esta misma página, donde podrá escoger las opciones de <b>Selección</b> de artículos. En el caso de las opciones "Aprobados por mi" y "Rechazados por mi" son los artículos obtenidos a partir de la selección <i>Progreso Personal</i>. Para las opciones "Aprobados por todos" y "Rechazados por todos" se aplica el mismo criterio de <i>Progreso total</i>, o sea deben haber decisiones unánimes para aplicar esta selección.</p>
+<p>Puede elegir incluir artículos identificados como duplicados marcando la casilla <i>Descargar duplicados</i>.</p>
+<p>Al presionar descargar, obtendrá un fichero Excel <i>.XLSX</i> con la configuración que haya marcado.</p>
+
+{%endblock%}

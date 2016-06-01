@@ -11,7 +11,7 @@ $.ajaxSetup({
 
 });
 
- $("a[href='#download']").on('shown.bs.tab', function (e) {
+ $("a[href='#summary']").on('shown.bs.tab', function (e) {
  	divsource=this;
 	inputconnect = 
 	{
@@ -23,10 +23,10 @@ $.ajaxSetup({
 		idquery: $("#idquery").val(),
 		download: true,
 	};
-	$("#download").empty().append("<legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p>");
+	$("#summary").empty().append("<legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p>");
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
-		$("#download").empty().append(response);
+		$("#summary").empty().append(response);
 		console.log("toggle");
 	});  
 });

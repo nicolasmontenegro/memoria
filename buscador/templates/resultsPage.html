@@ -19,13 +19,13 @@
 			</div>	
 		{% endif %}
 	{% else %}
-		<div class="row">
+		<div class="row">			
+			<h3>Total resultados: {{out.totalsave}} descargados de {{out.totalfound}} en total</h3>
 			<div class="panel panel-default panel-bookmark {% if not userlogin|id in out.bookmark %}collapse{% endif %}">
 				<div class="panel-body">
-					Tienes un marcador activo <b><a href="#" class="button-bookmarkGoTo" {% if userlogin|id in out.bookmark %} rank = "{{out.bookmark|getBookmark:userlogin|getItem:"rank"}}"{% endif %}">Ir al marcador</a></b>
+					Anteriormente has dejado un artículo con un marcador... <b><a href="#" class="button-bookmarkGoTo" {% if userlogin|id in out.bookmark %} rank = "{{out.bookmark|getBookmark:userlogin|getItem:"rank"}}"{% endif %}">Haz clic aquí para ir al artículo marcado</a></b>
 				</div>
 			</div>
-			<h3>Total resultados: {{out.totalsave}} descargados de {{out.totalfound}} en total</h3>
 		</div>
 		{% for doc in out.results %}
 			<div class="well well-sm {% if doc.isDuplicate %}duplicate{% endif %}" rank={{doc.rank}}>
@@ -37,7 +37,7 @@
 					<div class="col-sm-3 col-md-3 col-lg-2">						
 						<div class="btn-group btn-group-justified paperButton" role="group" aria-label="control">
 							<a type="button" class="btn btn-default button-remove {% if userlogin|id in doc.vote.no %}active{% endif %}">
-								<div data-toggle="tooltip" data-placement="top" title="Rechazar comentario">
+								<div data-toggle="tooltip" data-placement="top" title="Rechazar paper">
 									<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									<strong> {{doc.vote.no|length }}</strong>
 								</div>
@@ -49,7 +49,7 @@
 								</div>
 							</a>
 							<a type="button" class="btn btn-default button-ok {% if userlogin|id in doc.vote.yes %}active{% endif %}">
-								<div data-toggle="tooltip" data-placement="top" title="Aprobar comentario">
+								<div data-toggle="tooltip" data-placement="top" title="Aprobar paper">
 									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 									<strong> {{doc.vote.yes|length }}</strong>
 								</div>

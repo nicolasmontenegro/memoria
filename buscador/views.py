@@ -189,5 +189,10 @@ def comment(request):
 		#print("comment dice: " + request.POST['source'] + request.POST['id'])
 		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))
 
+def help(request):
+	if request.method == 'GET':
+		return render(request, 'help.html')
+
+
 def testing(request):
 	return JsonResponse({"elseiver": scriptBuscador.testing()})

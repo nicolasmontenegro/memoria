@@ -2,21 +2,7 @@
 {% load staticfiles %}
 <div>
 	<legend>Progreso votaciones</legend>
-	<a data-toggle="collapse" data-target="#helpDownload"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> ¿Qué significan estos números? ¿Cómo descargar?</a>
-	<div id="helpDownload" class="collapse">
-		<p><i>para cerrar esta ayuda, vuelva a pulsar el texto superior...</i></p>
-		<h2>¿Qué significan estos números?</h2>
-		<p>Estos son contadores de los artículos seleccionados organizados por fuente. Tenga en cuenta que <b>los votos válidos</b> son aquellos realizados a través de los <b>botones de aprobación <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></b> o <b>rechazo <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></b> sobre cada artículo. <b>Los comentarios <span class="glyphicon glyphicon-comment" aria-hidden="true"></span> no son contabilizados</b>.</p>
-		<h4>Progreso Personal</h4>
-		<p>Son los artículos <b>marcados por usted</b>, que están asociados a su cuenta. Este contador es personal, y no considera las elecciones de otros usuarios.</p>
-		<h4>Progreso total</h4>
-		<p>Son los artículos maracados por <b>todos los miembros de la carpeta</b>. A diferencia del progreso personal, para que los valores se vean reflejados, debe existir una decisión unánime en las votaciones, es decir, que todas las votaciones sobre un artículo deben ser de aprovación o rechazo. Si un artículo <b>no cumple tal requerimiento, no es considerado</b>, por lo que se sugiere su discución en la <b>caja de comentarios</b> <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>.</p>
-		<p>En caso de haber un solo usuario en la carpeta, este contador será igual al progreso personal. En caso de agregar un nuevo usuario, este deberá realizar su selección, de caso contrario, solo habrá 0 votos.</p>
-		<h2>¿Cómo descargar?</h2>
-		<p>Baje hasta la sección <b>Descargar artículos</b> en esta misma página, donde podrá escoger las opciones de <b>Selección</b> de artículos. En el caso de las opciones "Aprobados por mi" y "Rechazados por mi" son los artículos obtenidos a partir de la selección <i>Progreso Personal</i>. Para las opciones "Aprobados por todos" y "Rechazados por todos" se aplica el mismo criterio de <i>Progreso total</i>, o sea deben haber decisiones unánimes para aplicar esta selección.</p>
-		<p>Puede elegir incluir artículos identificados como duplicados marcando la casilla <i>Descargar duplicados</i>.</p>
-		<p>Al presional descargar, obtendrá un fichero Excel <i>.XLSX</i> con la configuración que haya marcado.</p>
-	</div>
+	<a href="/help#summary" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>¿Qué significan estos números?</a>
 	{% for item in progress.sources %}
 	{% if item.doc.totalfound > 0 %}
 	<div class="panel panel-primary"> 
