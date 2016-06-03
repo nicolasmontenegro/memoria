@@ -31,25 +31,26 @@
 
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					{%block nav_left%}{%endblock%}
 					<ul class="nav navbar-nav navbar-right">
-						<li><p class="navbar-text hidden-sm hidden-md">{%block nav_right%}{%endblock%}</p></li>
-						<li role="separator" class="divider"></li>
+						<li class="navbar-text hidden-sm hidden-md">{%block nav_right%}{%endblock%}</li>
 						{% if userlogin %}
-							<li class="dropdown">
-								  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{userlogin.firstname}}<span class="caret"></span></a>
-								  <ul class="dropdown-menu">
-									<li><a href="/">Carpetas</a></li>
-									<li><a href="/profile">Perfil</a></li>
-									<li><a href="/logout">Cerrar sesión</a></li>
-								  </ul>
-								</li>
+						<li><a href="/help#{% block helpPage %}{% endblock %}" target="_blank" ><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Ayuda</a></li>
+						<li class="dropdown hidden-xs">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span>  {{userlogin.firstname}}<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>  Carpetas</a></li>
+								<li><a href="/profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Perfil</a></li>
+								<li><a href="/logout"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>  Cerrar sesión</a></li>
+							</ul>
+						</li>						
+						<li class="navbar-text hidden-sm hidden-md hidden-lg"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> {{userlogin.firstname}} {{userlogin.lastname}}</li>
+						<li class="hidden-sm hidden-md hidden-lg"><a href="/"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> Carpetas</a></li>
+						<li class="hidden-sm hidden-md hidden-lg"><a href="/profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Perfil</a></li>
+						<li class="hidden-sm hidden-md hidden-lg"><a href="/logout"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Cerrar sesión</a></li>
 						{% else %}
-							<li><a class="btn btn-sm btn-default" href="/login" role="button">Inicia sesion</a><li>
+						<li><a class="btn btn-sm btn-default" href="/login" role="button">Inicia sesion</a></li>
 						{% endif %}
-						<li>
-							<a href="/help#{% block helpPage %}{% endblock %}" target="_blank" ><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Ayuda</a>
-						</li>
+						
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div>

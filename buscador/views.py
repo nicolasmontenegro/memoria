@@ -105,7 +105,9 @@ def folder(request):
 			out = scriptDB.getFolder(request.GET, request.COOKIES, True)
 			if isinstance(out, int):
 				if out == -1:
-					HttpResponseNotFound('<h1>Página no encontrada</h1>')
+					return HttpResponseNotFound('<h1>Página no encontrada</h1>')
+				else:
+					return HttpResponseNotFound('<h1>Error en sitio...</h1>')
 			if out.get("permission"):
 				return render(request, 'folder.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 			else:
@@ -192,6 +194,10 @@ def comment(request):
 def help(request):
 	if request.method == 'GET':
 		return render(request, 'help.html')
+
+def about(request):
+	if request.method == 'GET':
+		return render(request, 'about.html')		
 
 
 def testing(request):

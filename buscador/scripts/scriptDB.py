@@ -130,11 +130,12 @@ def getFolder(inputdata, inputcookie, complete):
 		folder["permission"] = folder["user"].get(str(user["_id"]))	
 		if complete:
 			for doc in folder["search"]:
-				doc["doc"] = readQuery(doc["id"]) 
+				if doc != None:
+					doc["doc"] = readQuery(doc["id"]) 
 		return folder
 	except Exception:
 		print("error en getFolder")
-		return -1
+		return -2
 
 # def getPageResults():
 # 	resultsperpage = 24

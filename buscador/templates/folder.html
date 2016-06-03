@@ -5,7 +5,7 @@
 {%block title%}Carpeta "{{out.folder}}"{%endblock%}
 {%block title_body%}Carpeta <i>"{{out.folder}}"</i>{%endblock%}
 
-{%block nav_right%}fecha de creación: {{out|date}}{%endblock%}
+{%block nav_right%}fecha de creación de carpeta: {{out|date}}{%endblock%}
 
 {%block script%}<script type="text/javascript" src="{% static 'func/invitation.js' %}"></script>{%endblock%}
 {% block helpPage %}folder{% endblock %}
@@ -101,7 +101,7 @@
 				<thead>
 					<tr>
 						<th>Busqueda</th>						
-						<th class="hidden-xs">Fecha</th>
+						<th class="hidden-xs">Fecha de búsqueda</th>
 					</tr>
 				</thead>
 				<tbody>
