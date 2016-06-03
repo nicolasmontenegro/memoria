@@ -32,22 +32,3 @@
 	{% endif %}
 	{% endfor %}	
 </div>
-<div>
-	<legend>Descargar artículos</legend>
-	<form class="form-inline" action="descargar" method="GET" >
-			<label for="typeQuery">Selección </label>
-			<div class="form-group">
-			{% csrf_token %}
-			<input type="hidden" name="idquery" value="{{progress|id}}">
-			<select class="form-control" name="typeQuery">
-				<option value=0>Todos</option>
-				<option value=1>Aprobados por mi</option>
-				<option value=2>Aprobados por todos</option>
-				<option value=-1>Rechazados por mi</option>
-				<option value=-2>Rechazados por todos</option>
-			</select>
-			<input type="checkbox" aria-label="download duplicate" name="duplicate"> Descargar duplicados    </input>
-			<button class="btn btn-default" type="submit">Descargar</button>
-		</div>						
-	</form>
-</div>

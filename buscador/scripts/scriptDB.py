@@ -71,6 +71,7 @@ def addUser(inputdata):
 			"lastname":  inputdata["lastname"],
 			"email":  inputdata["email"],
 			"password":  inputdata["password"],
+			"dateCreation":  time.asctime(time.localtime(time.time())),
 			"folder": [],
 			}
 		if client.memoria.username.insert(objInsert):
@@ -323,8 +324,3 @@ def duplicates(iddb):
 							client.memoria[toComapre["name"]].update_one(
 								{"_id": toComapre["db"], "results.rank": match}, 
 								{"$set": {"results.$.isDuplicate": True} })
-
-
-
-
-
