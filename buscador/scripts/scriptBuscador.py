@@ -16,6 +16,7 @@ import bibtexparser
 from . import scriptDB
 
 client = MongoClient('mongodb://niko_nmv:tesista@ds052408.mongolab.com:52408/memoria')
+headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}
 
 threadLock = threading.Lock()
 	
@@ -41,7 +42,7 @@ class threadACM(threading.Thread):
 	def run(self):
 		url = "http://dl.acm.org/exportformats_search.cfm?filtered=&within=owners%2Eowner%3DHOSTED&dte=&bfr=&srt=%5Fscore&expformat=bibtex&query=" + self.querytext
 		print(time.asctime(time.localtime(time.time()))  + " query from: " + url)
-		downBit = requests.get(url).text
+		downBit = requests.get(url, headers=headers).text
 		parsered = bibtexparser.loads(downBit)
 		totalfound = len(parsered.entries)
 		totalsave = 0
@@ -96,7 +97,7 @@ class threadELSEVIER(threading.Thread):
 	def run(self):
 		url = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + self.querytext # &oa=true
 		print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
-		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
+		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url, headers=headers).text).find("{http://a9.com/-/spec/opensearch/1.1/}totalResults")))
 		totalsave = 0
 		now = 0
 		count = 200
@@ -113,7 +114,7 @@ class threadELSEVIER(threading.Thread):
 		while totalfound > 0:
 			results = []
 			urlWhile = 'http://api.elsevier.com/content/search/scidir?apiKey=3c332dc26c8b79d51d16a786b74fe76b&httpAccept=application/xml&query=' + self.querytext + '&count=' + str(count) + '&start=' + str(now) # + '&oa=true&view=complete'
-			queryResults = ET.fromstring(requests.get(urlWhile).text).findall("{http://www.w3.org/2005/Atom}entry")##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
+			queryResults = ET.fromstring(requests.get(urlWhile, headers=headers).text).findall("{http://www.w3.org/2005/Atom}entry")##BeautifulSoup(requests.get(urlWhile).text).find_all("entry"):
 			if len(queryResults):
 				for element in queryResults:
 					strAuthor = ""
@@ -157,7 +158,7 @@ class threadIEEE(threading.Thread):
 	def run(self):
 		url = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?hc=0&md=' + self.querytext
 		print(time.asctime(time.localtime(time.time()))  + " query from: " +url)
-		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url).text).find("totalfound")))
+		totalfound = int("0"+putAtributeUn(ET.fromstring(requests.get(url, headers=headers).text).find("totalfound")))
 		totalsave = 0
 		now = 1
 		count = 300
@@ -174,7 +175,7 @@ class threadIEEE(threading.Thread):
 		while totalfound > 0:
 			results = []
 			urlWhile = 'http://ieeexplore.ieee.org/gateway/ipsSearch.jsp?sort=relevancy&md=' + self.querytext + '&hc=' + str(count) + '&rs=' + str(now)
-			queryResults = ET.fromstring(requests.get(urlWhile).text).findall("document")
+			queryResults = ET.fromstring(requests.get(urlWhile, headers=headers).text).findall("document")
 			if len(queryResults):
 				for element in queryResults:
 					results.append({
@@ -307,9 +308,10 @@ def getAbstract(inputdata):
 	if inputdata.get("source") == "acm":
 		match = scriptDB.simpleAggregateSource({"name": inputdata.get("source"), "db": ObjectId(inputdata.get("iddb"))}, match = {"results.rank": inputdata.get("rank")})
 		try:
-			response = requests.get(match["results"]["mdurl"] + "&preflayout=flat")
+			response = requests.get(match["results"]["mdurl"] + "&preflayout=flat", headers=headers)
 			soup = BeautifulSoup(response.text, 'html.parser')
 			abstract = soup.find("div", {"class":"flatbody"}).div.text
+			print("abst from acm: " + abstract)
 			if abstract:
 				modifiedValues = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["iddb"]), "results.rank": inputdata["rank"]}, {"$set": {"results.$.abstract": abstract}}).modified_count
 				if modifiedValues:
