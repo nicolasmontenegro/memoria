@@ -76,7 +76,7 @@ class threadACM(threading.Thread):
 				})
 			if ((totalsave%100) is 0) or (totalsave == totalfound):
 				print(self.name + " " + str(totalsave))
-				client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})				
+				client.memoria.acm.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}, "$set": {"totalsave": totalsave}})				
 				results.clear()
 				if totalsave is 100:
 					self.q.put({"name": self.name, "db": queryObj})
@@ -138,7 +138,7 @@ class threadELSEVIER(threading.Thread):
 					rank += 1
 				now += count
 				print(self.name + " " +  str(now))
-				client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+				client.memoria.elsevier.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}, "$set": {"totalsave": totalsave}})
 				if now == 200:
 					self.q.put({"name": self.name, "db": queryObj})
 			else:
@@ -192,7 +192,7 @@ class threadIEEE(threading.Thread):
 					totalsave += 1
 				now += count
 				print(self.name + " " + str(now))
-				client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}})
+				client.memoria.ieee.update_one({"_id": queryObj}, {"$push": {"results": {"$each": results}}, "$set": {"totalsave": totalsave}})
 				if now == 301:
 					self.q.put({"name": self.name, "db": queryObj})
 			else:

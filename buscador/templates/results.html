@@ -41,9 +41,9 @@
 		<div role="tabpanel" class="tab-pane active{% for item in out.sources %} source"  name="{{item.name}}" id="{{item.doc|id}}">
 		</div>
 		<div role="tabpanel" class="tab-pane{% endfor %}" id="summary"><legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p></div>
-		<div role="tabpanel" class="tab-pane" id="download">
-		<a href="/help#summary" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> ¿Cómo descargar?</a>
+		<div role="tabpanel" class="tab-pane" id="download">		
 				<legend>Descargar artículos</legend>
+				<a href="/help#summary" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> ¿Cómo descargar?</a>
 				<form class="form" action="descargar" method="GET" >
 						<label for="typeQuery">Selección </label>
 						<div class="form-group">
