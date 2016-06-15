@@ -1,0 +1,34 @@
+{% load types %}
+{% load staticfiles %}
+<div>
+	<legend>Progreso votaciones</legend>
+	<a href="/help#summary" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>¿Qué significan estos números?</a>
+	{% for item in progress.sources %}
+	{% if item.doc.totalfound > 0 %}
+	<div class="panel panel-primary"> 
+		<div class="panel-heading"> 
+			<h3 class="panel-title">{{item.name}}</h3> 
+		</div> 
+		<div class="panel-body"> 
+			<div class="rows">
+				<div class="col-md-2">
+					<h4>{{item.doc.totalfound}} <small>artículos en total</small></h4>
+				</div>
+				<div class="col-md-10">
+					<ul class="list-inline">
+						<li><label>Progreso personal</label></li>
+						<li>{{item.votes.my.yes}} aprobados ({{item.votes.my.yesPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.my.no}} rechazados ({{item.votes.my.noPercent|stringformat:"d"}}%)</li>
+					</ul>
+					<ul class="list-inline">
+						<li><label>Progreso total</label></li>
+						<li>{{item.votes.all.yes}} aprobados ({{item.votes.all.yesPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.all.no}} rechazados ({{item.votes.all.noPercent|stringformat:"d"}}%)</li>
+					</ul>
+				</div>					
+			</div>
+		</div> 
+	</div>
+	{% endif %}
+	{% endfor %}	
+</div>

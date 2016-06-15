@@ -38,6 +38,9 @@ def revisar(request):
 				{'page': scriptPage.countPage(int(request.GET['page']), int(out["totalfound"]), resultsperpage),
 				'out': out,
 				"userlogin": scriptDB.unfold(request.COOKIES)})
+		elif request.GET.get('idquery') and request.GET.get("download"):
+			return render(request, 'resultsDownload.html', 
+				{"userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
 		elif request.GET.get('idquery'):
 			print("revisar dice: " + request.GET['idquery'])
 			out = scriptDB.getResults(request.GET, request.COOKIES)
@@ -45,15 +48,18 @@ def revisar(request):
 				if out == -2:
 					return  render(request, 'forbidden.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 				elif out == -1:
-					HttpResponseNotFound('<h1>Página no encontrada</h1>')
+					HttpResponseNotFound('<h1>Página no encontrada</h1>')				
 			return render(request, 'results.html', 
-				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES), "progress": scriptDB.Progress(request.GET, request.COOKIES)})
+				{'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 		elif request.GET.get('query'):
 			print("busqueda dice: " + request.GET['query'])
 			dbId = scriptBuscador.search(request.GET['query'])
 			scriptDB.addToFolder(str(dbId), request.GET['idfolder'])
 			return HttpResponseRedirect('/revisar?idquery=%s' % str(dbId))	
 	if request.method == 'POST':
+		if request.POST.get("getAbstract"):
+			return JsonResponse(scriptBuscador.getAbstract(request.POST))
+
 		if request.POST.get('query'):
 			response_data = {
 				'state': scriptBuscador.searchComplete(request.POST['query']),}
@@ -82,6 +88,11 @@ def vote(request):
 	elif request.method == 'POST':
 		return JsonResponse(scriptDB.updateVote(request.POST, request.COOKIES))
 
+@isLogged
+def bookmark(request):
+	if request.method == 'POST':
+		return JsonResponse(scriptDB.bookmark(request.POST, request.COOKIES))
+
 @never_cache
 @isLogged
 def folder(request):
@@ -94,7 +105,9 @@ def folder(request):
 			out = scriptDB.getFolder(request.GET, request.COOKIES, True)
 			if isinstance(out, int):
 				if out == -1:
-					HttpResponseNotFound('<h1>Página no encontrada</h1>')
+					return HttpResponseNotFound('<h1>Página no encontrada</h1>')
+				else:
+					return HttpResponseNotFound('<h1>Error en sitio...</h1>')
 			if out.get("permission"):
 				return render(request, 'folder.html', {'out': out, "userlogin": scriptDB.unfold(request.COOKIES)})
 			else:
@@ -177,6 +190,15 @@ def comment(request):
 	if request.method == 'POST' and scriptDB.unfold(request.COOKIES) != None:
 		#print("comment dice: " + request.POST['source'] + request.POST['id'])
 		return render(request, 'comment.html', scriptDB.addComment(request.POST, request.COOKIES))
+
+def help(request):
+	if request.method == 'GET':
+		return render(request, 'help.html')
+
+def about(request):
+	if request.method == 'GET':
+		return render(request, 'about.html')		
+
 
 def testing(request):
 	return JsonResponse({"elseiver": scriptBuscador.testing()})

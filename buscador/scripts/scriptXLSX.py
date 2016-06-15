@@ -14,18 +14,24 @@ def xlsfile(inputdata, inputcookie):
 	
 	matchDowload = { "$and": []}
 
+	if (inputdata.get("duplicate") is None) or (inputdata.get("duplicate") is "off") :
+		matchDowload["$and"].append( {"results.isDuplicate": {"$in": [False, None]} } )
+
 	if inputdata["typeQuery"] is "2":
 		for userId in folder["user"] :
-			matchDowload["$and"].append( {"results.vote.yes": userId} )
+			matchDowload["$and"].append( {"results.vote.yes": userId, } )
 	elif inputdata["typeQuery"] is "1":
 		matchDowload["$and"].append({"results.vote.yes": str(user["_id"])})
-	elif inputdata["typeQuery"] is "0":
-		matchDowload = None
+	#elif inputdata["typeQuery"] is "0":
+	#	matchDowload = None
 	elif inputdata["typeQuery"] is "-1":
 		matchDowload["$and"].append({"results.vote.no": str(user["_id"])})
 	elif inputdata["typeQuery"] is "-2":
 		for userId in folder["user"] :
 			matchDowload["$and"].append( {"results.vote.no": userId} )
+
+	if len(matchDowload["$and"]) is 0:
+		matchDowload = None
 
 	#try:
 	wb = Workbook()

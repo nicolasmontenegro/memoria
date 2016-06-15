@@ -35,3 +35,8 @@ def nameById(value):
 @register.filter(name='getItem')
 def getItem(dictionary, key):
     return dictionary.get(key)
+
+
+@register.filter(name='getBookmark')
+def getBookmark(dictionary, user):
+	return getItem(dictionary, id(user))

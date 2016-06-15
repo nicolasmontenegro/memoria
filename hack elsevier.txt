@@ -1,0 +1,42 @@
+query = "python"
+import requests
+algo = requests.get("http://www.sciencedirect.com/science?_ob=QuickSearchURL&_method=submitForm&_acct=C000228598&searchtype=a&_origin=home&_zone=qSearch&md5=61ce8901b141d527683913a240486ac4&qs_all=" + query)
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(algo.text, 'html.parser')
+bibquery = "http://www.sciencedirect.com/science?_ob=DownloadURL&_method=finish&searchtype=a&refSource=search&_st=13&sort=r&filterType=&_chunk=0&NEXT_LIST=1&view=c&chunkSize=25&sisr_search=&zone=exportDropDown&citation-type=BIBTEX&format=cite-abs&export=Export&bottomPaginationBoxChanged=&displayPerPageFlag=f&resultsPerPage=25" + "&_ArticleListID=" + soup.find(attrs={"name" : "_ArticleListID"}).get("value") + "&md5=" + "3c332dc26c8b79d51d16a786b74fe76b"+ "&count=" + soup.find(attrs={"name" : "count"}).get("value")+ "&hitCount=" + soup.find(attrs={"name" : "hitCount"}).get("value")+ "&TOTAL_PAGES" + soup.find(attrs={"name" : "TOTAL_PAGES"}).get("value")
+bibquery
+bib = requests.post(bibquery)
+import bibtexparser
+parsered = bibtexparser.loads(bib.text)
+len(parsered.entries)
+
+
+
+
+
+
+soup.find(attrs={"name" : "_ArticleListID"}).get("value")
+
+&_ArticleListID=-998969466&md5=067b7af4aa5f7c398edba46e3255be8e
+
+file_ = open('elsevier.html', 'w')
+file_.write(algo.text)
+file_.close()
+
+
+file_ = open('acm.html', 'w')
+file_.write(response.text)
+file_.close()
+
+
+file_ = open('export.bib', 'w')
+file_.write(algo.text)
+file_.close()
+
+'33d75ff49244f6c57442c01614c198f3'
+'-998990908'
+
+http://www.sciencedirect.com/science?_ob=DownloadURL&_method=finish&searchtype=a&refSource=search&_st=13&count=1000&sort=r&filterType=&_chunk=0&hitCount=13091&NEXT_LIST=1&view=c&_ArticleListID=-998990908&chunkSize=25&sisr_search=&TOTAL_PAGES=524&zone=exportDropDown&citation-type=BIBTEX&format=cite-abs&export=Export&bottomPaginationBoxChanged=&displayPerPageFlag=f&resultsPerPage=25&md5=f83c1f4b0411c4e8afe9910ecbbf29dc
+
+
+algo = requests.post("http://www.sciencedirect.com/science?_ob=DownloadURL&_method=finish&searchtype=a&refSource=search&_st=13&count=735&sort=r&filterType=&_chunk=0&hitCount=735&NEXT_LIST=1&view=c&_ArticleListID=-998969466&chunkSize=25&sisr_search=&TOTAL_PAGES=30&zone=exportDropDown&citation-type=BIBTEX&format=cite-abs&export=Export&bottomPaginationBoxChanged=&displayPerPageFlag=f&resultsPerPage=25&md5=067b7af4aa5f7c398edba46e3255be8e")

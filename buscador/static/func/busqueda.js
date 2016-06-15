@@ -1,9 +1,3 @@
-$('#nav-tabs').click(function (e) 
-{
-	e.preventDefault()
-	$(this).tab('show')
-})
-
 function csrfSafeMethod(method) {
 	// these HTTP methods do not require CSRF protection
 	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -17,6 +11,25 @@ $.ajaxSetup({
 
 });
 
+ $("a[href='#summary']").on('shown.bs.tab', function (e) {
+ 	divsource=this;
+	inputconnect = 
+	{
+		url: "revisar",
+		type: "GET",
+	};
+	inputdata =
+	{
+		idquery: $("#idquery").val(),
+		download: true,
+	};
+	$("#summary").empty().append("<legend>Cargando...</legend><p>Estamos actualizando el conteo de votos.</p>");
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		$("#summary").empty().append(response);
+		console.log("toggle");
+	});  
+});
 
 $(document).ready(function(){
 	$(".tab-pane.source").each(function()
@@ -50,10 +63,10 @@ $(document).on('click', ".button-ok", function(){
 	};
 	inputdata =
 	{
-		source: $(btn).parent().attr("source"),
-		rank: $(btn).parent().attr("rank"),
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
 		value: 0, 
-		id: $(btn).parent().attr("id"),
+		id: $(btn).parents(".source").attr("id"),
 	};
 	if ($(btn).hasClass('active')) 
 	{
@@ -95,10 +108,10 @@ $(document).on('click', ".button-remove", function(){
 	};
 	inputdata =
 	{
-		source: $(btn).parent().attr("source"),
-		rank: $(btn).parent().attr("rank"),
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
 		value: 0, 
-		id: $(btn).parent().attr("id"),
+		id: $(btn).parents(".source").attr("id"),
 	};
 	if ($(btn).hasClass('active')) 
 	{
@@ -150,9 +163,9 @@ $(document).on('click', ".buttonpagination", function(e){
 		};
 		inputdata =
 		{
-			source: $(".tab-pane.active").attr("name"),
+			source: $(btn).parents(".source").attr("name"),
+			iddb: $(btn).parents(".source").attr("id"),
 			page: $(btn).val(),
-			iddb: $(".tab-pane.active").attr("id"),
 			idquery: $("#idquery").val(),
 		};
 		ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
@@ -164,7 +177,7 @@ $(document).on('click', ".buttonpagination", function(e){
 });
 
 
-$(document).on('click', "#ConfirmInfoComplete", function(e){
+/*$(document).on('click', "#ConfirmInfoComplete", function(e){
 	//$('#ModalInfoComplete').modal('hide')
 	inputconnect = 
 	{
@@ -174,6 +187,7 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	inputconnect.type = "GET"; 
 		inputdata =
 		{
+
 			source: $(".tab-pane.active").attr("name"),
 			page: 1,
 			iddb: $(".tab-pane.active").attr("id"),
@@ -195,13 +209,13 @@ $(document).on('click', "#ConfirmInfoComplete", function(e){
 	{	
 	 	location.reload();
 	});
-});
+});*/
 
 $(document).on('click', ".button-comment", function(e){
 	btn = this;
-	$("#ModalComment").attr("source", $(btn).parent().attr("source"));
-	$("#ModalComment").attr("rank", $(btn).parent().attr("rank"));
-	$("#ModalComment").attr("idpub", $(btn).parent().attr("id"));	
+	$("#ModalComment").attr("source", $(btn).parents(".source").attr("name"));
+	$("#ModalComment").attr("rank", $(btn).parents(".well").attr("rank"));
+	$("#ModalComment").attr("idpub", $(btn).parents(".source").attr("id"));	
 	inputconnect = 
 	{
 		url: "comment",
@@ -257,7 +271,6 @@ $(document).on('click', "#sendComment", function(e){
 });
 
 
-
 $('#ModalComment').on('hidden.bs.modal', function () {
     updateButtonsValues();
 })
@@ -277,11 +290,102 @@ function updateButtonsValues() {
 	};
 	ajaxPages(inputconnect, inputdata).promise().done(function(response)
 	{
-		btn = $("[source='" + inputdata.source + "'][rank='" + inputdata.rank + "'][id='" + inputdata.id + "']").find(".button-comment");
+		btn = $("#" + inputdata.id).find("[rank='" + inputdata.rank + "']").find(".button-comment");
 		updateCountVote (btn, response); 
 	});	
 }
 
+$(document).on('click', ".button-bookmark", function(){
+	btn = this;
+	inputconnect = 
+	{
+		url: "bookmark",
+		type: "POST",
+	};
+	inputdata =
+	{
+		source: $(btn).parents(".source").attr("name"),
+		rank: $(btn).parents(".well").attr("rank"),
+		iddb: $(btn).parents(".source").attr("id"),
+	};
+	console.log(inputdata);
+	ajaxPages(inputconnect, inputdata).promise().done(function(response)
+	{
+		if (response.modified){
+			$("#" + inputdata.iddb + " .panel-bookmark").removeClass("collapse");
+			$("#" + inputdata.iddb + " .panel-bookmark a").attr("rank", inputdata.rank);
+			$("#" + inputdata.iddb + " .button-bookmark").removeClass("active");
+			$(btn).addClass("active");
+		}
+		else
+		{
+			console.log("bookmark check " +  response.modified);
+		}
+
+	});
+});
+
+$(document).on('click', ".button-bookmarkGoTo", function(e){
+	e.preventDefault()
+	btn=this;
+	inputconnect = 
+	{
+		url: "revisar",
+		type: "GET",
+	};
+	inputdata =
+	{
+		source: $(btn).parents(".source").attr("name"),
+		iddb: $(btn).parents(".source").attr("id"),
+		idquery: $("#idquery").val(),
+		page: parseInt((parseInt($(btn).attr("rank"))-1)/24)+1,
+		rank: $(btn).attr("rank"),
+	};
+	
+	ajaxPagesAUX(inputconnect, inputdata).promise().done(function(response)
+	{
+		console.log(inputdata);
+		$('.nav-tabs a[href="#' + inputdata.iddb + '"]').tab('show');
+		$('html,body').animate({
+        scrollTop: $('#' + inputdata.iddb).find('.well[rank="' + inputdata.rank +  '"]').offset().top - 70},
+        'slow');
+        $('#' + inputdata.iddb).find('.well[rank="' + inputdata.rank +  '"]').effect( "highlight", {color:"#4080bf"}, 1000 );
+	});
+});
+
+$(document).on('click', ".button-abstract", function(e){
+	e.preventDefault()
+	var objective = $($(this).attr("target"));
+	if (objective.hasClass("empty") && !objective.hasClass("in") && "acm" == $(this).parents(".source").attr("name"))
+	{
+		inputconnect = 
+		{
+			url: "revisar",
+			type: "POST",
+		};
+		inputdata =
+		{
+			getAbstract: true,
+			source: $(this).parents(".source").attr("name"),
+			rank: $(this).parents(".well").attr("rank"),
+			iddb: $(this).parents(".source").attr("id"),
+		};
+		ajaxPages(inputconnect, inputdata).promise().done(function(response)
+		{
+			console.log(response);
+			if (response.update)
+			{
+				objective.removeClass("empty");
+				objective.empty().append("<p><b>Abstract: </b>" + response.abstract + "</p>");
+			}
+			else
+			{
+				objective.empty().append("<p><b>Error al obtener abstract. Intentelo más tarde...</b></p>");
+			}
+		});
+	}
+	objective.collapse("toggle");
+});
 
 function ajaxPages(inputconnect, inputdata)
 {
@@ -313,6 +417,8 @@ function ajaxPagesAUX(inputconnect, inputdata)
 		{
 			console.log(inputdata.iddb);
 			$("#" + inputdata.iddb).empty().append(response);
+			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="popover"]').popover();
 			return response;
 		},
 		// handle a non-successful response

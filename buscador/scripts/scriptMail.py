@@ -19,7 +19,7 @@ def send_simple_message(to, subject, text):
 def prepareInvitation(fromUser, toUser, folder, propose):
     outTo =  toUser["firstname"] + " " + toUser["lastname"] + " <" + toUser["email"] + ">"
     outSubject = fromUser["firstname"] + " Te ha invitado a colaborar"
-    outText = "Hola " + toUser["firstname"] + ",\n\n" + fromUser["firstname"] + " " + fromUser["lastname"] + " " + propose + " \"" + folder["folder"] + "\".\nPara entrar, inicia sesión y revisa tu lista de carpetas o entra directamente a http://www.papered.xyz/folder?idquery=" + str(folder["_id"]) + " \nRecuerda colaborar en las votaciones para mejorar las selecciones de los resultados.\n\nSaludos\nPapered" 
+    outText = "Hola " + toUser["firstname"] + ",\n\n" + fromUser["firstname"] + " " + fromUser["lastname"] + " [" + fromUser["email"] +"] "+ propose + " \"" + folder["folder"] + "\".\nPara entrar, inicia sesión y revisa tu lista de carpetas o entra directamente a http://www.papered.xyz/folder?idquery=" + str(folder["_id"]) + " \nRecuerda colaborar en las votaciones para mejorar las selecciones de los resultados.\n\nSaludos\nPapered" 
     send_simple_message(outTo, outSubject, outText)    
     print ("enviada invitacion a " + outTo)
 

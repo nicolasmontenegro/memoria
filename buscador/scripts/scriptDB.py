@@ -71,6 +71,7 @@ def addUser(inputdata):
 			"lastname":  inputdata["lastname"],
 			"email":  inputdata["email"],
 			"password":  inputdata["password"],
+			"dateCreation":  time.asctime(time.localtime(time.time())),
 			"folder": [],
 			}
 		if client.memoria.username.insert(objInsert):
@@ -129,19 +130,20 @@ def getFolder(inputdata, inputcookie, complete):
 		folder["permission"] = folder["user"].get(str(user["_id"]))	
 		if complete:
 			for doc in folder["search"]:
-				doc["doc"] = readQuery(doc["id"]) 
+				if doc != None:
+					doc["doc"] = readQuery(doc["id"]) 
 		return folder
 	except Exception:
 		print("error en getFolder")
-		return -1
+		return -2
 
-def getPageResults():
-	resultsperpage = 24
-	#print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
-	out = readSource(request.GET['source'], request.GET['iddb'])
-	lapsus = (int(request.GET['page'])-1)*(resultsperpage)
-	out["results"] = out["results"][lapsus:(lapsus+resultsperpage)]	
-	out["name"] = request.GET['source']
+# def getPageResults():
+# 	resultsperpage = 24
+# 	#print ("usando " + request.GET['source'] + ": " + request.GET['iddb'] + " pag: " + request.GET['page'])
+# 	out = readSource(request.GET['source'], request.GET['iddb'])
+# 	lapsus = (int(request.GET['page'])-1)*(resultsperpage)
+# 	out["results"] = out["results"][lapsus:(lapsus+resultsperpage)]	
+# 	out["name"] = request.GET['source']
 
 def getResults(inputdata, inputcookie):
 	results = client.memoria.query.find_one({"_id": ObjectId(inputdata['idquery'])})
@@ -242,11 +244,12 @@ def Progress(inputdata, inputcookie):
 	results = getResults(inputdata, inputcookie)
 	folder = client.memoria.folder.find_one({"_id": ObjectId(results["folder"])})	
 
-	matchAll = {"yes":[], "no":[]}
+	matchAll = {"yes":[{"results.isDuplicate": {"$in": [False, None]}}], "no":[{"results.isDuplicate": {"$in": [False, None]}}]}
 	for userId in folder["user"] :
 		matchAll["yes"].append( {"results.vote.yes": userId} )
 		matchAll["no"].append( {"results.vote.no": userId} )
-	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}], "no":[{"results.vote.no": str(user["_id"])}]}
+	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ], 
+		"no":[{"results.vote.no": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ]}
 	
 	for doc in results["sources"]:
 		if doc["doc"]["totalfound"] > 0:
@@ -255,7 +258,7 @@ def Progress(inputdata, inputcookie):
 	return results
 
 def progressQuery(doc, match):
-	values = {"yes": 0 , "no": 0}
+	values = {"yes": 0 , "yesPercent": 0,  "no": 0, "noPercent": 0}
 
 	auxyes = simpleAggregateSource(doc, match =  { "$and": match["yes"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
 	if auxyes:
@@ -287,3 +290,38 @@ def simpleAggregateSource(doc, match = None, group = None):
 		return result[0]
 	else:
 		return None
+
+def bookmark(inputdata, inputcookie):
+	user = unfold(inputcookie)
+	#source = readSource(inputdata["source"], inputdata["iddb"])
+	if user:
+		bookmarkQuery = "bookmark." +  str(user["_id"])
+		results = client.memoria[inputdata["source"]].update_one({"_id": ObjectId(inputdata["iddb"])}, {"$set":{bookmarkQuery: {"rank": inputdata.get("rank")}}})
+		return {"modified" : results.modified_count}
+	else:
+		return {"modified" : 0}
+
+def duplicates(iddb):
+	query = readQuery(iddb)
+	for doc in query["sources"]:
+		titles = list(client.memoria[doc["name"]].aggregate([{ 
+			"$match": {"_id": doc["db"]} }, 
+			{ "$unwind": '$results' }, 
+			{ "$match": {"results.isDuplicate": {"$in": [False, None]}}},
+			{ "$group": {"_id":"_id", "results": {"$push": {"$toLower": "$results.title"}}}},
+			]))
+		if len(titles) and titles[0].get("results"):
+			for toComapre in query["sources"]:				
+				if toComapre["name"] != doc["name"]:
+					matches = list(client.memoria[toComapre["name"]].aggregate([
+						{ "$match": {"_id": toComapre["db"]} }, 
+						{ "$unwind": '$results' },
+						{ "$project" :{ "rank": "$results.rank", "title": {"$toLower": "$results.title"}}},
+						{ "$match": { "title": {"$in":titles[0].get("results")}}},
+						{ "$group": { "_id": "_id", "matches": {"$push": "$rank"}}},
+						]))
+					if len(matches) and matches[0].get("matches"):
+						for match in matches[0].get("matches"):
+							client.memoria[toComapre["name"]].update_one(
+								{"_id": toComapre["db"], "results.rank": match}, 
+								{"$set": {"results.$.isDuplicate": True} })
