@@ -244,12 +244,19 @@ def Progress(inputdata, inputcookie):
 	results = getResults(inputdata, inputcookie)
 	folder = client.memoria.folder.find_one({"_id": ObjectId(results["folder"])})	
 
-	matchAll = {"yes":[{"results.isDuplicate": {"$in": [False, None]}}], "no":[{"results.isDuplicate": {"$in": [False, None]}}]}
+	matchAll = {
+		"yes": { "$and": [{"results.isDuplicate": {"$in": [False, None]}}] }, 
+		"no": { "$and": [{"results.isDuplicate": {"$in": [False, None]}}] },
+		"discussion": { "$and": [{"results.isDuplicate": {"$in": [False, None]}}], "$or": [{"results.vote.yes": { "$exists": True } }, {"results.vote.no": { "$exists": True } }] }
+		}
 	for userId in folder["user"] :
-		matchAll["yes"].append( {"results.vote.yes": userId} )
-		matchAll["no"].append( {"results.vote.no": userId} )
-	matchMy = {"yes":[{"results.vote.yes": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ], 
-		"no":[{"results.vote.no": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ]}
+		matchAll["yes"]["$and"].append( {"results.vote.yes": userId} )
+		matchAll["no"]["$and"].append( {"results.vote.no": userId} )
+
+	matchMy = {
+		"yes": {"$and": [{"results.vote.yes": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ]}, 
+		"no": {"$and": [{"results.vote.no": str(user["_id"])}, {"results.isDuplicate": {"$in": [False, None]}} ]},
+		}
 	
 	for doc in results["sources"]:
 		if doc["doc"]["totalfound"] > 0:
@@ -258,32 +265,48 @@ def Progress(inputdata, inputcookie):
 	return results
 
 def progressQuery(doc, match):
-	values = {"yes": 0 , "yesPercent": 0,  "no": 0, "noPercent": 0}
+	values = {"yes": 0 , "yesPercent": 0,  "no": 0, "noPercent": 0, "discussion": 0, "discussionPercent": 0 }
 
-	auxyes = simpleAggregateSource(doc, match =  { "$and": match["yes"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	auxyes = simpleAggregateSource(doc, operations = [ {"$match": match["yes"]} , {"$group" :{"_id": '$_id', "count": { "$sum": 1 }} }] )
 	if auxyes:
 		values["yes"] = auxyes["count"]
 		values["yesPercent"] = round((auxyes["count"] / doc["doc"]["totalfound"]) * 100, 0)
 	
-	auxno = simpleAggregateSource(doc, match =  { "$and": match["no"]}, group = {"_id": '$_id', "count": { "$sum": 1 }})
+	auxno = simpleAggregateSource(doc, operations = [ {"$match": match["no"]} , {"$group" :{"_id": '$_id', "count": { "$sum": 1 }}} ] )
 	if auxno:
 		values["no"] = auxno["count"]
 		values["noPercent"] = round((auxno["count"] / doc["doc"]["totalfound"]) * 100, 0)
+
+	if match.get("discussion"):
+		operations = [
+			{"$match": match["discussion"]},
+			{ "$project": {
+				"results": "$results", 
+				"yes": {"$size": { "$ifNull": [ "$results.vote.yes", [] ] }}, 
+				"no": {"$size": { "$ifNull": [ "$results.vote.no", [] ] }}
+			}},
+			{ "$match": {
+				"$or": [{"yes": { "$gt": 0, "$lt": len(match["yes"]["$and"])-1 } }, {"no": { "$gt": 0, "$lt": len(match["yes"]["$and"])-1 } }]
+			}},
+			{"$group" :{"_id": '$_id', "count": { "$sum": 1 }}}]
+		auxDiscussion = simpleAggregateSource(doc, operations = operations)
+		if auxDiscussion:
+			values["discussion"] = auxDiscussion["count"]
+			values["discussionPercent"] = round((auxDiscussion["count"] / doc["doc"]["totalfound"]) * 100, 0)
+
 	
-	values["votesComplete"] = values["no"] + values["yes"]
-	values["votesPercentComplete"] = round((values["votesComplete"]/ doc["doc"]["totalfound"])*100, 0)
+	values["votesComplete"] = values["no"] + values["yes"] + values["discussion"] 
+	values["votesCompletePercent"] = round((values["votesComplete"]/ doc["doc"]["totalfound"])*100, 0)
 	
 	values["votesRemain"] = doc["doc"]["totalsave"] - values["votesComplete"]
-	values["votesPercentRemain"] = round((values["votesRemain"]/ doc["doc"]["totalfound"])*100, 0)
+	values["votesRemainPercent"] = round((values["votesRemain"]/ doc["doc"]["totalfound"])*100, 0)
 	
 	return values
 
-def simpleAggregateSource(doc, match = None, group = None):
+def simpleAggregateSource(doc, operations = None):
 	query = [{ "$match": {"_id": doc["db"]} }, { "$unwind": '$results' }]
-	if match:
-		query.append({ "$match": match })
-	if group:
-		query.append({ "$group": group })
+	if operations:
+		query.extend(operations)
 
 	result = list(client.memoria[doc["name"]].aggregate(query))
 	if len(result):

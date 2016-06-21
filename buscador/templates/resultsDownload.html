@@ -19,11 +19,14 @@
 						<li><label>Progreso personal</label></li>
 						<li>{{item.votes.my.yes}} aprobados ({{item.votes.my.yesPercent|stringformat:"d"}}%)</li>
 						<li>{{item.votes.my.no}} rechazados ({{item.votes.my.noPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.my.votesRemain}} pendientes ({{item.votes.my.votesRemainPercent|stringformat:"d"}}%)</li>
 					</ul>
 					<ul class="list-inline">
 						<li><label>Progreso total</label></li>
 						<li>{{item.votes.all.yes}} aprobados ({{item.votes.all.yesPercent|stringformat:"d"}}%)</li>
 						<li>{{item.votes.all.no}} rechazados ({{item.votes.all.noPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.all.discussion}} en discusión ({{item.votes.all.discussionPercent|stringformat:"d"}}%)</li>
+						<li>{{item.votes.all.votesRemain}} pendientes ({{item.votes.all.votesRemainPercent|stringformat:"d"}}%)</li>
 					</ul>
 				</div>					
 			</div>
