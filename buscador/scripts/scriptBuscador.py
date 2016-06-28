@@ -306,12 +306,12 @@ def search(querytext):
 def getAbstract(inputdata):
 	returnObject = {"update": 0, "code": "nothing"}
 	if inputdata.get("source") == "acm":
-		match = scriptDB.simpleAggregateSource({"name": inputdata.get("source"), "db": ObjectId(inputdata.get("iddb"))}, match = {"results.rank": inputdata.get("rank")})
+		match = scriptDB.simpleAggregateSource({"name": inputdata.get("source"), "db": ObjectId(inputdata.get("iddb"))}, operations = [{"$match": {"results.rank": inputdata.get("rank")}}])
 		try:
 			response = requests.get(match["results"]["mdurl"] + "&preflayout=flat", headers=headers)
 			soup = BeautifulSoup(response.text, 'html.parser')
 			abstract = soup.find("div", {"class":"flatbody"}).div.text
-			print("abst from acm: " + abstract)
+			#print("abst from acm: " + abstract)
 			if abstract:
 				modifiedValues = client.memoria[inputdata['source']].update_one({"_id": ObjectId(inputdata["iddb"]), "results.rank": inputdata["rank"]}, {"$set": {"results.$.abstract": abstract}}).modified_count
 				if modifiedValues:
